@@ -182,17 +182,17 @@ cython_debug/
 
 # Front End files to ignore
 # dependencies
-/node_modules
-/.pnp
+/node_modules/
+/.pnp/
 .pnp.*
 .yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+!.yarn/patches/
+!.yarn/plugins/
+!.yarn/releases/
+!.yarn/versions/
 
 # testing
-/coverage
+/coverage/
 
 # next.js
 /.next/
