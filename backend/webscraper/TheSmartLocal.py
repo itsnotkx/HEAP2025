@@ -1,22 +1,49 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import json
+from typing import List, Optional
 import os
 from datetime import datetime
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
-os.makedirs("event_listings", exist_ok=True)
+app = FastAPI()
 
-url = "https://thesmartlocal.com/read/things-to-do-this-weekend-singapore/"
-response = requests.get(url)
-soup = BeautifulSoup(response.content, "html.parser")
+class Event(BaseModel):
+    title: str
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    time: Optional[str] = None
+    location: Optional[str] = None
+    postal_code: Optional[str] = None
+    category: Optional[str] = None
+    price: Optional[str] = None
+    description: str
+    image_urls: List[str] = []
+    organizer: Optional[str] = None
+    official_link: Optional[str] = None
+    url: List[str]
 
 def extract_address(text):
     address_pattern = r"Singapore\s+\d{6}"
     match = re.search(address_pattern, text)
-    if match:
-        return text.strip()
-    return text
+    return text.strip() if match else text
+
+def parse_dates_improved(dates_text):
+    cleaned_text = re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', dates_text)
+    # Match date ranges like "16-18 May"
+    date_range_match = re.match(r'(\d{1,2})-(\d{1,2})\s+(\w+)', cleaned_text)
+    if date_range_match:
+        start_day, end_day, month = date_range_match.groups()
+        try:
+            start_date = datetime.strptime(f"{start_day} {month} 2025", "%d %B %Y").isoformat()
+            end_date = datetime.strptime(f"{end_day} {month} 2025", "%d %B %Y").isoformat()
+            return start_date, end_date
+        except ValueError:
+            return None, None
+    else:
+        # Fallback to original method for single dates
+        return parse_dates(dates_text)
 
 def parse_dates(dates_text):
     date_parts = re.findall(r'(\d{1,2})(?:st|nd|rd|th)?\s*(\w+)', dates_text)
@@ -28,98 +55,94 @@ def parse_dates(dates_text):
     except ValueError:
         return None, None
 
-event_tags = soup.find_all('h3')
-index = 1
+def scrape_events() -> List[Event]:
+    url = "https://thesmartlocal.com/read/things-to-do-this-weekend-singapore/"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}")
+    soup = BeautifulSoup(response.content, "html.parser")
+    event_tags = soup.find_all('h3')
+    events = []
+    for event in event_tags:
+        title = event.get_text(strip=True)
+        if "new events in singapore" in title.lower():
+            continue
+        content = []
+        event_data = {
+            "title": title,
+            "start_date": None,
+            "end_date": None,
+            "time": None,
+            "location": None,
+            "postal_code": None,
+            "category": None,
+            "price": None,
+            "description": "",
+            "image_urls": [],
+            "organizer": None,
+            "official_link": None,
+            "url": [url]
+        }
+        sibling = event.find_next_sibling()
+        while sibling and sibling.name != 'h3':
+            text = sibling.get_text(separator=' ', strip=True)
+            content.append(text)
 
-for event_tag in event_tags:
-    title = event_tag.get_text(strip=True)
-    if "new events in singapore" in title.lower():
-        continue
+            if not event_data["price"]:
+                price_match = re.search(r'(Tickets?|Price)[:\-]?\s*(From\s*\$?\d+|Free|\$?\d+(?:\s*-\s*\$?\d+)?(?:\+)?)(?=\s|$)', text, re.IGNORECASE)
+                if price_match:
+                    event_data["price"] = price_match.group(2)
 
-    content = []
-    event_data = {
-        "Title": title,
-        "Start Date": None,
-        "End Date": None,
-        "Time": None,
-        "Address / Location": None,
-        "Postal Code": None,
-        "Category": None,
-        "Price / Ticket Info": None,
-        "Description": "",
-        "Image URL(s)": [],
-        "Organizer": None,
-        "Official Event Link": None,  # Default null if no official link found
-        "url": [url]  # Always include the thesmartlocal URL as a list
-    }
+            if not event_data["location"]:
+                venue_match = re.search(r'Venue[:\-]?\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Organizer)[:\-])', text, re.IGNORECASE)
+                if venue_match:
+                    address_str = venue_match.group(1).strip()
+                    event_data["location"] = extract_address(address_str)
 
-    sibling = event_tag.find_next_sibling()
-    while sibling and sibling.name != 'h3':
-        text = sibling.get_text(separator=' ', strip=True)
-        content.append(text)
+            date_match = re.search(r'Dates?[:\-]?\s*([\d, &a-zA-Z]+)', text)
+            if date_match:
+                start_date, end_date = parse_dates_improved(date_match.group(1))
+                event_data["start_date"] = start_date
+                event_data["end_date"] = end_date
 
-        # Price info
-        if not event_data["Price / Ticket Info"]:
-            price_match = re.search(r'(Tickets?|Price)[:\-]?\s*(From\s*\$?\d+|Free|\$?\d+(?:\s*-\s*\$?\d+)?(?:\+)?)(?=\s|$)', text, re.IGNORECASE)
-            if price_match:
-                event_data["Price / Ticket Info"] = price_match.group(2)
+            if not event_data["time"]:
+                time_match = re.search(r'Time[:\-]?\s*([^\n]+)', text, re.IGNORECASE)
+                if time_match:
+                    event_data["time"] = time_match.group(1).strip()
 
-        # Address / Location
-        if not event_data["Address / Location"]:
-            venue_match = re.search(r'Venue[:\-]?\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Organizer)[:\-])', text, re.IGNORECASE)
-            if venue_match:
-                address_str = venue_match.group(1).strip()
-                event_data["Address / Location"] = extract_address(address_str)
+            if not event_data["organizer"]:
+                org_match = re.search(r'Organizer[s]?[:\-]?\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Venue)[:\-]|$)', text, re.IGNORECASE)
+                if org_match:
+                    organizer = org_match.group(1).strip()
+                    if organizer.lower() not in ["n/a", "tbc", ""]:
+                        event_data["organizer"] = organizer
 
-        # Dates
-        date_match = re.search(r'Dates?[:\-]?\s*([\d, &a-zA-Z]+)', text)
-        if date_match:
-            start_date, end_date = parse_dates(date_match.group(1))
-            event_data["Start Date"] = start_date
-            event_data["End Date"] = end_date
+            if not event_data["official_link"]:
+                links = sibling.find_all('a', href=True)
+                for link in links:
+                    href = link['href']
+                    if href.startswith("http") and "thesmartlocal.com" not in href.lower():
+                        event_data["official_link"] = href
+                        break
 
-        # Time
-        if not event_data["Time"]:
-            time_match = re.search(r'Time[:\-]?\s*([^\n]+)', text, re.IGNORECASE)
-            if time_match:
-                event_data["Time"] = time_match.group(1).strip()
+            sibling = sibling.find_next_sibling()
 
-        # Organizer
-        if not event_data["Organizer"]:
-            org_match = re.search(r'Organizer[s]?[:\-]?\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Venue)[:\-]|$)', text, re.IGNORECASE)
-            if org_match:
-                organizer = org_match.group(1).strip()
-                if organizer.lower() not in ["n/a", "tbc", ""]:
-                    event_data["Organizer"] = organizer
+        if event_data["location"]:
+            postal_match = re.search(r'\b\d{6}\b', event_data["location"])
+            if postal_match:
+                event_data["postal_code"] = postal_match.group()
 
-        # Official Event Link - look for links that are NOT thesmartlocal URLs
-        if not event_data["Official Event Link"]:
-            links = sibling.find_all('a', href=True)
-            for link in links:
-                href = link['href']
-                # Skip internal thesmartlocal URLs
-                if href.startswith("http") and "thesmartlocal.com" not in href.lower():
-                    event_data["Official Event Link"] = href
-                    break
+        prev_img = event.find_previous('img')
+        if prev_img and prev_img.has_attr('src'):
+            event_data["image_urls"].append(prev_img['src'])
 
-        sibling = sibling.find_next_sibling()
+        event_data["description"] = " ".join(content)
+        events.append(Event(**event_data))
+    return events
 
-    # Extract postal code from Address / Location if present
-    if event_data["Address / Location"]:
-        postal_match = re.search(r'\b\d{6}\b', event_data["Address / Location"])
-        if postal_match:
-            event_data["Postal Code"] = postal_match.group()
-
-    # Image
-    prev_img = event_tag.find_previous('img')
-    if prev_img and prev_img.has_attr('src'):
-        event_data["Image URL(s)"].append(prev_img['src'])
-
-    event_data["Description"] = " ".join(content)
-
-    filename = f"event_listings/event_{index:02d}.json"
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(event_data, f, indent=4, ensure_ascii=False)
-
-    print(f"Saved: {filename}")
-    index += 1
+@app.post("/scrape-events", response_model=List[Event])
+async def trigger_scraper():
+    # Triggers scraping and returns Events
+    return scrape_events()
