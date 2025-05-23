@@ -1,28 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-from typing import List, Optional
 import os
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from typing import List, Optional
+from ...src import Event
 
 app = FastAPI()
 
-class Event(BaseModel):
-    title: str
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    time: Optional[str] = None
-    location: Optional[str] = None
-    postal_code: Optional[str] = None
-    category: Optional[str] = None
-    price: Optional[str] = None
-    description: str
-    image_urls: List[str] = []
-    organizer: Optional[str] = None
-    official_link: Optional[str] = None
-    url: List[str]
 
 def extract_address(text):
     address_pattern = r"Singapore\s+\d{6}"

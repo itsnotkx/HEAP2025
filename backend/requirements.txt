@@ -1,0 +1,8 @@
+beautifulsoup4
+fastapi
+requests
+selenium
+sqlalchemy
+psycopg2-binary
+dotenv
+python-dotenv
