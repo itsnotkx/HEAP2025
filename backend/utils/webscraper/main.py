@@ -7,7 +7,6 @@ from TheSmartLocalScraper import scrape_tsl_events
 
 app = FastAPI()
 @app.get("/", response_class=HTMLResponse)
-@app.get("/", response_class=HTMLResponse)
 def read_root():
     return """
     <html>
