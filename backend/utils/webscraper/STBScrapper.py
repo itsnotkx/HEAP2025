@@ -1,39 +1,79 @@
 import os
 import re
 import time
-import base64
 import requests
+from fastapi import FastAPI, HTTPException
+from typing import List, Optional
+from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Use these if you have OAuth credentials, else fallback to API key
-CLIENT_ID = os.getenv("STB_CLIENT_ID")
-CLIENT_SECRET = os.getenv("STB_CLIENT_SECRET")
 API_KEY = os.getenv("STB_API_KEY")
-
-OAUTH_TOKEN_URL = "https://oauth.stb.gov.sg/token"  # double-check actual URL in docs
 EVENTS_API_URL = "https://api.stb.gov.sg/content/events/v2/search"
 
-def get_access_token():
-    if not CLIENT_ID or not CLIENT_SECRET:
-        raise RuntimeError("Missing CLIENT_ID or CLIENT_SECRET for OAuth")
+app = FastAPI()
 
-    auth_str = f"{CLIENT_ID}:{CLIENT_SECRET}"
-    b64_auth_str = base64.b64encode(auth_str.encode()).decode()
+EXCLUDED_TITLES = [
+    "National Day 2025",
+    "Hari Raya Haji 2025",
+    "Chinese New Year",
+    "Good Friday 2025",
+    "Deepavali 2025",
+    "Christmas 2025",
+    "Hari Raya Puasa 2025",
+    "New Year’s Day 2025",
+    "Labour Day 2025",
+    "Vesak Day 2025",
+    "Year of the Horse 2026",
+]
 
-    headers = {
-        "Authorization": f"Basic {b64_auth_str}",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = {"grant_type": "client_credentials"}
+SEARCH_KEYWORDS = [
+    "music", "arts", "food", "family", "festival", "sports", "culture",
+    "dance", "drama", "exhibition", "performance", "theatre", "bazaar",
+    "market", "parade", "workshop", "concert", "heritage", "community",
+    "fashion", "film", "carnival", "marathon", "wellness", "photography",
+    "flea", "design", "craft", "culinary", "comedy", "kids", "indoor", "outdoor"
+]
 
-    response = requests.post(OAUTH_TOKEN_URL, headers=headers, data=data)
-    response.raise_for_status()
-    token = response.json().get("access_token")
-    if not token:
-        raise RuntimeError("Failed to retrieve access token")
-    return token
+SEARCH_KEYWORDS += [
+    "street fair", "block party", "music festival", "concert", "live music",
+    "food festival", "food truck festival", "wine tasting", "beer festival",
+    "cultural festival", "heritage festival", "art walk", "gallery opening",
+    "art show", "craft fair", "makers market", "flea market", "farmers market",
+    "holiday market", "bazaar", "parade", "carnival", "circus", "funfair",
+    "outdoor movie", "film screening", "film festival", "open mic", "jam session",
+    "karaoke night", "talent show", "dance party", "silent disco", "dance class",
+    "yoga class", "fitness bootcamp", "wellness retreat", "meditation session",
+    "guided hike", "nature walk", "bird watching", "garden tour", "plant sale",
+    "pet show", "animal adoption", "dog walk", "community picnic", "potluck",
+    "cook-off", "bake sale", "culinary class", "cooking demo", "baking workshop",
+    "storytelling", "poetry slam", "book reading", "book club", "kids workshop",
+    "children's activity", "family fun day", "science fair", "robotics competition",
+    "board game night", "game night", "trivia night", "quiz night", "escape room",
+    "scavenger hunt", "treasure hunt", "sports tournament", "charity run",
+    "fun run", "marathon", "bike ride", "cycling event", "skate night",
+    "roller disco", "swimming gala", "beach party", "campout", "stargazing",
+    "fireworks show", "lantern festival", "light show", "historical reenactment",
+    "reenactment", "community cleanup", "tree planting", "volunteer day",
+    "environmental rally", "petting zoo", "farm tour", "nature festival",
+    "outdoor adventure", "adventure race", "obstacle course", "park event"
+]
+
+# Pydantic Event model for response serialization
+class Event(BaseModel):
+    title: str
+    start_date: Optional[str]
+    end_date: Optional[str]
+    location: Optional[str]
+    postal_code: Optional[str]
+    category: Optional[str]
+    price: Optional[str]
+    description: str
+    image_urls: List[str]
+    organizer: Optional[str]
+    official_link: Optional[str]
+    url: List[str]
 
 def fetch_events(auth_header, limit=50, offset=0, keywords=None):
     headers = {
@@ -41,12 +81,9 @@ def fetch_events(auth_header, limit=50, offset=0, keywords=None):
         **auth_header,
     }
 
-    # If keywords param is None or empty, fallback to ["all"]
-    search_values = keywords if keywords else ["all"]
-
     params = {
         "searchType": "keyword",
-        "searchValues": search_values,  # Pass as list directly here
+        "searchValues": keywords or ["all"],
         "limit": limit,
         "offset": offset
     }
@@ -55,16 +92,25 @@ def fetch_events(auth_header, limit=50, offset=0, keywords=None):
     response.raise_for_status()
     return response.json()
 
-
 def parse_events(events):
     parsed = []
     for event in events:
-        time.sleep(0.2)  # to avoid hammering API
+        title = event.get("name", "").strip()
+        if any(excluded.lower() == title.lower() for excluded in EXCLUDED_TITLES):
+            continue  # skip excluded events
 
-        title = event.get("name")
         start_date = event.get("startDate")
         end_date = event.get("endDate")
+
+        # Convert location dict to string if dict, else keep as is or None
         location = event.get("location")
+        if isinstance(location, dict):
+            lat = location.get("latitude")
+            lon = location.get("longitude")
+            if lat is not None and lon is not None:
+                location = f"{lat},{lon}"
+            else:
+                location = str(location)  # fallback to string of dict
 
         postal_code = None
         address = event.get("address")
@@ -75,7 +121,7 @@ def parse_events(events):
 
         category = event.get("type")
 
-        price = None # none means cannot scrape price, free is free
+        price = None
         if event.get("ticketed") is True:
             price = "Ticketed"
         elif event.get("ticketed") is False:
@@ -83,53 +129,48 @@ def parse_events(events):
 
         description = event.get("description") or ""
 
-        image_urls = event.get("images")
-        if not isinstance(image_urls, list):
-            image_urls = []
+        # image_urls should be list of strings (extract 'uuid' if dict)
+        images = event.get("images")
+        image_urls = []
+        if isinstance(images, list):
+            for img in images:
+                if isinstance(img, dict) and "uuid" in img:
+                    image_urls.append(img["uuid"])
+                elif isinstance(img, str):
+                    image_urls.append(img)
 
         organizer = event.get("eventOrganizer")
         official_link = event.get("officialWebsite")
         url_list = [official_link] if official_link else []
 
-        event_data = {
-            "title": title,
-            "start_date": start_date,
-            "end_date": end_date,
-            "location": location,
-            "postal_code": postal_code,
-            "category": category,
-            "price": price,
-            "description": description,
-            "image_urls": image_urls,
-            "organizer": organizer,
-            "official_link": official_link,
-            "url": url_list,
-        }
-        parsed.append(event_data)
+        parsed.append(Event(
+            title=title,
+            start_date=start_date,
+            end_date=end_date,
+            location=location,
+            postal_code=postal_code,
+            category=category,
+            price=price,
+            description=description,
+            image_urls=image_urls,
+            organizer=organizer,
+            official_link=official_link,
+            url=url_list,
+        ))
+
     return parsed
 
-def main():
-    # Choose auth method: OAuth or API key
-    use_oauth = CLIENT_ID and CLIENT_SECRET
 
-    if use_oauth:
-        try:
-            token = get_access_token()
-            auth_header = {"Authorization": f"Bearer {token}"}
-        except Exception as e:
-            print(f"Error obtaining access token: {e}")
-            return
-    elif API_KEY:
-        auth_header = {"X-Api-Key": API_KEY}
-    else:
-        print("No authentication method found. Set either STB_CLIENT_ID & STB_CLIENT_SECRET or STB_API_KEY.")
-        return
+@app.post("/scrape-stb-events", response_model=List[Event])
+def scrape_stb_events():
+    if not API_KEY:
+        raise HTTPException(status_code=500, detail="Missing STB_API_KEY in environment.")
 
-    keywords = ['music', 'arts', 'food', 'family', 'history', 'festival', 'sports', 'culture']
+    auth_header = {"X-Api-Key": API_KEY}
     all_events = []
     seen_uuids = set()
 
-    for kw in keywords:
+    for kw in SEARCH_KEYWORDS:
         offset = 0
         limit = 50
 
@@ -137,6 +178,7 @@ def main():
             try:
                 data = fetch_events(auth_header, limit=limit, offset=offset, keywords=[kw])
             except Exception as e:
+                # Log error and skip this keyword
                 print(f"Error fetching events for keyword '{kw}': {e}")
                 break
 
@@ -146,36 +188,15 @@ def main():
 
             parsed_events = parse_events(events)
 
-            for event in events:
-                uuid = event.get("uuid")
+            for event, raw in zip(parsed_events, events):
+                uuid = raw.get("uuid")
                 if uuid and uuid not in seen_uuids:
                     seen_uuids.add(uuid)
-                    match = next((e for e in parsed_events if e["title"] == event.get("name")), None)
-                    if match:
-                        all_events.append(match)
+                    all_events.append(event)
 
             total_records = data.get("totalRecords", 0)
             offset += limit
             if offset >= total_records:
                 break
 
-            print(f"Fetched {len(events)} events for keyword '{kw}' (offset {offset})")
-
-    print(f"\nTotal unique events fetched: {len(all_events)}\n")
-
-    for e in all_events[:5]:
-        print(f"Title: {e['title']}")
-        print(f"Start: {e['start_date']}")
-        print(f"End: {e['end_date']}")
-        print(f"Location: {e['location']}")
-        print(f"Postal Code: {e['postal_code']}")
-        print(f"Category: {e['category']}")
-        print(f"Price: {e['price']}")
-        print(f"Description: {e['description'][:100]}...")
-        print(f"Organizer: {e['organizer']}")
-        print(f"Official Link: {e['official_link']}")
-        print(f"URLs: {e['url']}")
-        print("-" * 40)
-
-if __name__ == "__main__":
-    main()
+    return all_events
