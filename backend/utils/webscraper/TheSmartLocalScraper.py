@@ -4,8 +4,7 @@ import re
 import os
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
-from typing import List, Optional
-from ...src import Event
+from typing import List
 
 app = FastAPI()
 
@@ -40,6 +39,16 @@ def parse_dates(dates_text):
         return start_date, end_date
     except ValueError:
         return None, None
+    
+def normalize_price(price_text):
+    if not price_text:
+        return None
+    if "free" in price_text.lower():
+        return 0.0
+    price_numbers = re.findall(r'\d+(?:\.\d+)?', price_text)
+    if price_numbers:
+        return float(price_numbers[0])
+    return None
 
 def scrape_events() -> List[Event]:
     url = "https://thesmartlocal.com/read/things-to-do-this-weekend-singapore/"
@@ -79,7 +88,7 @@ def scrape_events() -> List[Event]:
             if not event_data["price"]:
                 price_match = re.search(r'(Tickets?|Price)[:\-]?\s*(From\s*\$?\d+|Free|\$?\d+(?:\s*-\s*\$?\d+)?(?:\+)?)(?=\s|$)', text, re.IGNORECASE)
                 if price_match:
-                    event_data["price"] = price_match.group(2)
+                    event_data["price"] = normalize_price(price_match.group(2)) if price_match else None
 
             if not event_data["location"]:
                 venue_match = re.search(r'Venue[:\-]?\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Organizer)[:\-])', text, re.IGNORECASE)

@@ -1,6 +1,7 @@
 from typing import List
 from uuid import uuid4
 from datetime import datetime
+import psycopg2 as pg2
 
 from sqlalchemy import Column, String, Float, ForeignKey, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID, ARRAY
@@ -32,9 +33,9 @@ class Event(Base):
         # Handle basic fields
         event.title = data.get("title")
         event.organizer = data.get("organizer")
-        event.address = data.get("address")
+        event.address = data.get("location") or data.get("address")
         event.price = data.get("price", 0.0) if data.get("price") is not None else None
-        event.category = data.get("category")
+        event.category = data.get("category") or []
         event.description = data.get("description")
         event.image_urls = data.get("image_urls", [])
         
@@ -169,7 +170,7 @@ class Participant_History(Base):
     __tablename__ = "participant-history"
     participant_id = Column(PG_UUID(as_uuid=True), ForeignKey("users.user_id"), primary_key=True, default=uuid4)
     event_id = Column(PG_UUID(as_uuid=True), ForeignKey("event.event_id"), primary_key=True,  default=uuid4)
-    comments = Column(List[String])
+    comments = Column(ARRAY[String])
     indiv_rating = Column(Float)
 
     __table_args__ = (
