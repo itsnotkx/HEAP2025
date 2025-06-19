@@ -102,6 +102,7 @@ class User(Base):
     __tablename__ = "users"
     user_id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     image_url = Column(String)
+    user_password_hash = Column(String)
 
 class Company(Base):
     __tablename__ = "company"

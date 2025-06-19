@@ -58,6 +58,7 @@ tags = [
   "DIY / makerspace"
 ]
 
+#compress long tags into concise descriptions
 map = {
     "festival / fair":"Fair",
     "learning / education":"Educative",
@@ -72,7 +73,7 @@ map = {
 classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
 def classify_event(event: dict, top_k: int = 3):
-    text = f"{event.get('title', '')} {event.get('description', '')} {event.get('location', '')} {event.get('audience', '')}"
+    text = f"{event.get('title', '')} {event.get('description', '')}"
     
     result = classifier(text, tags, multi_label=True)
     
@@ -88,5 +89,3 @@ def classify_event(event: dict, top_k: int = 3):
             res.append(category)
 
     return res
-
-
