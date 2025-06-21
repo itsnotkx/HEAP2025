@@ -1,14 +1,12 @@
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem} from "@heroui/navbar";
 import {Link} from "@heroui/link";
 import {Button, ButtonGroup} from "@heroui/button";
-import Slider from "../components/Slider";
 
 
 
 export default function App() {
   return (
-    <>
-    <Navbar isBordered>
+    <Navbar>
       <NavbarBrand>
         <p className="font-bold text-inherit">KiasuPlanner</p>
       </NavbarBrand>
@@ -23,8 +21,5 @@ export default function App() {
         </NavbarItem>
       </NavbarContent>
     </Navbar>
-    <Slider/>
-  
-    </>
   );
 }
