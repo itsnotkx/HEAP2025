@@ -1,28 +1,28 @@
-import type { A11yOptions } from './modules/a11y.d.ts';
-import type { AutoplayOptions } from './modules/autoplay.d.ts';
-import type { ControllerOptions } from './modules/controller.d.ts';
-import type { CoverflowEffectOptions } from './modules/effect-coverflow.d.ts';
-import type { CubeEffectOptions } from './modules/effect-cube.d.ts';
-import type { FadeEffectOptions } from './modules/effect-fade.d.ts';
-import type { FlipEffectOptions } from './modules/effect-flip.d.ts';
-import type { CreativeEffectOptions } from './modules/effect-creative.d.ts';
-import type { CardsEffectOptions } from './modules/effect-cards.d.ts';
-import type { HashNavigationOptions } from './modules/hash-navigation.d.ts';
-import type { HistoryOptions } from './modules/history.d.ts';
-import type { KeyboardOptions } from './modules/keyboard.d.ts';
-import type { MousewheelOptions } from './modules/mousewheel.d.ts';
-import type { NavigationOptions } from './modules/navigation.d.ts';
-import type { PaginationOptions } from './modules/pagination.d.ts';
-import type { ParallaxOptions } from './modules/parallax.d.ts';
-import type { ScrollbarOptions } from './modules/scrollbar.d.ts';
-import type { ThumbsOptions } from './modules/thumbs.d.ts';
-import type { VirtualOptions } from './modules/virtual.d.ts';
-import type { ZoomOptions } from './modules/zoom.d.ts';
-import type { FreeModeOptions } from './modules/free-mode.d.ts';
-import type { GridOptions } from './modules/grid.d.ts';
+import type { A11yOptions } from './modules/a11y.js';
+import type { AutoplayOptions } from './modules/autoplay.js';
+import type { ControllerOptions } from './modules/controller.js';
+import type { CoverflowEffectOptions } from './modules/effect-coverflow.js';
+import type { CubeEffectOptions } from './modules/effect-cube.js';
+import type { FadeEffectOptions } from './modules/effect-fade.js';
+import type { FlipEffectOptions } from './modules/effect-flip.js';
+import type { CreativeEffectOptions } from './modules/effect-creative.js';
+import type { CardsEffectOptions } from './modules/effect-cards.js';
+import type { HashNavigationOptions } from './modules/hash-navigation.js';
+import type { HistoryOptions } from './modules/history.js';
+import type { KeyboardOptions } from './modules/keyboard.js';
+import type { MousewheelOptions } from './modules/mousewheel.js';
+import type { NavigationOptions } from './modules/navigation.js';
+import type { PaginationOptions } from './modules/pagination.js';
+import type { ParallaxOptions } from './modules/parallax.js';
+import type { ScrollbarOptions } from './modules/scrollbar.js';
+import type { ThumbsOptions } from './modules/thumbs.js';
+import type { VirtualOptions } from './modules/virtual.js';
+import type { ZoomOptions } from './modules/zoom.js';
+import type { FreeModeOptions } from './modules/free-mode.js';
+import type { GridOptions } from './modules/grid.js';
 
-import type { CSSSelector, SwiperModule } from './shared.d.ts';
-import type { SwiperEvents } from './swiper-events.d.ts';
+import type { CSSSelector, SwiperModule } from './shared.js';
+import type { SwiperEvents } from './swiper-events.js';
 
 export interface SwiperOptions {
   /**

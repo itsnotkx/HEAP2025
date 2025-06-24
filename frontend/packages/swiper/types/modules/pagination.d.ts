@@ -1,5 +1,5 @@
-import type { CSSSelector } from '../shared.d.ts';
-import type Swiper from '../swiper-class.d.ts';
+import type { CSSSelector } from '../shared.js';
+import type Swiper from '../swiper-class.js';
 
 export interface PaginationMethods {
   /**

@@ -1,29 +1,29 @@
-import type { SwiperOptions } from './swiper-options.d.ts';
-import type { CSSSelector, SwiperModule } from './shared.d.ts';
-import type { SwiperEvents } from './swiper-events.d.ts';
+import type { SwiperOptions } from './swiper-options.js';
+import type { CSSSelector, SwiperModule } from './shared.js';
+import type { SwiperEvents } from './swiper-events.js';
 
-import type { A11yMethods } from './modules/a11y.d.ts';
-import type { AutoplayMethods } from './modules/autoplay.d.ts';
-import type { ControllerMethods } from './modules/controller.d.ts';
-import type { CoverflowEffectMethods } from './modules/effect-coverflow.d.ts';
-import type { CubeEffectMethods } from './modules/effect-cube.d.ts';
-import type { FadeEffectMethods } from './modules/effect-fade.d.ts';
-import type { FlipEffectMethods } from './modules/effect-flip.d.ts';
-import type { CreativeEffectMethods } from './modules/effect-creative.d.ts';
-import type { CardsEffectMethods } from './modules/effect-cards.d.ts';
-import type { HashNavigationMethods } from './modules/hash-navigation.d.ts';
-import type { HistoryMethods } from './modules/history.d.ts';
-import type { KeyboardMethods } from './modules/keyboard.d.ts';
-import type { MousewheelMethods } from './modules/mousewheel.d.ts';
-import type { NavigationMethods } from './modules/navigation.d.ts';
-import type { PaginationMethods } from './modules/pagination.d.ts';
-import type { ParallaxMethods } from './modules/parallax.d.ts';
-import type { ScrollbarMethods } from './modules/scrollbar.d.ts';
-import type { ThumbsMethods } from './modules/thumbs.d.ts';
-import type { VirtualMethods } from './modules/virtual.d.ts';
-import type { ZoomMethods } from './modules/zoom.d.ts';
-import type { FreeModeMethods } from './modules/free-mode.d.ts';
-import type { ManipulationMethods } from './modules/manipulation.d.ts';
+import type { A11yMethods } from './modules/a11y.js';
+import type { AutoplayMethods } from './modules/autoplay.js';
+import type { ControllerMethods } from './modules/controller.js';
+import type { CoverflowEffectMethods } from './modules/effect-coverflow.js';
+import type { CubeEffectMethods } from './modules/effect-cube.js';
+import type { FadeEffectMethods } from './modules/effect-fade.js';
+import type { FlipEffectMethods } from './modules/effect-flip.js';
+import type { CreativeEffectMethods } from './modules/effect-creative.js';
+import type { CardsEffectMethods } from './modules/effect-cards.js';
+import type { HashNavigationMethods } from './modules/hash-navigation.js';
+import type { HistoryMethods } from './modules/history.js';
+import type { KeyboardMethods } from './modules/keyboard.js';
+import type { MousewheelMethods } from './modules/mousewheel.js';
+import type { NavigationMethods } from './modules/navigation.js';
+import type { PaginationMethods } from './modules/pagination.js';
+import type { ParallaxMethods } from './modules/parallax.js';
+import type { ScrollbarMethods } from './modules/scrollbar.js';
+import type { ThumbsMethods } from './modules/thumbs.js';
+import type { VirtualMethods } from './modules/virtual.js';
+import type { ZoomMethods } from './modules/zoom.js';
+import type { FreeModeMethods } from './modules/free-mode.js';
+import type { ManipulationMethods } from './modules/manipulation.js';
 
 interface SwiperClass<Events> {
   /** Add event handler */

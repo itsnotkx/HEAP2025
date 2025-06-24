@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Swiper, SwiperOptions } from './types/index.d.ts';
+import { Swiper, SwiperOptions } from './types/index.js';
 
 declare const register: () => void;
 

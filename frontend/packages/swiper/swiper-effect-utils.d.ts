@@ -1,4 +1,4 @@
-import type { Swiper, SwiperOptions } from './types/index.d.ts';
+import type { Swiper, SwiperOptions } from './types/index.js';
 
 declare const createShadow: (suffix: string, slideEl: HTMLElement, side?: string) => HTMLElement;
 

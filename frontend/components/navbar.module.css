@@ -1,0 +1,28 @@
+
+.menu {
+  width: 320px;           /* or any width you like */
+  max-width: 90vw;        /* responsive max width */
+  left: auto;             /* ensure it aligns right or left as needed */
+  right: 0;               /* align to the right, or use left: 0 for left side */
+  top: 0;
+  bottom: 0;
+  height: 100vh;          /* full height, partial width */
+  background: white; /* or your preferred background */
+  box-shadow: 0 0 24px rgba(0,0,0,0.12);
+  position: fixed;        /* ensure it overlays content */
+  z-index: 1000;          /* above other content */
+  transition: transform 0.3s;
+}
+
+.menuList {
+  margin-top: 80px;    /* Pushes menu items lower. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* aligns items to the left */
+}
+
+.menuItem {
+
+  font-weight: bold;  /* Makes text bold */
+  margin-bottom: 18px; /* Space between items */
+}

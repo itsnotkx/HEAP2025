@@ -1,0 +1,26 @@
+
+
+import Navigationbar from "@/components/navbar";
+
+
+
+export default function App(){
+    return(
+        <>
+        <header>
+            <Navigationbar/>  
+        </header>
+        <main>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ac sem sit amet nulla accumsan euismod sed nec orci. In pretium, sem vel molestie imperdiet, leo lectus imperdiet velit, ac dapibus ipsum dolor sed urna. Proin ac nisi aliquam, pharetra libero a, bibendum enim. Vestibulum sit amet ultrices lorem. Duis quis pharetra mauris, sed suscipit lacus. Aliquam pellentesque est at enim ullamcorper, ac placerat mi rhoncus. Vivamus tempus volutpat eros, ut feugiat urna fringilla sed.
+
+In interdum nunc lacus, ac sagittis dui dictum et. Maecenas vestibulum fermentum ligula, ultrices fringilla eros placerat at. Morbi feugiat elit vitae gravida bibendum. Vivamus et vestibulum neque. Quisque dictum et enim sit amet suscipit. Sed at pellentesque nisi. Duis eget eleifend libero, id placerat ex. Donec viverra lacus eu eros placerat, ac facilisis magna porta. Quisque hendrerit nisi non maximus laoreet. Phasellus at massa eu lectus condimentum efficitur. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris malesuada lacus at ligula cursus, tempor finibus lorem tincidunt. Nulla faucibus vitae nunc a tempus. Suspendisse condimentum mi arcu, in volutpat mauris imperdiet et. Suspendisse a leo nisl.
+
+Phasellus luctus tincidunt congue. Maecenas lobortis turpis vitae lacinia placerat. Etiam tristique lorem non volutpat pellentesque. Integer tempor, lectus a placerat tempus, metus dolor lacinia arcu, vel porta mi mauris quis sapien. In placerat aliquam facilisis. Nulla fringilla, dui non mattis sagittis, ante turpis convallis nulla, tincidunt mollis ex eros id purus. Donec sed hendrerit odio, sit amet finibus ligula. Donec nec laoreet ligula, ac commodo sapien. Donec non leo condimentum, ullamcorper libero sed, aliquet tellus. Nam a fringilla ex, non porta dolor. Suspendisse facilisis semper ex, eget scelerisque lacus sodales sed. Proin id justo gravida lacus tempor placerat. Nullam sed quam eget lorem pharetra imperdiet. Aenean sed sollicitudin dui. Nulla facilisi. Vestibulum dapibus dignissim fringilla.
+
+Nullam tincidunt rutrum nibh, sed condimentum tortor eleifend et. Etiam tincidunt, urna in eleifend imperdiet, sem libero commodo sapien, vitae vehicula odio tortor at massa. Pellentesque porttitor metus varius, egestas metus eu, fermentum eros. Mauris eget faucibus nibh. In tincidunt, nisi a elementum varius, metus felis tincidunt tortor, a efficitur turpis erat in tellus. Maecenas ullamcorper imperdiet ullamcorper. Etiam lacinia luctus mi. Suspendisse malesuada enim quis justo scelerisque fermentum. Pellentesque luctus tellus arcu, id lacinia ligula consectetur a. Ut ac tincidunt odio. Nam in arcu nisl. Aenean quis sem sit amet dolor fringilla lobortis at non dolor. Mauris vitae elit semper, imperdiet arcu et, ultricies nibh. Nullam sit amet finibus erat. Vestibulum at leo et augue pulvinar posuere.
+
+Pellentesque vulputate molestie vestibulum. Etiam scelerisque mi a iaculis consectetur. Sed congue id leo vitae luctus. Maecenas non elit libero. Fusce sed urna sapien. Nam egestas metus et nisi scelerisque accumsan. Vivamus nec nulla quam. Proin lobortis commodo ante, vitae luctus massa faucibus ac. Sed fringilla eget ligula quis fringilla. Sed tincidunt nulla in posuere dictum. Nullam non elit rhoncus, convallis nunc et, ultricies dui. Vivamus consectetur in nunc et aliquam. Donec eu neque sit amet ex scelerisque finibus a eget turpis.
+        </main>
+        </>
+    )
+}

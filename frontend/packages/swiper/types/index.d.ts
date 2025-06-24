@@ -1,6 +1,6 @@
 // @ts-nocheck
-export * from './shared.d.ts';
-export { default as Swiper } from './swiper-class.d.ts';
-export * from './swiper-events.d.ts';
-export * from './swiper-options.d.ts';
-export * from './modules/public-api.d.ts';
+export * from './shared.js';
+export { default as Swiper } from './swiper-class.js';
+export * from './swiper-events.js';
+export * from './swiper-options.js';
+export * from './modules/public-api.js';
