@@ -14,6 +14,8 @@ CREATE TABLE Event (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
     address TEXT,
+    latitude decimal(8,6),
+    longitude decimal(9,6),
     price DECIMAL(10, 2),
     categories INTEGER[],   -- Array of integers
     description TEXT
