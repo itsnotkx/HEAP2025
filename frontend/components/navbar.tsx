@@ -33,11 +33,7 @@ export default function Navigationbar() {
     return (
     <>
     <Navbar className="navbar-blur" isBordered isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} >
-      {/*
-      <NavbarContent justify="start">
-        <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
-      </NavbarContent>
-      */}
+
       {/* Brand - always visible */}
       <NavbarContent justify="start" style={{flex: 4}}>
         <NavbarBrand>
@@ -121,7 +117,6 @@ export default function Navigationbar() {
       
 
     </Navbar>
-  );
   
           </>
       )
