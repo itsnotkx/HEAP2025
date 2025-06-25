@@ -1,6 +1,5 @@
 "use client";
 
-import styles from './navbar.module.css';
 import React from "react";
 import { FaBookmark } from "react-icons/fa";
 import {
@@ -25,8 +24,8 @@ import {
 export default function Navigationbar() {
 
   return (
-    <Navbar shouldHideOnScroll >
-    <NavbarContent justify="start" >
+    <Navbar shouldHideOnScroll isBordered className="py-1 min-h-0 h-auto" >
+    <NavbarContent justify="start" className="items-start" >
     <NavbarBrand>
         <Button as={Link}
           href="../app/homepage"
@@ -45,24 +44,24 @@ export default function Navigationbar() {
     {/*Code for the logo*/ }
 
 
-    <NavbarContent className="hidden sm:flex gap-4 flex-1" justify="center" >
+    <NavbarContent className="hidden sm:flex gap-4 flex-1 items-start" justify="center" >
       <NavbarItem>
-        <Link color="foreground" href="/home">
+        <Link color="foreground" href="/home" className="text-base leading-tight py-0 my-0">
           Home
         </Link>
       </NavbarItem>
       <NavbarItem isActive>
-        <Link color="foreground" href="/customers">
+        <Link color="foreground" href="/customers" className="text-base leading-tight py-0 my-0">
           Customers
         </Link>
       </NavbarItem>
       <NavbarItem>
-        <Link color="warning" href="/surprise">
+        <Link color="warning" href="/surprise" className="text-base leading-tight py-0 my-0">
           Surprise Me!
         </Link>
       </NavbarItem>
     </NavbarContent>
-    <NavbarContent as ="div" justify="end">
+    <NavbarContent as ="div" justify="end" className="items-start">
       <Button as={Link}
       href="../app/bookmarks"
       aria-label="Bookmark"
