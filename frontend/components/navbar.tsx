@@ -24,60 +24,45 @@ import {
 
 export default function Navigationbar() {
 
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const menuItems = [
-    {label: "Home", href: "/home"},
-    {label: "Bookmarks", href:"/bookmark"},
-    {label: "Suprise Me", href:"/suprise"},
-    ];
-    return (
-    <>
-    <Navbar className="navbar-blur" isBordered isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} >
-      {/*
-      <NavbarContent justify="start">
-        <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
-      </NavbarContent>
-      */}
-      {/* Brand - always visible */}
-      <NavbarContent justify="start" style={{flex: 4}}>
-        <NavbarBrand>
-          <p className="font-bold text-inherit">KiasuPlanner</p>
-        </NavbarBrand>
-      </NavbarContent>
-
-      {/* Hamburger menu content - always available when toggled */}
+  return (
+    <Navbar shouldHideOnScroll >
+    <NavbarContent justify="start" >
+    <NavbarBrand>
+        <Button as={Link}
+          href="../app/homepage"
+          aria-label="logo"
+          style={{
+      background: "none",
+      border: "none",
+      cursor: "pointer",
+      padding: 0,
+    }}
+    >  
+    <img src="/android-chrome-512x512.png" alt="Favicon" width={40} height={40} style={{marginLeft: 0, paddingLeft: 0}}/>
+    </Button>
+    </NavbarBrand> 
+    </NavbarContent>
+    {/*Code for the logo*/ }
 
 
-      <NavbarContent as ="div" justify="end">
-
-        <NavbarContent >
-        <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
-        </NavbarContent>
-
-        <NavbarMenu className="dropdown-menu-clear, {styles.menu}">
-        <div className={styles.menuList}>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={item.href} className={styles.menuItem}>
-            <Link
-              className="w-full"
-              color={
-                index === 2
-                  ? "warning"
-                  : index === menuItems.length - 1
-                  ? "danger"
-                  : "foreground"
-              }
-              href={item.href}
-              
-            >
-              {item.label}
-            </Link>
-          </NavbarMenuItem>
-
-        ))}
-      </div>
-      </NavbarMenu>
-
+    <NavbarContent className="hidden sm:flex gap-4 flex-1" justify="center" >
+      <NavbarItem>
+        <Link color="foreground" href="/home">
+          Home
+        </Link>
+      </NavbarItem>
+      <NavbarItem isActive>
+        <Link color="foreground" href="/customers">
+          Customers
+        </Link>
+      </NavbarItem>
+      <NavbarItem>
+        <Link color="warning" href="/surprise">
+          Surprise Me!
+        </Link>
+      </NavbarItem>
+    </NavbarContent>
+    <NavbarContent as ="div" justify="end">
       <Button as={Link}
       href="../app/bookmarks"
       aria-label="Bookmark"
@@ -117,15 +102,6 @@ export default function Navigationbar() {
           </DropdownMenu>
         </Dropdown>
       </NavbarContent> 
-
-      
-
     </Navbar>
   );
-  
-          </>
-      )
-  }
-
-
-  
+}
