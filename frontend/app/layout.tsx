@@ -7,7 +7,7 @@ import { Providers } from "../app_template/providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar_backup";
+
 
 export const metadata: Metadata = {
   title: {
@@ -34,9 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head>
-          <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-      </head>
+      <head />
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
