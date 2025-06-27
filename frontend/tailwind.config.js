@@ -27,7 +27,7 @@ const config = {
             },
             secondary: {
               DEFAULT: '#D1FAF0',
-              foreground: '#6B7280', // Used for primary text on primary bg
+              foreground: '#6B7280', 
             },
             accent: {
               DEFAULT: '#FF6B6B',
