@@ -66,7 +66,7 @@ export default function FormBox() {
         </div>
 
         <Button type="submit" className="w-full mt-2 bg-primary">
-            Plan My Day
+            Plan My 
         </Button>
       </form>
     </div>
