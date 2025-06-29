@@ -17,7 +17,7 @@ CREATE TABLE Event (
     price DECIMAL(10, 2),
     categories INTEGER[],   -- Array of integers
     description TEXT
-);
+    organiser_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE;
 
 -- Participation History Table
 CREATE TABLE participation_history (
@@ -27,11 +27,4 @@ CREATE TABLE participation_history (
     is_over BOOLEAN DEFAULT FALSE,
     rating REAL,
     comments TEXT
-);
-
--- Organisation History Table
-CREATE TABLE organisation_history (
-    org_hist_id SERIAL PRIMARY KEY,
-    participant_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE,
-    event_id INTEGER REFERENCES Event(event_id) ON DELETE CASCADE
 );
