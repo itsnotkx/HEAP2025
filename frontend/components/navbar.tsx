@@ -37,7 +37,7 @@ export default function Navigationbar() {
       padding: 0,
     }}
     >  
-    <img src="/logo.svg" alt="Favicon" width={64} height={64} style={{marginLeft: 0, paddingLeft: 0}}/>
+    <img src="/logo.svg" alt="Favicon" width={100} height={100} style={{marginLeft: 0, paddingLeft: 0}}/>
     </Button>
     </NavbarBrand> 
     </NavbarContent>

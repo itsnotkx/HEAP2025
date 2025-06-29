@@ -13,7 +13,7 @@ export async function getEvents() {
       .filter(file => file.endsWith('.json'))
       .map(async file => {
         const content = await fs.readFile(path.join(folder, file), 'utf8');
-        return JSON.parse(content);
+        return { id: file.replace('.json', ''), ...JSON.parse(content)};
       })
   );
 

@@ -31,7 +31,7 @@ export default function EventCard({ event }: EventCardProps) {
       <Card 
         isPressable 
         isHoverable 
-        className="m-4 transition-transform hover:scale-105"
+        className="m-4 transition-transform hover:scale-105 "
       >
         <CardBody className="p-0 overflow-hidden">
           {event["Image URL(s)"]?.[0] && (
