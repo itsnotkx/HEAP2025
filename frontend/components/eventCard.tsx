@@ -1,60 +1,44 @@
-
-"use client";
 // components/EventCard.tsx
-import { Card, CardBody, CardFooter, Image } from "@heroui/react";
-import Link from "next/link";
+import Image from "next/image";
 
-export interface Event {
-  id: string; // or number, depending on your data
-  Title: string;
-  "Start Date": string | null;
-  "End Date": string | null;
-  Time: string | null;
-  "Address / Location": string | null;
-  "Postal Code": string | null;
-  Category: string | null;
-  "Price / Ticket Info": string | null;
-  Description: string;
-  "Image URL(s)": string[];
-  Organizer: string | null;
-  "Official Event Link": string | null;
-  url: string[];
-}
+type Event = {
+  id: string;
+  title: string;
+  location: string;
+  rating: number;
+  tags: string[];
+  imageUrl: string;
+};
 
-interface EventCardProps {
-  event: Event;
-}
-
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event }: { event: Event }) {
   return (
-    <Link href={`/events/${event.id}`} passHref>
-      <Card 
-        isPressable 
-        isHoverable 
-        className="m-4 transition-transform hover:scale-105"
-      >
-        <CardBody className="p-0 overflow-hidden">
-          {event["Image URL(s)"]?.[0] && (
-            <Image
-              src={event["Image URL(s)"][0]}
-              alt={event.Title}
-              className="w-full object-cover"
-              height={200}
-              width="100%"
-            />
-          )}
-          <div className="p-4">
-            <h3 className="font-bold text-lg">{event.Title}</h3>
-            <p className="text-gray-500 truncate">
-              {event.Description.substring(0, 100)}...
-            </p>
-          </div>
-        </CardBody>
-        <CardFooter className="flex justify-between">
-          <span>{event["Address / Location"]}</span>
-          <span>{event.Time}</span>
-        </CardFooter>
-      </Card>
-    </Link>
+    <div className="rounded-xl border shadow-sm overflow-hidden w-full max-w-xs bg-white">
+      <Image
+        src={event.imageUrl}
+        alt={event.title}
+        width={400}
+        height={250}
+        className="w-full h-48 object-cover"
+      />
+      <div className="p-4">
+        <h3 className="font-semibold text-sm">{event.title}</h3>
+        <p className="text-gray-500 text-sm">{event.location}</p>
+        <div className="flex items-center space-x-1 my-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <span key={i} className={i < event.rating ? "text-yellow-400" : "text-gray-300"}>★</span>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-1 mt-2">
+          {event.tags.map(tag => (
+            <span
+              key={tag}
+              className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -24,10 +24,12 @@ const config = {
             primary: {
               DEFAULT: '#2EC4B6',
               foreground: '#2E2E2E', // Used for primary text on primary bg
+              dark: '#2299A8'
             },
             secondary: {
-              DEFAULT: '#D1FAF0',
+              DEFAULT: '#ff6b6b',
               foreground: '#6B7280', 
+              dark:'#f75959'
             },
             accent: {
               DEFAULT: '#FF6B6B',
