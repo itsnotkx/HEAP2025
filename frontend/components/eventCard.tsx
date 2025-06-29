@@ -1,11 +1,9 @@
-
 "use client";
-// components/EventCard.tsx
 import { Card, CardBody, CardFooter, Image } from "@heroui/react";
 import Link from "next/link";
 
 export interface Event {
-  id: string; // or number, depending on your data
+  id: string;
   Title: string;
   "Start Date": string | null;
   "End Date": string | null;
@@ -23,34 +21,36 @@ export interface Event {
 
 interface EventCardProps {
   event: Event;
+  className?: string;
 }
 
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event, className = "" }: EventCardProps) {
+  // Remove leading numbers and dot from title for display
+  const displayTitle = event.Title.replace(/^\d+\.\s*/, "");
+
   return (
     <Link href={`/events/${event.id}`} passHref>
-      <Card 
-        isPressable 
-        isHoverable 
-        className="m-4 transition-transform hover:scale-105"
+      <Card
+        isPressable
+        isHoverable
+        className={`flex flex-col h-full w-full transition-transform hover:scale-105 shadow rounded-lg bg-white ${className}`}
       >
-        <CardBody className="p-0 overflow-hidden">
-          {event["Image URL(s)"]?.[0] && (
-            <Image
-              src={event["Image URL(s)"][0]}
-              alt={event.Title}
-              className="w-full object-cover"
-              height={200}
-              width="100%"
-            />
-          )}
-          <div className="p-4">
-            <h3 className="font-bold text-lg">{event.Title}</h3>
-            <p className="text-gray-500 truncate">
-              {event.Description.substring(0, 100)}...
-            </p>
-          </div>
+        {event["Image URL(s)"]?.[0] && (
+          <Image
+            src={event["Image URL(s)"][0]}
+            alt={displayTitle}
+            className="h-40 w-full object-cover"
+            height={160}
+            width="100%"
+          />
+        )}
+        <CardBody className="flex-1 flex flex-col p-4">
+          <h3 className="font-bold text-lg mb-1">{displayTitle}</h3>
+          <p className="text-gray-500 text-sm line-clamp-3">
+            {event.Description}
+          </p>
         </CardBody>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="mt-auto flex justify-between p-4 text-xs text-gray-400">
           <span>{event["Address / Location"]}</span>
           <span>{event.Time}</span>
         </CardFooter>
