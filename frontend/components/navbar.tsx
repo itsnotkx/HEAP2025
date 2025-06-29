@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { FaBookmark } from "react-icons/fa";
 import {
   Navbar,
   NavbarBrand,
@@ -14,12 +13,17 @@ import {
   DropdownMenu,
   Avatar,
 } from "@heroui/react";
+import { useRouter } from 'next/navigation';
 
 interface NavigationbarProps {
   shouldHideOnScroll?: boolean;
 }
 
 export default function Navigationbar({ shouldHideOnScroll = true }: NavigationbarProps) {
+    const router = useRouter();
+    const handleLoginClick = () => {
+        router.push('/login')
+    }
   return (
     <Navbar
       isBordered
@@ -49,8 +53,16 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
           </Button>
         </NavbarBrand>
       </NavbarContent>
+                      <nav className="flex space-x-40 text-lg font-semibold">
+                    <a href="#" className="hover:text-primary">Features</a>
+                    <a href="#" className="hover:text-primary">About Us</a>
+                    <a href="#" className="hover:text-primary">Support</a>
+                </nav>
+    <Button color="primary" className="text-white px-10 ml-40 py-2 rounded-full" size="lg" onPress = {handleLoginClick}>
+        Login
+    </Button>
 
-      <NavbarContent className="hidden sm:flex gap-4 flex-1 items-start mt-8" justify="center">
+      {/* <NavbarContent className="hidden sm:flex gap-4 flex-1 items-start mt-8" justify="center">
         <NavbarItem>
           <Link color="foreground" href="/home" className="text-base leading-tight py-0 my-0">
             Home
@@ -66,9 +78,9 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
             Surprise Me!
           </Link>
         </NavbarItem>
-      </NavbarContent>
+      </NavbarContent> */}
 
-      <NavbarContent as="div" justify="end" className="items-start mt-6">
+      {/* <NavbarContent as="div" justify="end" className="items-start mt-6">
         <Button
           as={Link}
           href="../app/bookmarks"
@@ -106,7 +118,7 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
-      </NavbarContent>
+      </NavbarContent> */}
     </Navbar>
   );
 }

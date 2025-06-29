@@ -1,7 +1,7 @@
 import Navigationbar from "@/components/navbar";
 import PopupBar from "@/components/PopupBar";
 import EventCard from "@/components/eventCard";
-import { getEvents } from "@/utils/utils/server/getEvents";
+import { getEvents } from "@/utils/server/getEvents";
 
 export default async function TimelinePage() {
   const events = await getEvents();
