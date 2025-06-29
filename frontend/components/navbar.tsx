@@ -24,7 +24,7 @@ import {
 export default function Navigationbar() {
 
   return (
-    <Navbar shouldHideOnScroll isBordered className="py-1 min-h-0 h-auto" >
+    <Navbar shouldHideOnScroll isBordered className="py-1 min-h-0 h-auto mt-6" >
     <NavbarContent justify="start" className="items-start" >
     <NavbarBrand>
         <Button as={Link}
@@ -37,7 +37,7 @@ export default function Navigationbar() {
       padding: 0,
     }}
     >  
-    <img src="/android-chrome-512x512.png" alt="Favicon" width={40} height={40} style={{marginLeft: 0, paddingLeft: 0}}/>
+    <img src="/logo.svg" alt="Favicon" width={64} height={64} style={{marginLeft: 0, paddingLeft: 0}}/>
     </Button>
     </NavbarBrand> 
     </NavbarContent>
