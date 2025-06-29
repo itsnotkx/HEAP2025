@@ -40,3 +40,12 @@ a {
     color-scheme: dark;
   }
 }
+
+/* In your global CSS file */
+.truncate-multiline {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Number of lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
