@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Navigationbar from "../../components/navbar";
 import EventCard from '@/components/eventCard';
-import { getEvents } from '../../lib/server/getEvents';
+import { getEvents } from '../../utils/server/getEvents';
 
 export default async function App(){
     const events = await getEvents();
