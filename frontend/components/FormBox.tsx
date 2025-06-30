@@ -54,7 +54,7 @@ export default function FormBox() {
           <Button
             onClick={() => setMode("activity")}
             className={`w-full py-2 rounded-lg text-base font-medium transition-all ${mode === "activity"
-              ? "bg-accent text-white shadow-inner"
+              ? "bg-secondary shadow-inner"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
           >
@@ -63,7 +63,7 @@ export default function FormBox() {
           <Button
             onClick={() => setMode("availability")}
             className={`w-full py-2 rounded-lg text-base font-medium transition-all ${mode === "availability"
-              ? "bg-accent text-white shadow-inner"
+              ? "bg-secondary shadow-inner"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
           >
@@ -98,14 +98,14 @@ export default function FormBox() {
           <div className="flex flex-row gap-4 justify-center mt-4">
             <Button
               type="submit"
-              className="flex-1 px-6 py-3 bg-primary text-white rounded-xl shadow hover:bg-blue-700 transition"
+              className="flex-1 px-6 py-3 bg-primary text-white rounded-xl shado transition"
             >
               Plan My Day
             </Button>
             <Button
               type="button"
               onClick={handleSurpriseMe}
-              className="flex-1 px-6 py-3 bg-accent text-white rounded-xl shadow hover:bg-red-600 transition"
+              className="flex-1 px-6 py-3 bg-accent text-white rounded-xl shadow transition"
             >
               Surprise Me
             </Button>
