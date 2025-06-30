@@ -115,7 +115,7 @@ export default async function App() {
                         <p className="font-bold">Integrated<br />Event Ticket Purchases</p>
                     </div>
                     <div className="flex flex-col items-center">
-                        <Calendar className="text-cyan-400 w-10 h-10 mb-2" />
+                        <Calendar className="primary-text w-10 h-10 mb-2" />
                         <p className="font-bold">Event<br />Scheduling and Optimization</p>
                     </div>
                     <div className="flex flex-col items-center">

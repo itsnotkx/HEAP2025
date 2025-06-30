@@ -1,0 +1,60 @@
+"use client"
+
+import React from "react";
+import { Input, Button, Card, CardBody } from "@heroui/react";
+import { FcGoogle } from "react-icons/fc";
+import Navigationbar from "../../components/navbar";
+
+export default function LoginPage() {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+            <Card className="w-full max-w-md shadow-xl rounded-2xl p-6 bg-white">
+                <CardBody>
+                    <h1 className="text-2xl font-bold mb-6 text-center">Sign in to your account</h1>
+
+                    {/* SSO Buttons */}
+                    <div className="flex flex-col gap-4 mb-6">
+                        <Button variant="bordered" className="w-full flex items-center gap-2" startContent={<FcGoogle className="text-xl" />}>
+                            Sign in with Google
+                        </Button>
+                    </div>
+
+                    {/* Custom Divider */}
+                    <div className="flex items-center gap-2 my-6">
+                        <div className="flex-grow h-px bg-gray-300" />
+                        <span className="text-sm text-gray-500">or continue with email</span>
+                        <div className="flex-grow h-px bg-gray-300" />
+                    </div>
+
+                    {/* Email Login */}
+                    <form className="flex flex-col gap-4">
+                        <Input
+                            isRequired
+                            label="Email"
+                            type="email"
+                            placeholder="you@example.com"
+                            className="w-full"
+                        />
+                        <Input
+                            isRequired
+                            label="Password"
+                            type="password"
+                            placeholder="••••••••"
+                            className="w-full"
+                        />
+                        <Button type="submit" color="primary" className="w-full mt-4">
+                            Sign In
+                        </Button>
+                    </form>
+
+                    <p className="mt-6 text-sm text-center">
+                        Don’t have an account?{' '}
+                        <a href="/register" className="text-blue-600 hover:underline">
+                            Create one
+                        </a>
+                    </p>
+                </CardBody>
+            </Card>
+        </div>
+    );
+}

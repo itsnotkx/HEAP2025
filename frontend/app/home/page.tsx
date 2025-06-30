@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import EventCard from "@/components/eventCard";
 import Header from "@/components/header"
 import useInfiniteScroll from "@/lib/infiniteScroll";
-import { schibstedGrotesk } from "@/config/fonts";
-import { Calendar } from "@heroui/calendar";
 import { Button } from "@heroui/button";
 import { Calendar as CalendarIcon } from "lucide-react";
 

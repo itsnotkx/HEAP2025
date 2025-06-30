@@ -5,7 +5,17 @@ CREATE TABLE "User" (
     image_url TEXT,
     preferences INTEGER[],  -- Array of integers
     rating REAL             -- Optional: can be NULL
+    email TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+"""
+ALTER TABLE "User"
+ADD COLUMN email TEXT UNIQUE NOT NULL,
+ADD COLUMN password_hash TEXT NOT NULL,
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+"""
 
 -- Event Table
 CREATE TABLE Event (
@@ -50,6 +60,7 @@ CREATE TABLE Event (
     categories INTEGER[],   -- Array of integers
     description TEXT
     organiser_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE;
+)
 
 -- Participation History Table
 CREATE TABLE participation_history (
