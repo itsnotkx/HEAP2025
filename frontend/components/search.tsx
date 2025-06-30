@@ -32,8 +32,6 @@ export default function FormBox() {
         endTime: formData.endTime.toString().replace(":", "-"),
     }); 
     router.push(`/planner?${params.toString()}`);
-
-
   };
 
   return (

@@ -2,7 +2,7 @@ import {Link} from "@heroui/link";
 import {Button, ButtonGroup} from "@heroui/button";
 import Slider from "../../components/Slider";
 import Navigationbar from "@/components/navbar";
-import SearchForm from "../../components/FormBox";
+import SearchForm from "../../components/search";
 
 
 

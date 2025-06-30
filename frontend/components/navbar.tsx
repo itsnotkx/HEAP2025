@@ -4,14 +4,8 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem,
   Link,
   Button,
-  DropdownItem,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  Avatar,
 } from "@heroui/react";
 import { useRouter } from 'next/navigation';
 
@@ -20,10 +14,10 @@ interface NavigationbarProps {
 }
 
 export default function Navigationbar({ shouldHideOnScroll = true }: NavigationbarProps) {
-    const router = useRouter();
-    const handleLoginClick = () => {
-        router.push('/login')
-    }
+  const router = useRouter();
+  const handleLoginClick = () => {
+    router.push('/login')
+  }
   return (
     <Navbar
       isBordered
@@ -34,7 +28,7 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
         <NavbarBrand>
           <Button
             as={Link}
-            href="../app/homepage"
+            href="../"
             aria-label="logo"
             style={{
               background: "none",
@@ -53,14 +47,14 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
           </Button>
         </NavbarBrand>
       </NavbarContent>
-                      <nav className="flex space-x-40 text-lg font-semibold">
-                    <a href="#" className="hover:text-primary">Features</a>
-                    <a href="#" className="hover:text-primary">About Us</a>
-                    <a href="#" className="hover:text-primary">Support</a>
-                </nav>
-    <Button color="primary" className="text-white px-10 ml-40 py-2 rounded-full" size="lg" onPress = {handleLoginClick}>
+      <nav className="flex space-x-40 text-lg font-semibold">
+        <a href="#" className="hover:text-primary">Features</a>
+        <a href="#" className="hover:text-primary">About Us</a>
+        <a href="#" className="hover:text-primary">Support</a>
+      </nav>
+      <Button color="primary" className="text-white px-10 ml-40 py-2 rounded-full" size="lg" onPress={handleLoginClick}>
         Login
-    </Button>
+      </Button>
 
       {/* <NavbarContent className="hidden sm:flex gap-4 flex-1 items-start mt-8" justify="center">
         <NavbarItem>
