@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import EventCard from "@/components/eventCard";
 import Header from "@/components/header"
-import useInfiniteScroll from "@/lib/infiniteScroll";
+import useInfiniteScroll from "@/utils/infiniteScroll";
 import { Button } from "@heroui/button";
 import { Calendar as CalendarIcon } from "lucide-react";
 
