@@ -65,4 +65,4 @@ def generate_event_inserts(n):
     return "\n".join(inserts)
 
 # Example usage:
-print(generate_event_inserts(50))
+# print(generate_event_inserts(50))
