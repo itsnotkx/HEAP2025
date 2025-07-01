@@ -2,6 +2,8 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
 import clsx from "clsx";
+import Navigationbar from "@/components/navbar"
+
 
 import { Providers } from "../app/providers";
 
@@ -26,7 +28,6 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
-
 export default function RootLayout({
   children,
 }: {
@@ -34,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
+      <header/>
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
@@ -49,6 +50,8 @@ export default function RootLayout({
             </main>
           </div>
         </Providers>
+
+        <Navigationbar/>
       </body>
     </html>
   );

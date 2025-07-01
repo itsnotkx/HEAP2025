@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import SearchForm from "../../components/FormBox";
-import Navigationbar from "@/components/navbar";
 import EventCard from '@/components/eventCard';
 
 
@@ -52,7 +51,6 @@ export default function Planner() {
 
   return (
     <>
-      <Navigationbar />
       <SearchForm></SearchForm>
       <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
         <div className="max-w-6xl mx-auto px-4">

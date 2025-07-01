@@ -1,6 +1,5 @@
 import { Button } from "@heroui/button";
 
-import Navigationbar from "../components/navbar";
 import { getEvents } from '@/utils/server/getEvents';
 import { CheckCircle, Calendar, MapPin } from "lucide-react";
 
@@ -64,9 +63,7 @@ export default async function App() {
 
     return (
         <>
-            <header>
-                <Navigationbar />
-            </header>
+
 
             <main className="min-h-screen">
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-12 py-16 mt-20">
