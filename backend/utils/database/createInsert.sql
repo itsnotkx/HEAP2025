@@ -8,14 +8,8 @@ CREATE TABLE "User" (
     email TEXT NOT NULL,
     password_hash TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    sso_id TEXT
 );
-
-"""
-ALTER TABLE "User"
-ADD COLUMN email TEXT UNIQUE NOT NULL,
-ADD COLUMN password_hash TEXT NOT NULL,
-ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-"""
 
 -- Event Table
 CREATE TABLE Event (
@@ -71,3 +65,10 @@ CREATE TABLE participation_history (
     rating REAL,
     comments TEXT
 );
+
+"""
+ALTER TABLE "User"
+ADD COLUMN email TEXT UNIQUE NOT NULL,
+ADD COLUMN password_hash TEXT NOT NULL,
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+"""

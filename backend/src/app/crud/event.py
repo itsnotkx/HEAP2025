@@ -11,7 +11,6 @@ def get_event(db: Session, event_id: int) -> Optional[Event]:
 def get_all_events(db: Session, skip: int = 0, limit: int = 100) -> List[Event]:
     return db.query(Event).offset(skip).limit(limit).all()
 
-
 def create_event(db: Session, event_data: EventCreate) -> Event:
     db_event = Event(
         title=event_data.title,

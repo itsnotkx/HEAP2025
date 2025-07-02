@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import EventCard from "@/components/eventCard";
-import Header from "@/components/header"
+import NavigationBar from "@/components/navbar"
 import useInfiniteScroll from "@/utils/infiniteScroll";
 import { Button } from "@heroui/button";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -40,21 +40,8 @@ export default function HomePage() {
         <div className="min-h-screen bg-white px-6 py-4">
             {/* Header */}
             <header className="flex justify-between items-center px-8 py-6">
-                <Header />
+                <NavigationBar />
             </header>
-
-            {/* Search Bar */}
-            <h2 className="text-center font-medium mb-2">I want to participate in….</h2>
-            <div className="flex items-center gap-2 bg-gray-100 rounded-md p-2 mb-6">
-                <input
-                    type="text"
-                    placeholder="Fun family day events"
-                    className="bg-transparent w-full outline-none"
-                />
-                <Button isIconOnly aria-label="calendar" onPress={handleCalendar}>
-                    <CalendarIcon/>
-                </Button>
-            </div>
 
             {/* Events Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 place-items-center">

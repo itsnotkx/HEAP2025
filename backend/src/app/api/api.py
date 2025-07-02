@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from schemas.event import EventCreate, EventUpdate, EventOut
+from schemas.user import UserCreate, UserCreateSSO, UserOut
 from crud import event as event_crud
+from crud import user as user_crud
 from db.session import get_db
 
 router = APIRouter(
@@ -44,3 +46,27 @@ def delete_event(event_id: int, db: Session = Depends(get_db)):
     success = event_crud.delete_event(db, event_id)
     if not success:
         raise HTTPException(status_code=404, detail="Event not found")
+
+@router.post("/signup/traditional", response_model=UserOut)
+def signup_traditional(user: UserCreate, db: Session = Depends(get_db)):
+    if user_crud.get_user_by_email(db, user.email):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return user_crud.create_user_traditional(db, user)
+
+@router.post("/signup/sso", response_model=UserOut)
+def signup_sso(user: UserCreateSSO, db: Session = Depends(get_db)):
+    if user_crud.get_user_by_email(db, user.email):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return user_crud.create_user_sso(db, user)
+
+@router.post("/signin/traditional")
+def signin_traditional(email: str, password: str, db: Session = Depends(get_db)):
+    if user_crud.verify_user_password(db, email, password):
+        return {"message": "Login successful"}
+    raise HTTPException(status_code=401, detail="Invalid credentials")
+
+@router.post("/signin/sso")
+def signin_sso(email: str, sso_id: str, db: Session = Depends(get_db)):
+    if user_crud.verify_user_sso(db, email, sso_id):
+        return {"message": "SSO login successful"}
+    raise HTTPException(status_code=401, detail="Invalid SSO credentials")

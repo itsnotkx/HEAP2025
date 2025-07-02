@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from models import *
 
-from api import event  # import your router modules here
+from HEAP2025.backend.src.app.api import api  # import your router modules here
 # from app.api import user, auth, etc.
 
 app = FastAPI(
@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 # Include routers here
-app.include_router(event.router, prefix="/api")
+app.include_router(api.router, prefix="/api")
 # app.include_router(user.router, prefix="/api")
 # app.include_router(auth.router, prefix="/api")
 
