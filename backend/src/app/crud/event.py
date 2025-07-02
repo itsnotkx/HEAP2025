@@ -2,6 +2,17 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from models.event import Event
 from schemas.event import EventCreate, EventUpdate
+from fastapi.middleware.cors import CORSMiddleware
+
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Your Next.js dev URL
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_event(db: Session, event_id: int) -> Optional[Event]:
