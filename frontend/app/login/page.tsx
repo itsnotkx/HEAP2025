@@ -1,5 +1,6 @@
-import { signIn } from "next-auth/react";
 "use client";
+import { signIn } from "next-auth/react";
+
 
 import React, { useState } from "react";
 import { Form, Input, Button } from "@heroui/react";
