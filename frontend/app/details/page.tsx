@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Navigationbar from "@/components/navbar"; // Adjust path if needed
 
 const event = {
   title: "McSpicy Museum",
@@ -241,8 +240,6 @@ const EventTabs: React.FC = () => {
 const EventInfoPage: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-yellow-100 via-red-100 to-orange-100 flex flex-col">
-      {/* Navigation Bar */}
-      <Navigationbar />
 
       {/* Page Content */}
       <div className="pt-28 w-full flex flex-col items-center">

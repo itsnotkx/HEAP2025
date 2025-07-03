@@ -1,0 +1,107 @@
+"use client";
+import "@/styles/globals.css";
+import { Metadata, Viewport } from "next";
+
+import clsx from "clsx";
+import NavigationBar from "@/components/navbar";
+import SideBar from "@/components/SideBar";
+
+import { Providers } from "@/app/providers";
+
+import { siteConfig } from "@/config/site";
+import { fontSans } from "@/config/fonts";
+
+
+import { useState } from "react";
+// ...existing code...
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+
+  return (
+    <html suppressHydrationWarning lang="en">
+      <body
+        className={clsx(
+          "min-h-screen text-foreground bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+          <NavigationBar />
+          <div className="relative">
+            <div className="flex">
+              <div
+                className="fixed left-0 top-[60px] h-[calc(100vh-20px)] border-r bg-white shadow z-20"
+                style={{
+                  width: sidebarExpanded ? 400 : 70,
+                  transition: "width 0.3s",
+                }}>
+                
+                <SideBar expanded={sidebarExpanded} setExpanded={setSidebarExpanded} />
+              </div>
+              <div
+                className="w-full"
+                style={{
+                  paddingLeft: sidebarExpanded ? 250 : 0,
+                  transition: "padding-left 0.3s",
+                }}
+              >
+                <div className="flex justify-center mx-auto">
+                  <div className="w-full md:max-w-6xl px-4 py-8">
+                    {children}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Providers>
+      </body>
+    </html>
+  );
+}
+
+
+
+
+
+
+// export default function RootLayout({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   return (
+//     <html suppressHydrationWarning lang="en">
+//       <body
+//         className={clsx(
+//           "min-h-screen text-foreground bg-background font-sans antialiased",
+//           fontSans.variable
+//         )}
+//       >
+//         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+//           <NavigationBar />
+//           <div className="relative">
+//             <div className="flex">
+//               <div className="fixed left-0 top-[60px] h-[calc(100vh-20px)] w-[70px] border-r bg-white shadow">
+//                 <SideBar />
+//               </div>
+//               <div className="w-full pl-[70px]">
+//                 <div className="flex justify-center mx-auto">
+//                   <div className="w-full md:max-w-6xl px-4 py-8">
+//                     {children}
+//                   </div>
+//                 </div>
+//               </div>
+              
+
+//             </div>
+//           </div>
+//         </Providers>
+//       </body>
+//     </html>
+//   );
+// }

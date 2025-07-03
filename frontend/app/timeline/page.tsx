@@ -1,4 +1,3 @@
-import Navigationbar from "@/components/navbar";
 import PopupBar from "@/components/PopupBar";
 import EventCard from "@/components/eventCard";
 import { getEvents } from "@/utils/server/getEvents";
@@ -12,8 +11,6 @@ export default async function TimelinePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Always visible navbar for this page */}
-      <Navigationbar shouldHideOnScroll={false} />
 
       {/* Popup bar for this page only */}
       <PopupBar />

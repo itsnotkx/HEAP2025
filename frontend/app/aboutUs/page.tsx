@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import Logo from "@/components/logo";
-import Navigationbar from "@/components/navbar";
 
 const team = [
   {
@@ -35,7 +34,6 @@ const team = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background text-primary-foreground flex flex-col">
-      <Navigationbar />
 
       <main className="flex flex-col items-center pt-32 pb-16 px-4">
         {/* Logo and Title */}

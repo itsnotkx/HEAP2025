@@ -2,12 +2,12 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
 import clsx from "clsx";
+import NavigationBar from "@/components/navbar";
 
 import { Providers } from "../app/providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-
 
 export const metadata: Metadata = {
   title: {
@@ -26,7 +26,6 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
-
 export default function RootLayout({
   children,
 }: {
@@ -34,21 +33,30 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex flex-col h-screen">
 
-            <main className="container mx-auto max-w-7xl px-6 flex-grow">
-              {children}
-            </main>
+
+
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+        <NavigationBar/>
+          <div className="flex px-6">
+            <div className="w-full overflow-x-auto">
+              <div className="sm:h-[calc(99vh-60px)] overflow-auto ">
+                <div className="w-full flex justify-center mx-auto   overflow-auto h-[calc(100vh - 120px)] overflow-y-auto relative">
+                  <div className="w-full md:max-w-6xl">{children}</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </Providers>
+
+
       </body>
     </html>
   );
