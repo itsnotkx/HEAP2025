@@ -1,3 +1,4 @@
+import { signIn } from "next-auth/react";
 "use client";
 
 import React, { useState } from "react";
@@ -70,6 +71,38 @@ export default function LoginPage() {
         <Button type="submit" className="w-full mt-2">
           Login
         </Button>
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-2 text-muted-foreground">or continue with</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => signIn("google")}
+          >
+            Sign in with Google
+          </Button>
+          {/* <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => signIn("github")}
+          > */}
+            {/* Sign in with GitHub
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => signIn("discord")}
+          >
+            Sign in with Discord
+          </Button> */}
+        </div>
       </Form>
 
       {/* Right half: Logo fills whole area */}
