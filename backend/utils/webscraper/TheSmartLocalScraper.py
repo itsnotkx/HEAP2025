@@ -56,30 +56,55 @@ def normalize_price(price_text: Optional[str]) -> Optional[float]:
 
 
 def parse_date_range(dates_text: str) -> (Optional[str], Optional[str]):
-    """Parse date range like '16-18 May' or fallback to single dates."""
+    """Parse date ranges like '15 May - 16 Jun' or '16-18 May', or fall back to single dates."""
     cleaned = re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', dates_text)
-    range_match = re.match(r'(\d{1,2})-(\d{1,2})\s+(\w+)', cleaned)
-    if range_match:
-        start_day, end_day, month = range_match.groups()
+    cleaned = cleaned.replace("–", "-").replace("—", "-")
+
+    # Handle "15 May - 16 Jun"
+    cross_month_pattern = re.match(
+        r'(\d{1,2})\s+([A-Za-z]+)\s*-\s*(\d{1,2})\s+([A-Za-z]+)', cleaned)
+    if cross_month_pattern:
+        d1, m1, d2, m2 = cross_month_pattern.groups()
         try:
-            start_date = datetime.strptime(f"{start_day} {month} 2025", "%d %B %Y").isoformat()
-            end_date = datetime.strptime(f"{end_day} {month} 2025", "%d %B %Y").isoformat()
-            return start_date, end_date
+            start = datetime.strptime(f"{d1} {m1} 2025", "%d %b %Y")
         except ValueError:
-            return None, None
-    else:
-        return parse_single_dates(dates_text)
+            start = datetime.strptime(f"{d1} {m1} 2025", "%d %B %Y")
+        try:
+            end = datetime.strptime(f"{d2} {m2} 2025", "%d %b %Y")
+        except ValueError:
+            end = datetime.strptime(f"{d2} {m2} 2025", "%d %B %Y")
+        return start.isoformat(), end.isoformat()
+
+    # Handle "16-18 May"
+    range_match = re.match(r'(\d{1,2})-(\d{1,2})\s+([A-Za-z]+)', cleaned)
+    if range_match:
+        d1, d2, m = range_match.groups()
+        try:
+            start = datetime.strptime(f"{d1} {m} 2025", "%d %b %Y")
+        except ValueError:
+            start = datetime.strptime(f"{d1} {m} 2025", "%d %B %Y")
+        try:
+            end = datetime.strptime(f"{d2} {m} 2025", "%d %b %Y")
+        except ValueError:
+            end = datetime.strptime(f"{d2} {m} 2025", "%d %B %Y")
+        return start.isoformat(), end.isoformat()
+
+    return parse_single_dates(dates_text)
 
 
 def parse_single_dates(dates_text: str) -> (Optional[str], Optional[str]):
     date_parts = re.findall(r'(\d{1,2})(?:st|nd|rd|th)?\s*(\w+)', dates_text)
     try:
         parsed_dates = [datetime.strptime(f"{d} {m} 2025", "%d %B %Y") for d, m in date_parts]
-        start_date = parsed_dates[0].isoformat()
-        end_date = parsed_dates[-1].isoformat() if len(parsed_dates) > 1 else None
+        if len(parsed_dates) == 1:
+            start_date = end_date = parsed_dates[0].isoformat()
+        else:
+            start_date = parsed_dates[0].isoformat()
+            end_date = parsed_dates[-1].isoformat()
         return start_date, end_date
     except ValueError:
         return None, None
+
 
 
 def extract_event_info(sibling) -> dict:
@@ -96,10 +121,25 @@ def extract_event_info(sibling) -> dict:
         info["location"] = extract_address(venue_match.group(1).strip())
 
     date_match = re.search(r'Dates?[:\-]?\s*([\d, &a-zA-Z]+)', text)
-    if date_match:
+    # First try label-based date extraction (existing)
+    date_match = re.search(r'Dates?[:\-]?\s*([\d, &a-zA-Z]+)', text)
+
+    # Fallback: try to extract any date-like pattern if not found
+    if not date_match:
+        # Look for patterns like "2nd-3rd July", "15 May - 16 Jun" anywhere in text
+        fallback_date_match = re.search(
+            r'(\d{1,2}(?:st|nd|rd|th)?(?:-\d{1,2}(?:st|nd|rd|th)?)?\s+[A-Za-z]+(?:\s*-\s*\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+)?)',
+            text)
+        if fallback_date_match:
+            date_str = fallback_date_match.group(1)
+            start_date, end_date = parse_date_range(date_str)
+            info["start_date"] = start_date
+            info["end_date"] = end_date
+    else:
         start_date, end_date = parse_date_range(date_match.group(1))
         info["start_date"] = start_date
         info["end_date"] = end_date
+
 
     time_match = re.search(r'Time[:\-]?\s*([^\n]+)', text, re.IGNORECASE)
     if time_match:
@@ -199,4 +239,4 @@ def scrape_tsl_events() -> List[Event]:
 
 @app.post("/scrape-tsl-events", response_model=List[Event])
 async def trigger_scraper():
-    return scrape_events()
+    return scrape_tsl_events()
