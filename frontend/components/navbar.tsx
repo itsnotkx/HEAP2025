@@ -19,9 +19,9 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
     router.push('/login')
   }
   return (
-    <Navbar
+    <Navbar 
       isBordered
-      className="py-1 min-h-0 h-auto fixed top-0 left-0 w-full z-50 bg-white"
+      className="py-1 min-h-0 h-100 fixed top-0 left-0 w-full z-50 bg-white"
       {...(shouldHideOnScroll ? { shouldHideOnScroll: true } : {})}
     >
       <NavbarContent justify="start" className="items-start mt-6">
