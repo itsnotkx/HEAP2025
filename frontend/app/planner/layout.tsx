@@ -4,7 +4,7 @@ import { Metadata, Viewport } from "next";
 
 import clsx from "clsx";
 import NavigationBar from "@/components/navbar";
-import SideBar from "@/components/SideBar";
+import SideBar from "@/components/Timeline/SideBar";
 
 import { Providers } from "@/app/providers";
 
@@ -13,7 +13,7 @@ import { fontSans } from "@/config/fonts";
 
 
 import { useState } from "react";
-// ...existing code...
+
 
 export default function RootLayout({
   children,
@@ -31,7 +31,7 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <NavigationBar />
+          <NavigationBar shouldHideOnScroll={false}/>
           <div className="relative">
             <div className="flex">
               <div
@@ -65,43 +65,4 @@ export default function RootLayout({
 }
 
 
-
-
-
-
-// export default function RootLayout({
-//   children,
-// }: {
-//   children: React.ReactNode;
-// }) {
-//   return (
-//     <html suppressHydrationWarning lang="en">
-//       <body
-//         className={clsx(
-//           "min-h-screen text-foreground bg-background font-sans antialiased",
-//           fontSans.variable
-//         )}
-//       >
-//         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-//           <NavigationBar />
-//           <div className="relative">
-//             <div className="flex">
-//               <div className="fixed left-0 top-[60px] h-[calc(100vh-20px)] w-[70px] border-r bg-white shadow">
-//                 <SideBar />
-//               </div>
-//               <div className="w-full pl-[70px]">
-//                 <div className="flex justify-center mx-auto">
-//                   <div className="w-full md:max-w-6xl px-4 py-8">
-//                     {children}
-//                   </div>
-//                 </div>
-//               </div>
-              
-
-//             </div>
-//           </div>
-//         </Providers>
-//       </body>
-//     </html>
-//   );
-// }
+ 
