@@ -23,8 +23,7 @@ export default function RootLayout({
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
   return (
-    <html suppressHydrationWarning lang="en">
-      <body
+      <div
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
           fontSans.variable
@@ -59,8 +58,7 @@ export default function RootLayout({
             </div>
           </div>
         </Providers>
-      </body>
-    </html>
+      </div>
   );
 }
 

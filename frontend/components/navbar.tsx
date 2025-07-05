@@ -9,7 +9,7 @@ import {
   Avatar,
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react"; // Replace with your auth hook if not NextAuth
+// import { useSession } from "next-auth/react"; // Replace with your auth hook if not NextAuth
 
 interface NavigationbarProps {
   shouldHideOnScroll?: boolean;
@@ -19,16 +19,16 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
   const router = useRouter();
 
   // Get auth state (replace this with your own auth hook if needed)
-  const { data: session, status } = useSession();
+//   const { data: session, status } = useSession();
 
   const handleLoginClick = () => {
     router.push("/login");
   };
 
   const handleProfileClick = () => {
-    if (session?.user?.id) {
-      router.push(`/users/${session.user.id}`);
-    }
+    // if (session?.user?.id) {
+    //   router.push(`/users/${session.user.id}`);
+    // }
   };
 
   return (
@@ -71,18 +71,20 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
         {status === "loading" ? (
           // Show nothing or a skeleton while loading session
           <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
-        ) : session?.user ? (
-          // User is logged in → show avatar
-          <Avatar
-            isBordered
-            as="button"
-            src={session.user.image || "/default-avatar.png"}
-            name={session.user.name || "User"}
-            size="lg"
-            className="cursor-pointer"
-            onClick={handleProfileClick}
-          />
-        ) : (
+        )
+        //  : session?.user ? (
+        //   // User is logged in → show avatar
+        //   <Avatar
+        //     isBordered
+        //     as="button"
+        //     src={session.user.image || "/default-avatar.png"}
+        //     name={session.user.name || "User"}
+        //     size="lg"
+        //     className="cursor-pointer"
+        //     onClick={handleProfileClick}
+        //   />
+        // ) 
+        : (
           // User not logged in → show login button
           <Button
             color="primary"

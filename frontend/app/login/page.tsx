@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import React, { useState } from "react";
 import { Input, Button, Card, CardBody } from "@heroui/react";
 import { FcGoogle } from "react-icons/fc";
-import { signIn } from "../_apis/apis"; // Make sure this path matches your file structure
+// import { signIn } from "../_apis/apis"; // Make sure this path matches your file structure
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -18,7 +18,7 @@ export default function LoginPage() {
     e.preventDefault(); // Prevent form refresh
 
     try {
-      const user = await signIn(email, password);
+    //   const user = await signIn(email, password);
       console.log("Login successful", user);
       // Redirect to dashboard or homepage
       router.push("/planner");

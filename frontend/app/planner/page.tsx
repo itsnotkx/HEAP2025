@@ -1,9 +1,12 @@
+'use client';
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/eventCard";
 import { fetchAllEvents } from "../_apis/apis";
+import SearchForm from "@/components/FormBox";
+import React from "react";
 
 export default function Planner() {
-  const router = useRouter();
+//   const router = useRouter();
   const [search, setSearch] = React.useState("");
   const [events, setEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
