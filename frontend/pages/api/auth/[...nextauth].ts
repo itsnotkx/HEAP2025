@@ -19,6 +19,10 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   callbacks: {
+    async redirect({ url, baseUrl }) {
+        console.log(baseUrl);       
+        return  baseUrl + "/home"
+    },
     async session({ session, token }) {
       // Add custom session data here
       session.user.id = token.sub;
