@@ -1,29 +1,56 @@
 import Navigationbar from "@/components/navbar";
-import PopupBar from "@/components/PopupBar";
 import EventCard from "@/components/eventCard";
-import { getEvents } from "@/utils/server/getEvents";
+import { fetchAllEvents } from "../_apis/apis";
 
-export default async function TimelinePage() {
-  const events = await getEvents();
+export default function Planner() {
+  const router = useRouter();
+  const [search, setSearch] = React.useState("");
+  const [events, setEvents] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
 
-  // Adjust if your navbar height is different
-  const NAVBAR_HEIGHT = "4rem"; // 64px
+  React.useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const data = await fetchAllEvents();
+        setEvents(data);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError("Unable to load events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Main content starts below navbar + popup bar */}
-      <main
-        className="max-w-6xl mx-auto px-4"
-        style={{
-          paddingTop: `${NAVBAR_HEIGHT}`,
-        }}
-      >
-        <div className="grid grid-cols-3 gap-6 items-stretch">
-          {events.map((event) => (
-            <EventCard key={event.id} event={event} className="h-full w-full" />
-          ))}
+    <>
+      <Navigationbar />
+      <SearchForm />
+
+      <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
+        <div className="max-w-6xl mx-auto px-4">
+          {loading && <p className="text-center text-gray-500">Loading events...</p>}
+          {error && <p className="text-center text-red-500">{error}</p>}
+          {!loading && !error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+              {events.map((event) => (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  className="max-w-xs w-full"
+                />
+              ))}
+            </div>
+          )}
         </div>
-      </main>
-    </div>
+      </section>
+
+      <footer className="text-left text-gray-400 py-4">
+        © 2025 KiasuPlanner. All rights reserved.
+      </footer>
+    </>
   );
 }

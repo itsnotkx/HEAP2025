@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import datetime
 
 from schemas.event import EventCreate, EventUpdate, EventOut
+from schemas.user import UserCreate, UserCreateSSO, UserOut
 from crud import event as event_crud
+from crud import user as user_crud
 from db.session import get_db
 
 router = APIRouter(
@@ -38,9 +41,15 @@ def update_event(event_id: int, event_update: EventUpdate, db: Session = Depends
         raise HTTPException(status_code=404, detail="Event not found")
     return event
 
-
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_event(event_id: int, db: Session = Depends(get_db)):
     success = event_crud.delete_event(db, event_id)
     if not success:
         raise HTTPException(status_code=404, detail="Event not found")
+
+@router.post("/search")
+def search_for_events(start_date:datetime, end_date:datetime, preferences:List[int]):
+    event = event_crud.search_event(start_date, end_date, preferences)
+    if not event:
+        raise HTTPException(status_code=500, detail="Search function broke :(")
+    return event

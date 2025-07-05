@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import Logo from "@/components/logo";
+import Navigationbar from "@/components/navbar";
+import { Calendar,Star,Handshake,Check } from "lucide-react"
 
 const team = [
   {
@@ -15,18 +17,18 @@ const team = [
   },
   {
     name: "Ethan",
-    role: "Backend Developer",
-    avatar: "https://randomuser.me/api/portraits/men/13.jpg",
+    role: "Backend Developer, Frontend Developer, Team Morale Captain, Professional Diddler, Rizzlord",
+    avatar: "https://hips.hearstapps.com/hmg-prod/images/snoop_dogg_photo_by_estevan_oriol_archive_photos_getty_455616412.jpg",
   },
   {
     name: "Kar Xing",
-    role: "Backend Developer",
-    avatar: "https://randomuser.me/api/portraits/men/14.jpg",
+    role: "Professional Regard",
+    avatar: "https://m.media-amazon.com/images/M/MV5BNTE1ODU3NTM1N15BMl5BanBnXkFtZTcwNTk0NDM4Nw@@._V1_.jpg",
   },
   {
     name: "Wai Zin Lin",
     role: "Team Leader",
-    avatar: "https://randomuser.me/api/portraits/men/15.jpg",
+    avatar: "https://upload.wikimedia.org/wiktionary/en/thumb/6/6c/Ernest_Khalimov.png/250px-Ernest_Khalimov.png",
     leader: true,
   },
 ];
@@ -46,7 +48,7 @@ export default function AboutPage() {
 
         {/* Mission Statement */}
         <section className="bg-card rounded-2xl shadow-md p-8 mb-10 w-full max-w-3xl">
-          <h2 className="text-2xl font-bold text-primary mb-3">Our Mission</h2>
+          <h2 className="text-2xl font-bold text-accent mb-3">Our Mission</h2>
           <p className="text-base text-gray-700">
             Our mission is to make event discovery easy, fun, and accessible for everyone. We believe in building a vibrant community where people can find and share unforgettable moments.
           </p>
@@ -57,22 +59,22 @@ export default function AboutPage() {
           <h2 className="text-xl font-semibold text-primary mb-3">What We Do</h2>
           <ul className="grid md:grid-cols-2 gap-6">
             <li className="bg-highlight p-6 rounded-xl shadow-sm">
-              <span className="text-accent text-2xl font-bold">🎉</span>
+              <span className="text-accent text-2xl font-bold"></span>
               <h3 className="text-lg font-semibold mt-2 mb-1">Curated Events</h3>
               <p className="text-gray-700 text-sm">Hand-picked pop-ups, food fests, and hidden gems updated weekly.</p>
             </li>
             <li className="bg-highlight p-6 rounded-xl shadow-sm">
-              <span className="text-accent text-2xl font-bold">⭐</span>
+              <span className="text-accent text-2xl font-bold"></span>
               <h3 className="text-lg font-semibold mt-2 mb-1">Honest Reviews</h3>
               <p className="text-gray-700 text-sm">Real reviews from our community so you know what’s worth your time.</p>
             </li>
             <li className="bg-highlight p-6 rounded-xl shadow-sm">
-              <span className="text-accent text-2xl font-bold">🤝</span>
+              <span className="text-accent text-2xl font-bold"></span>
               <h3 className="text-lg font-semibold mt-2 mb-1">Community Driven</h3>
               <p className="text-gray-700 text-sm">Share your experiences, tips, and photos with fellow explorers.</p>
             </li>
             <li className="bg-highlight p-6 rounded-xl shadow-sm">
-              <span className="text-accent text-2xl font-bold">📅</span>
+              <span className="text-accent text-2xl font-bold"></span>
               <h3 className="text-lg font-semibold mt-2 mb-1">Easy Planning</h3>
               <p className="text-gray-700 text-sm">Save your favourite events and get reminders so you never miss out.</p>
             </li>
@@ -93,7 +95,7 @@ export default function AboutPage() {
                   alt={member.name}
                   className="w-20 h-20 rounded-full mb-3"
                 />
-                <div className="font-bold text-primary">{member.name}</div>
+                <div className="font-bold text-accent">{member.name}</div>
                 <div className="text-sm text-secondary-foreground">
                   {member.role}
                 </div>

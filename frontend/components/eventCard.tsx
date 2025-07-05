@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export interface Event {
   id: string;
-  Title: string;
+  title: string;
   "Start Date": string | null;
   "End Date": string | null;
   Time: string | null;
@@ -26,7 +26,7 @@ interface EventCardProps {
 
 export default function EventCard({ event, className = "" }: EventCardProps) {
   // Remove leading numbers and dot from title for display
-  const displayTitle = event.Title.replace(/^\d+\.\s*/, "");
+  const displayTitle = event.title.replace(/^\d+\.\s*/, "");
 
   return (
     <Link href={`/events/${event.id}`} passHref>

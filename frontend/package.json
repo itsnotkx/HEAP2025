@@ -25,6 +25,7 @@
     "@internationalized/date": "^3.8.2",
     "@react-aria/ssr": "3.9.9",
     "@react-aria/visually-hidden": "3.8.24",
+    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "clsx": "2.1.1",
     "dotenv": "^17.0.0",

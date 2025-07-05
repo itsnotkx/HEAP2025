@@ -42,9 +42,9 @@ def generate_event_inserts(n):
         
         address = random.choice(addresses)
         price = round(random.uniform(0, 100), 2)  # Some free events
-        categories = random.sample(range(1, 10), random.randint(1, 3))  # 1-3 random categories
+        categories = [random.randint(-10,10)/10 for _ in range(52)]
         description = random.choice(descriptions)
-        organiser_id = 1  # Assuming organizer IDs 1-10 exist
+        organiser_id = 5
         
         # Build the INSERT statement
         insert = f"""
@@ -65,4 +65,4 @@ def generate_event_inserts(n):
     return "\n".join(inserts)
 
 # Example usage:
-# print(generate_event_inserts(50))
+print(generate_event_inserts(50))

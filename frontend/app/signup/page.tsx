@@ -1,30 +1,41 @@
 "use client";
-import { signIn } from "next-auth/react";
-
 
 import React, { useState } from "react";
 import { Input, Button, Card, CardBody } from "@heroui/react";
-import { FcGoogle } from "react-icons/fc";
-import { signIn } from "../_apis/apis"; // Make sure this path matches your file structure
+import { signUp } from "../_apis/apis";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function SignUpPage() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form refresh
+    e.preventDefault();
+    setErrorMsg("");
+
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords do not match.");
+      return;
+    }
 
     try {
-      const user = await signIn(email, password);
-      console.log("Login successful", user);
-      // Redirect to dashboard or homepage
-      router.push("/planner");
+      await signUp({
+        username,
+        email,
+        password,
+        image_url: null,        // Optional — set to null or your logic
+        preferences: undefined, // Optional — let backend default
+        rating: undefined       // Optional — let backend default
+      });
+
+      router.push("/login"); // Redirect to login after successful signup
     } catch (error) {
-      console.error("Login failed", error);
-      setErrorMsg(error?.detail || "Invalid email or password");
+      console.error("Signup failed", error);
+      setErrorMsg(error?.detail || "Signup failed. Please try again.");
     }
   };
 
@@ -38,24 +49,17 @@ export default function LoginPage() {
             className="w-48 h-48 object-contain mx-auto mb-4"
             draggable={false}
           />
-          <h1 className="text-2xl font-bold mb-6 text-center">Sign in to your account</h1>
-
-          {/* SSO Buttons */}
-          <div className="flex flex-col gap-4 mb-6">
-            <Button variant="bordered" className="w-full flex items-center gap-2" startContent={<FcGoogle className="text-xl" />}>
-              Sign in with Google
-            </Button>
-          </div>
-
-          {/* Custom Divider */}
-          <div className="flex items-center gap-2 my-6">
-            <div className="flex-grow h-px bg-gray-300" />
-            <span className="text-sm text-gray-500">or continue with email</span>
-            <div className="flex-grow h-px bg-gray-300" />
-          </div>
-
-          {/* Email Login */}
+          <h1 className="text-2xl font-bold mb-6 text-center">Create your account</h1>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <Input
+              isRequired
+              label="Username"
+              type="text"
+              placeholder="username"
+              className="w-full"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
             <Input
               isRequired
               label="Email"
@@ -74,16 +78,24 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <Input
+              isRequired
+              label="Confirm Password"
+              type="password"
+              placeholder="••••••••"
+              className="w-full"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
             {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
             <Button type="submit" color="primary" className="w-full mt-4">
-              Sign In
+              Sign Up
             </Button>
           </form>
-
           <p className="mt-6 text-sm text-center">
-            Don’t have an account?{' '}
-            <a href="/signup" className="text-blue-600 hover:underline">
-              Create one
+            Already have an account?{" "}
+            <a href="/login" className="text-blue-600 hover:underline">
+              Sign in
             </a>
           </p>
         </CardBody>
