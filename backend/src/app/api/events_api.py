@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import datetime
 
 from schemas.event import EventCreate, EventUpdate, EventOut
 from schemas.user import UserCreate, UserCreateSSO, UserOut
@@ -40,33 +41,15 @@ def update_event(event_id: int, event_update: EventUpdate, db: Session = Depends
         raise HTTPException(status_code=404, detail="Event not found")
     return event
 
-
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_event(event_id: int, db: Session = Depends(get_db)):
     success = event_crud.delete_event(db, event_id)
     if not success:
         raise HTTPException(status_code=404, detail="Event not found")
 
-@router.post("/signup/traditional", response_model=UserOut)
-def signup_traditional(user: UserCreate, db: Session = Depends(get_db)):
-    if user_crud.get_user_by_email(db, user.email):
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return user_crud.create_user_traditional(db, user)
-
-@router.post("/signup/sso", response_model=UserOut)
-def signup_sso(user: UserCreateSSO, db: Session = Depends(get_db)):
-    if user_crud.get_user_by_email(db, user.email):
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return user_crud.create_user_sso(db, user)
-
-@router.post("/signin/traditional")
-def signin_traditional(email: str, password: str, db: Session = Depends(get_db)):
-    if user_crud.verify_user_password(db, email, password):
-        return {"message": "Login successful"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
-
-@router.post("/signin/sso")
-def signin_sso(email: str, sso_id: str, db: Session = Depends(get_db)):
-    if user_crud.verify_user_sso(db, email, sso_id):
-        return {"message": "SSO login successful"}
-    raise HTTPException(status_code=401, detail="Invalid SSO credentials")
+@router.post("/search")
+def search_for_events(start_date:datetime, end_date:datetime, preferences:List[int]):
+    event = event_crud.search_event(start_date, end_date, preferences)
+    if not event:
+        raise HTTPException(status_code=500, detail="Search function broke :(")
+    return event

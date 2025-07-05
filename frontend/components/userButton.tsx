@@ -3,7 +3,7 @@ import { UserIcon } from "lucide-react";
 
 interface UserButtonProps {
   user?: {
-    name: string;
+    username: string;
     profilePictureUrl?: string;
   };
   onClick?: () => void;

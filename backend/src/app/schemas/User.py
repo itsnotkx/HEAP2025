@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime
 
@@ -6,7 +6,7 @@ class UserBase(BaseModel):
     username: str
     email: EmailStr
     image_url: Optional[str] = None
-    preferences: Optional[List[int]] = []
+    preferences: List[int] = Field(default_factory=lambda: [0] * 51)
     rating: Optional[float] = None
 
 class UserCreate(UserBase):
@@ -21,4 +21,9 @@ class UserOut(UserBase):
 
     class Config:
         orm_mode = True
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
 

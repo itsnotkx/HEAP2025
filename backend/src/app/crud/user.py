@@ -48,7 +48,6 @@ def create_user_sso(db: Session, user: UserCreateSSO):
         image_url=user.image_url,
         preferences=user.preferences,
         rating=user.rating,
-        sso_id=user.sso_id
     )
     db.add(db_user)
     db.commit()

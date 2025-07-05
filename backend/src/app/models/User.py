@@ -3,15 +3,17 @@ from db.base import Base
 from sqlalchemy.sql import func
 
 class User(Base):
-    __tablename__ = "User"
+    __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True, index=True)
     username = Column(Text, nullable=False)
     image_url = Column(Text, nullable=True)
-    preferences = Column(ARRAY(Integer))
+    preferences = Column(
+        ARRAY(Integer),
+        nullable=False,
+        default=lambda: [0] * 51
+    )
     rating = Column(Float, nullable=True)
     email = Column(Text, unique=True, nullable=False, index=True)
     password_hash = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
-    sso_id = Column(Text, nullable=True)
-

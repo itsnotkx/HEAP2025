@@ -2,8 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from models import *
 
-from HEAP2025.backend.src.app.api import api  # import your router modules here
-# from app.api import user, auth, etc.
+from api import events_api, user_api # import your router modules here
 
 app = FastAPI(
     title="Event Management API",
@@ -21,7 +20,8 @@ app.add_middleware(
 )
 
 # Include routers here
-app.include_router(api.router, prefix="/api")
+app.include_router(events_api.router, prefix="/api")
+app.include_router(user_api.router, prefix="/api")
 # app.include_router(user.router, prefix="/api")
 # app.include_router(auth.router, prefix="/api")
 
