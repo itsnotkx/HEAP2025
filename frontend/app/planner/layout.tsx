@@ -46,7 +46,7 @@ export default function RootLayout({
               <div
                 className="w-full"
                 style={{
-                  paddingLeft: sidebarExpanded ? 250 : 0,
+                  paddingLeft: sidebarExpanded ? 400 : 70,
                   transition: "padding-left 0.3s",
                 }}
               >

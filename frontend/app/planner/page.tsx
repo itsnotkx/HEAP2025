@@ -18,7 +18,7 @@ export default async function TimelinePage() {
           paddingTop: `${NAVBAR_HEIGHT}`,
         }}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-stretch">
+        <div className="grid grid-cols-3 gap-6 items-stretch">
           {events.map((event) => (
             <EventCard key={event.id} event={event} className="h-full w-full" />
           ))}
