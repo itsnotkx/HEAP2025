@@ -1,11 +1,11 @@
 import os
 import re
-import time
 import requests
 from fastapi import FastAPI, HTTPException
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from dotenv import load_dotenv
+from models import Event
 
 load_dotenv()
 
@@ -15,151 +15,145 @@ EVENTS_API_URL = "https://api.stb.gov.sg/content/events/v2/search"
 app = FastAPI()
 
 EXCLUDED_TITLES = [
-    "National Day 2025",
-    "Hari Raya Haji 2025",
-    "Chinese New Year",
-    "Good Friday 2025",
-    "Deepavali 2025",
-    "Christmas 2025",
-    "Hari Raya Puasa 2025",
-    "New Year’s Day 2025",
-    "Labour Day 2025",
-    "Vesak Day 2025",
-    "Year of the Horse 2026",
+    "National Day 2025", "Hari Raya Haji 2025", "Chinese New Year", "Good Friday 2025",
+    "Deepavali 2025", "Christmas 2025", "Hari Raya Puasa 2025", "New Year’s Day 2025",
+    "Labour Day 2025", "Vesak Day 2025", "Year of the Horse 2026",
 ]
 
 SEARCH_KEYWORDS = [
-    "music", "arts", "food", "family", "festival", "sports", "culture",
-    "dance", "drama", "exhibition", "performance", "theatre", "bazaar",
-    "market", "parade", "workshop", "concert", "heritage", "community",
-    "fashion", "film", "carnival", "marathon", "wellness", "photography",
-    "flea", "design", "craft", "culinary", "comedy", "kids", "indoor", "outdoor"
-]
-
-SEARCH_KEYWORDS += [
-    "street fair", "block party", "music festival", "concert", "live music",
+    "music", "arts", "food", "family", "festival", "sports", "culture", "dance", "drama",
+    "exhibition", "performance", "theatre", "bazaar", "market", "parade", "workshop",
+    "concert", "heritage", "community", "fashion", "film", "carnival", "marathon",
+    "wellness", "photography", "flea", "design", "craft", "culinary", "comedy", "kids",
+    "indoor", "outdoor", "street fair", "block party", "music festival", "live music",
     "food festival", "food truck festival", "wine tasting", "beer festival",
-    "cultural festival", "heritage festival", "art walk", "gallery opening",
-    "art show", "craft fair", "makers market", "flea market", "farmers market",
-    "holiday market", "bazaar", "parade", "carnival", "circus", "funfair",
-    "outdoor movie", "film screening", "film festival", "open mic", "jam session",
-    "karaoke night", "talent show", "dance party", "silent disco", "dance class",
-    "yoga class", "fitness bootcamp", "wellness retreat", "meditation session",
-    "guided hike", "nature walk", "bird watching", "garden tour", "plant sale",
-    "pet show", "animal adoption", "dog walk", "community picnic", "potluck",
-    "cook-off", "bake sale", "culinary class", "cooking demo", "baking workshop",
-    "storytelling", "poetry slam", "book reading", "book club", "kids workshop",
-    "children's activity", "family fun day", "science fair", "robotics competition",
-    "board game night", "game night", "trivia night", "quiz night", "escape room",
-    "scavenger hunt", "treasure hunt", "sports tournament", "charity run",
-    "fun run", "marathon", "bike ride", "cycling event", "skate night",
-    "roller disco", "swimming gala", "beach party", "campout", "stargazing",
-    "fireworks show", "lantern festival", "light show", "historical reenactment",
-    "reenactment", "community cleanup", "tree planting", "volunteer day",
-    "environmental rally", "petting zoo", "farm tour", "nature festival",
-    "outdoor adventure", "adventure race", "obstacle course", "park event"
+    "cultural festival", "heritage festival", "art walk", "gallery opening", "art show",
+    "craft fair", "makers market", "flea market", "farmers market", "holiday market",
+    "bazaar", "parade", "carnival", "circus", "funfair", "outdoor movie", "film screening",
+    "film festival", "open mic", "jam session", "karaoke night", "talent show",
+    "dance party", "silent disco", "dance class", "yoga class", "fitness bootcamp",
+    "wellness retreat", "meditation session", "guided hike", "nature walk",
+    "bird watching", "garden tour", "plant sale", "pet show", "animal adoption",
+    "dog walk", "community picnic", "potluck", "cook-off", "bake sale",
+    "culinary class", "cooking demo", "baking workshop", "storytelling", "poetry slam",
+    "book reading", "book club", "kids workshop", "children's activity",
+    "family fun day", "science fair", "robotics competition", "board game night",
+    "game night", "trivia night", "quiz night", "escape room", "scavenger hunt",
+    "treasure hunt", "sports tournament", "charity run", "fun run", "bike ride",
+    "cycling event", "skate night", "roller disco", "swimming gala", "beach party",
+    "campout", "stargazing", "fireworks show", "lantern festival", "light show",
+    "historical reenactment", "reenactment", "community cleanup", "tree planting",
+    "volunteer day", "environmental rally", "petting zoo", "farm tour",
+    "nature festival", "outdoor adventure", "adventure race", "obstacle course",
+    "park event"
 ]
 
-# Pydantic Event model for response serialization
-class Event(BaseModel):
-    title: str
-    start_date: Optional[str]
-    end_date: Optional[str]
-    location: Optional[str]
-    postal_code: Optional[str]
-    category: Optional[str]
-    price: Optional[str]
-    description: str
-    image_urls: List[str]
-    organizer: Optional[str]
-    official_link: Optional[str]
-    url: List[str]
+# --------- Helper Functions ---------
 
-def fetch_events(auth_header, limit=50, offset=0, keywords=None):
-    headers = {
-        "Accept": "application/json",
-        **auth_header,
-    }
+def extract_postal_code(address: Optional[str]) -> Optional[str]:
+    if not address:
+        return None
+    match = re.search(r"\b\d{6}\b", address)
+    return match.group() if match else None
 
-    params = {
-        "searchType": "keyword",
-        "searchValues": keywords or ["all"],
-        "limit": limit,
-        "offset": offset
-    }
+def normalize_price(description: str) -> Optional[float]:
+    if not description:
+        return None
+    desc_lower = description.lower()
+    if "free" in desc_lower:
+        return 0.0
+    price_match = re.search(r"\$\s?(\d+(?:\.\d{1,2})?)", description)
+    if price_match:
+        return float(price_match.group(1))
+    return None
 
+def extract_time(description: Optional[str]) -> Optional[str]:
+    if not description:
+        return None
+    time_match = re.search(r"\b\d{1,2}(am|pm)(?:\s*-\s*\d{1,2}(am|pm))?", description, re.IGNORECASE)
+    return time_match.group() if time_match else None
+
+def is_excluded_title(title: str) -> bool:
+    return any(excluded.lower() == title.lower() for excluded in EXCLUDED_TITLES)
+
+def fetch_events(auth_header, limit=50, offset=0, keywords=None) -> dict:
+    headers = {"Accept": "application/json", **auth_header}
+    params = {"searchType": "keyword", "searchValues": keywords or ["all"], "limit": limit, "offset": offset}
     response = requests.get(EVENTS_API_URL, headers=headers, params=params)
     response.raise_for_status()
     return response.json()
 
-def parse_events(events):
+def parse_events(events: List[dict]) -> List[Event]:
     parsed = []
     for event in events:
-        title = event.get("name", "").strip()
-        if any(excluded.lower() == title.lower() for excluded in EXCLUDED_TITLES):
-            continue  # skip excluded events
+        try:
+            if not isinstance(event, dict):
+                print("Skipping non-dict event:", event)
+                continue
 
-        start_date = event.get("startDate")
-        end_date = event.get("endDate")
+            name_data = event.get("name")
+            title = name_data.get("en").strip() if isinstance(name_data, dict) else str(name_data).strip()
+            if is_excluded_title(title):
+                continue
 
-        # Convert location dict to string if dict, else keep as is or None
-        location = event.get("location")
-        if isinstance(location, dict):
-            lat = location.get("latitude")
-            lon = location.get("longitude")
-            if lat is not None and lon is not None:
-                location = f"{lat},{lon}"
-            else:
-                location = str(location)  # fallback to string of dict
+            description_data = event.get("description")
+            description = description_data.get("en") if isinstance(description_data, dict) else str(description_data or "")
 
-        postal_code = None
-        address = event.get("address")
-        if isinstance(address, str):
-            match = re.search(r'\b\d{6}\b', address)
-            if match:
-                postal_code = match.group()
+            start_date = event.get("startDate")
+            end_date = event.get("endDate")
 
-        category = event.get("type")
+            venue = event.get("venue", {})
+            location_data = venue.get("name")
+            location = location_data.get("en") if isinstance(location_data, dict) else location_data
 
-        price = None
-        if event.get("ticketed") is True:
-            price = "Ticketed"
-        elif event.get("ticketed") is False:
-            price = "Free"
+            address_data = venue.get("address", {})
+            address = address_data.get("streetAddress") if isinstance(address_data, dict) else None
+            postal_code = extract_postal_code(address)
 
-        description = event.get("description") or ""
+            time = extract_time(description)
+            price = normalize_price(description)
 
-        # image_urls should be list of strings (extract 'uuid' if dict)
-        images = event.get("images")
-        image_urls = []
-        if isinstance(images, list):
-            for img in images:
-                if isinstance(img, dict) and "uuid" in img:
-                    image_urls.append(img["uuid"])
-                elif isinstance(img, str):
-                    image_urls.append(img)
+            images = event.get("images", [])
+            image_urls = [
+                img.get("uuid") for img in images
+                if isinstance(img, dict) and img.get("uuid")
+            ]
 
-        organizer = event.get("eventOrganizer")
-        official_link = event.get("officialWebsite")
-        url_list = [official_link] if official_link else []
+            organizer_data = event.get("organizer")
+            organizer = (
+                organizer_data.get("name", {}).get("en")
+                if isinstance(organizer_data, dict)
+                else None
+            )
 
-        parsed.append(Event(
-            title=title,
-            start_date=start_date,
-            end_date=end_date,
-            location=location,
-            postal_code=postal_code,
-            category=category,
-            price=price,
-            description=description,
-            image_urls=image_urls,
-            organizer=organizer,
-            official_link=official_link,
-            url=url_list,
-        ))
+            official_link = event.get("website")
+            url_list = [event.get("slug")] if event.get("slug") else []
+
+            parsed.append(Event(
+                title=title,
+                start_date=start_date,
+                end_date=end_date,
+                time=time,
+                location=location,
+                postal_code=postal_code,
+                category=None,
+                price=price,
+                description=description,
+                image_urls=image_urls,
+                organizer=organizer,
+                official_link=official_link,
+                url=url_list,
+            ))
+
+        except ValidationError as ve:
+            print(f"Validation error: {ve}")
+        except Exception as e:
+            print(f"Unexpected error parsing event: {e}")
 
     return parsed
 
+
+# --------- Route ---------
 
 @app.post("/scrape-stb-events", response_model=List[Event])
 def scrape_stb_events():
@@ -178,7 +172,6 @@ def scrape_stb_events():
             try:
                 data = fetch_events(auth_header, limit=limit, offset=offset, keywords=[kw])
             except Exception as e:
-                # Log error and skip this keyword
                 print(f"Error fetching events for keyword '{kw}': {e}")
                 break
 
@@ -187,7 +180,6 @@ def scrape_stb_events():
                 break
 
             parsed_events = parse_events(events)
-
             for event, raw in zip(parsed_events, events):
                 uuid = raw.get("uuid")
                 if uuid and uuid not in seen_uuids:

@@ -5,48 +5,39 @@ from typing import List, Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from dateutil import parser as date_parser
+
+from models import Event  # Your local Event Pydantic model
 
 app = FastAPI()
 
 YEAR = 2025
 
+# Regex pattern to extract time ranges like "10am - 6pm", "7:30pm to 9pm"
+TIME_REGEX = re.compile(
+    r'\b(\d{1,2}(:\d{2})?\s*(am|pm|AM|PM))\s*(?:-|to)?\s*(\d{1,2}(:\d{2})?\s*(am|pm|AM|PM))?\b'
+)
 
-# --------- Models ---------
-
-class Event(BaseModel):
-    title: str
-    start_date: Optional[str]
-    end_date: Optional[str]
-    time: Optional[str]
-    location: Optional[str]
-    postal_code: Optional[str]
-    category: Optional[str]
-    price: Optional[float]
-    description: str
-    image_urls: List[str]
-    organizer: Optional[str]
-    official_link: Optional[str]
-    url: List[str]
-
-
-# --------- Helper Functions ---------
+# -------- Helper Functions --------
 
 def extract_postal_code(location: Optional[str]) -> Optional[str]:
-    return re.search(r'\b\d{6}\b', location).group() if location and re.search(r'\b\d{6}\b', location) else None
-
+    if location:
+        match = re.search(r'\b\d{6}\b', location)
+        if match:
+            return match.group()
+    return None
 
 def extract_address(text: str) -> str:
-    return text.strip() if re.search(r"Singapore\s+\d{6}", text) else text
-
+    if re.search(r"Singapore\s+\d{6}", text):
+        return text.strip()
+    return text
 
 def normalize_price(price_text: Optional[str]) -> Optional[float]:
     if not price_text:
         return None
     if "free" in price_text.lower():
         return 0.0
-    numbers = re.findall(r'\d+(?:\.\d+)?', price_text)
+    numbers = re.findall(r'\$?(\d+(?:\.\d+)?)', price_text)
     return float(numbers[0]) if numbers else None
 
 
@@ -56,41 +47,52 @@ def try_parse_date(date_str: str) -> Optional[datetime]:
     except Exception:
         return None
 
-
 def parse_single_dates(text: str) -> Tuple[Optional[str], Optional[str]]:
     matches = re.findall(r'(\d{1,2})(?:st|nd|rd|th)?\s*(\w+)', text)
     parsed = [try_parse_date(f"{d} {m} {YEAR}") for d, m in matches]
     parsed = [p for p in parsed if p]
-
     if not parsed:
         return None, None
     start, end = parsed[0], parsed[-1]
     return start.isoformat(), end.isoformat()
 
-
 def parse_date_range(text: str) -> Tuple[Optional[str], Optional[str]]:
     cleaned = re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', text).replace("–", "-").replace("—", "-")
 
-    # e.g., 15 May - 16 Jun
     cross_month = re.match(r'(\d{1,2})\s+([A-Za-z]+)\s*-\s*(\d{1,2})\s+([A-Za-z]+)', cleaned)
     if cross_month:
         d1, m1, d2, m2 = cross_month.groups()
-        return try_parse_date(f"{d1} {m1} {YEAR}").isoformat(), try_parse_date(f"{d2} {m2} {YEAR}").isoformat()
+        start = try_parse_date(f"{d1} {m1} {YEAR}")
+        end = try_parse_date(f"{d2} {m2} {YEAR}")
+        if start and end:
+            return start.isoformat(), end.isoformat()
 
-    # e.g., 16-18 May
     same_month = re.match(r'(\d{1,2})-(\d{1,2})\s+([A-Za-z]+)', cleaned)
     if same_month:
         d1, d2, m = same_month.groups()
-        return try_parse_date(f"{d1} {m} {YEAR}").isoformat(), try_parse_date(f"{d2} {m} {YEAR}").isoformat()
+        start = try_parse_date(f"{d1} {m} {YEAR}")
+        end = try_parse_date(f"{d2} {m} {YEAR}")
+        if start and end:
+            return start.isoformat(), end.isoformat()
 
     return parse_single_dates(text)
 
+def extract_time(text: str) -> Optional[str]:
+    match = TIME_REGEX.search(text)
+    if match:
+        # Rebuild the time string, ignoring None groups and connectors
+        groups = [g for g in match.groups() if g and g.lower() not in ['-', 'to']]
+        # Join the groups with " - " if there are two times, else single time
+        if len(groups) > 1:
+            return f"{groups[0]} - {groups[-1]}"
+        return groups[0]
+    return None
 
 def extract_event_info(sibling) -> dict:
     text = sibling.get_text(separator=' ', strip=True)
     info = {}
 
-    # Dates
+    # Dates (already reasonably handled)
     date_match = re.search(r'Dates?[:\-]?\s*([\d, &a-zA-Z]+)', text)
     if not date_match:
         date_match = re.search(
@@ -100,27 +102,39 @@ def extract_event_info(sibling) -> dict:
         start, end = parse_date_range(date_match.group(1))
         info["start_date"], info["end_date"] = start, end
 
-    # Price
-    price_match = re.search(r'(Tickets?|Price)[:\-]?\s*(From\s*\$?\d+|Free|\$?\d+(?:\s*-\s*\$?\d+)?(?:\+)?)(?=\s|$)', text, re.IGNORECASE)
-    if price_match:
-        info["price"] = normalize_price(price_match.group(2))
-
     # Venue
     venue_match = re.search(r'Venue[:\-]?\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Organizer)[:\-]|$)', text, re.IGNORECASE)
     if venue_match:
         info["location"] = extract_address(venue_match.group(1).strip())
 
-    # Time
-    time_match = re.search(r'Time[:\-]?\s*([^\n]+)', text, re.IGNORECASE)
+    # Time (refined regex to avoid trailing hyphen)
+    time_match = re.search(r'Time[:\-]?\s*([^\n|]+?)(?=\s*(?:\||$))', text, re.IGNORECASE)
     if time_match:
         info["time"] = time_match.group(1).strip()
+    else:
+        fallback_time_match = re.search(r'(\d{1,2}(am|pm)?\s*-\s*\d{1,2}(am|pm)?)', text, re.IGNORECASE)
+        if fallback_time_match:
+            info["time"] = fallback_time_match.group(1).strip()
 
-    # Organizer
-    org_match = re.search(r'Organizer[s]?[:\-]?\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Venue)[:\-]|$)', text, re.IGNORECASE)
-    if org_match:
-        organizer = org_match.group(1).strip()
+    # Price - match both structured and fallback
+    price_match = re.search(r'Admission[:\-]?\s*(\$?\d+.*?)(?=Venue|Dates?|Time|Organizer|$)', text, re.IGNORECASE)
+    if price_match:
+        info["price"] = normalize_price(price_match.group(1))
+    else:
+        generic_price_match = re.search(r'\$?\d+(?:\s*[-|/]\s*\$?\d+)?(?:\s*/\s*\w+)?', text)
+        if generic_price_match:
+            info["price"] = normalize_price(generic_price_match.group(0))
+
+    # Organizer (fallback: first capital phrase with “by”)
+    organizer_match = re.search(r'Organizer[s]?:\s*(.+?)(?=(?:Dates?|Time|Price|Tickets?|Venue)[:\-]|$)', text, re.IGNORECASE)
+    if organizer_match:
+        organizer = organizer_match.group(1).strip()
         if organizer.lower() not in ["n/a", "tbc", ""]:
             info["organizer"] = organizer
+    else:
+        by_line = re.search(r'by\s+([A-Z][a-zA-Z\s]+)', text)
+        if by_line:
+            info["organizer"] = by_line.group(1).strip()
 
     return info
 
@@ -129,8 +143,7 @@ def find_official_link(sibling) -> Optional[str]:
     return next((a['href'] for a in sibling.find_all('a', href=True)
                  if "thesmartlocal" not in a['href'].lower()), None)
 
-
-# --------- Scraper ---------
+# --------- Main Scraper --------
 
 def scrape_tsl_events() -> List[Event]:
     url = "https://thesmartlocal.com/read/things-to-do-this-weekend-singapore/"
@@ -169,6 +182,7 @@ def scrape_tsl_events() -> List[Event]:
 
         while sibling and sibling.name != 'h3':
             description_parts.append(sibling.get_text(separator=' ', strip=True))
+
             info = extract_event_info(sibling)
             for key, value in info.items():
                 if value and event.get(key) is None:
@@ -181,6 +195,7 @@ def scrape_tsl_events() -> List[Event]:
 
         event["description"] = " ".join(description_parts)
 
+        # fallback date parsing from description if no explicit date found
         if event["start_date"] is None:
             start, end = parse_date_range(event["description"])
             event["start_date"], event["end_date"] = start, end
@@ -195,8 +210,7 @@ def scrape_tsl_events() -> List[Event]:
 
     return events
 
-
-# --------- Route ---------
+# --------- FastAPI Route ---------
 
 @app.post("/scrape-tsl-events", response_model=List[Event])
 async def trigger_scraper():

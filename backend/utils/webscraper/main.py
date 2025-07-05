@@ -2,10 +2,13 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from typing import List
 
-from STBScrapper import scrape_stb_events  
-from TheSmartLocalScraper import scrape_tsl_events  
+from models import Event
+from STBScrapper import scrape_stb_events
+from TheSmartLocalScraper import scrape_tsl_events
+from TimeoutScraper import scrape_timeout_events
 
 app = FastAPI()
+
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     return """
@@ -44,17 +47,40 @@ def read_root():
         <div class="gradient-text">
             Welcome to the Events API!<br><br>
             Use the endpoint <br> <code>/scrape-stb-events</code> <br> to fetch curated STB event data.<br>
-            Use the endpoint <br> <code>/scrape-tsl-events</code> <br> to fetch curated TheSmartLocal event data.<br><br>
-            Both endpoints provide filtered event lists.<br>
+            Use the endpoint <br> <code>/scrape-tsl-events</code> <br> to fetch curated TheSmartLocal event data.<br>
+            Use the endpoint <br> <code>/scrape-timeout-events</code> <br> to fetch curated Timeout event data.<br>
+            Use the endpoint <br> <code>/scrape-all-events</code> <br> to fetch all sources combined.<br><br>
         </div>
     </body>
     </html>
     """
 
-@app.post("/scrape-stb-events")
-async def api_stb_events():
+@app.post("/scrape-stb-events", response_model=List[Event])
+def api_stb_events():
     return scrape_stb_events()
 
-@app.post("/scrape-tsl-events")
-async def api_tsl_events():
+@app.post("/scrape-tsl-events", response_model=List[Event])
+def api_tsl_events():
     return scrape_tsl_events()
+
+@app.post("/scrape-timeout-events", response_model=List[Event])
+def api_timeout_events():
+    return scrape_timeout_events()
+
+@app.post("/scrape-all-events", response_model=List[Event])
+def api_all_events():
+    events = []
+
+    for e in scrape_stb_events():
+        e.description = f"[STB] {e.description}"
+        events.append(e)
+
+    for e in scrape_tsl_events():
+        e.description = f"[TSL] {e.description}"
+        events.append(e)
+
+    for e in scrape_timeout_events():
+        e.description = f"[Timeout] {e.description}"
+        events.append(e)
+
+    return events
