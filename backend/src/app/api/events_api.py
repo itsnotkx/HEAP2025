@@ -4,7 +4,7 @@ from typing import List
 from datetime import datetime
 
 from schemas.event import EventCreate, EventUpdate, EventOut
-from schemas.user import UserCreate, UserCreateSSO, UserOut
+from schemas.User import UserCreate, UserCreateSSO, UserOut
 from crud import event as event_crud
 from crud import user as user_crud
 from db.session import get_db

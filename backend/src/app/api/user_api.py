@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
-from schemas.user import UserCreate, UserCreateSSO, UserOut, LoginRequest
+from schemas.User import UserCreate, UserCreateSSO, UserOut, LoginRequest
 from crud import user as user_crud
 from db.session import get_db
 

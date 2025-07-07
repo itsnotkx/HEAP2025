@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, Text, TIMESTAMP, ForeignKey, DECIMAL, ARRAY
 from db.base import Base
-from models.user import User
+from models.User import User
 class Event(Base):
     __tablename__ = "event"
 

@@ -1,45 +1,40 @@
 'use client';
-
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/PlannerCard";
-import { fetchAllEvents, fetchFilteredEvents } from "../_apis/events";
+import { fetchAllEvents } from "../_apis/apis";
 import SearchForm from "@/components/FormBox";
 import React from "react";
+import { useSearchParams } from "next/navigation";
+import DayPlannerTimeline from "@/components/Timeline/DayPlanner";
 
 export default function Planner() {
+//   const router = useRouter();
+  const [search, setSearch] = React.useState("");
   const [events, setEvents] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  
 
-  // Handler for FormBox submission
-  const handleFormSubmit = async (formData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Use your API to fetch events matching the form data
-      // You may need to implement fetchFilteredEvents to accept date/time
-      const data = await fetchFilteredEvents(formData);
-      setEvents(data);
-    } catch (err) {
-      setError("Unable to load events.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Optionally, load all events on first render
   React.useEffect(() => {
-    setLoading(true);
-    fetchAllEvents()
-      .then(setEvents)
-      .catch(() => setError("Unable to load events."))
-      .finally(() => setLoading(false));
+    const loadEvents = async () => {
+      try {
+        const data = await fetchAllEvents();
+        setEvents(data);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError("Unable to load events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
   }, []);
 
   return (
     <>
       <Navigationbar />
-      <SearchForm onSubmit={handleFormSubmit} />
+      <SearchForm />
 
       <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
         <div className="max-w-6xl mx-auto px-4">

@@ -9,6 +9,8 @@ import {
   Avatar,
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+
 // import { useSession } from "next-auth/react"; // Replace with your auth hook if not NextAuth
 
 interface NavigationbarProps {
@@ -17,6 +19,8 @@ interface NavigationbarProps {
 
 export default function Navigationbar({ shouldHideOnScroll = true }: NavigationbarProps) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
 
   // Get auth state (replace this with your own auth hook if needed)
 //   const { data: session, status } = useSession();

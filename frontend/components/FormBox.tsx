@@ -10,13 +10,15 @@ import {
 } from "@internationalized/date";
 import { ButtonGroup } from "@heroui/button";
 
-export default function FormBox() {
+export default function FormBox({onSubmit}) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     date: today(getLocalTimeZone()),
     startTime: new Time(8, 0),
     endTime: new Time(17, 30),
   });
+
+
 
   const [mode, setMode] = useState("availability");
 
@@ -30,7 +32,7 @@ export default function FormBox() {
     });
     router.push(`/planner?${params.toString()}`);
   };
-
+/*
   const handlePlanMyDay = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams({
@@ -40,6 +42,20 @@ export default function FormBox() {
     });
     router.push(`/planner?${params.toString()}`);
   };
+*/
+
+
+  const handlePlanMyDay = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Pass the form data up to the parent
+    onSubmit({
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+    });
+  };
+
+
 
   const handleSurpriseMe = (e: React.FormEvent) => {
     e.preventDefault();

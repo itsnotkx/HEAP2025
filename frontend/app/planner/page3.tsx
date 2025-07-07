@@ -1,45 +1,37 @@
 'use client';
-
 import Navigationbar from "@/components/navbar";
-import EventCard from "@/components/PlannerCard";
-import { fetchAllEvents, fetchFilteredEvents } from "../_apis/events";
+import EventCard from "@/components/eventCard";
+import { fetchAllEvents } from "../_apis/apis";
 import SearchForm from "@/components/FormBox";
 import React from "react";
+import { mapRawEvent, Event as MappedEvent, RawEvent } from "@/types/Event";
 
 export default function Planner() {
-  const [events, setEvents] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
+  const [search, setSearch] = React.useState("");
+  const [events, setEvents] = React.useState<MappedEvent[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  // Handler for FormBox submission
-  const handleFormSubmit = async (formData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Use your API to fetch events matching the form data
-      // You may need to implement fetchFilteredEvents to accept date/time
-      const data = await fetchFilteredEvents(formData);
-      setEvents(data);
-    } catch (err) {
-      setError("Unable to load events.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Optionally, load all events on first render
   React.useEffect(() => {
-    setLoading(true);
-    fetchAllEvents()
-      .then(setEvents)
-      .catch(() => setError("Unable to load events."))
-      .finally(() => setLoading(false));
+    const loadEvents = async () => {
+      try {
+        const data: RawEvent[] = await fetchAllEvents();
+        setEvents(data.map(mapRawEvent));
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError("Unable to load events.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
   }, []);
 
   return (
     <>
       <Navigationbar />
-      <SearchForm onSubmit={handleFormSubmit} />
+      <SearchForm />
 
       <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
         <div className="max-w-6xl mx-auto px-4">
