@@ -33,3 +33,8 @@ class EventOut(EventBase):
 
     class Config:
         orm_mode = True
+
+class EventSearchRequest(BaseModel):
+    start_date: datetime
+    end_date: datetime
+    preferences: List[int]

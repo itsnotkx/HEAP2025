@@ -1,9 +1,9 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from typing import List, Optional
 from models.event import Event
 from schemas.event import EventCreate, EventUpdate
 from datetime import datetime
-from sqlalchemy import func, text
+from sqlalchemy import func, text, select, literal_column
 from sqlalchemy.dialects.postgresql import array
 
 def get_event(db: Session, event_id: int) -> Optional[Event]:
@@ -48,18 +48,63 @@ def delete_event(db: Session, event_id: int) -> bool:
         return True
     return False
 
-def search_event(db: Session, start_date: datetime, end_date: datetime, preferences: List[int]) -> List[Event]:
-    # Convert Python list to PostgreSQL array
-    preferences_array = array(preferences)
+def search_event(db: Session, start_date: datetime, end_date: datetime, user_id: int) -> List[Event]:
+    # Fetch user preferences from the database
+    user = db.execute(
+        text("SELECT preferences FROM \"users\" WHERE user_id = :user_id"),
+        {"user_id": user_id}
+    ).fetchone()
+    print(f"User preferences fetched: {user}")
 
-    # Compute the dot product between event.categories and preferences
-    relevance_score = func.sum(
-        func.unnest(Event.categories) * func.unnest(preferences_array)
-    )
+    if not user or not user[0]:
+        preferences_array = []
+    else:
+        preferences_array = user[0]
+        
 
-    return (
-        db.query(Event)
-        .filter(Event.start_date >= start_date, Event.end_date <= end_date)
-        .order_by(relevance_score.desc())
-        .all()
-    )
+    print(f"start:{start_date}, end:{end_date}, user_id:{user_id}, preferences:{preferences_array}")
+
+    # If preferences_array is empty, just return events in date range
+    if not preferences_array:
+        sql = text("""
+            SELECT * FROM event
+            WHERE start_date >= :start_date
+              AND end_date <= :end_date
+        """)
+        results = db.execute(
+            sql,
+            {
+                "start_date": start_date,
+                "end_date": end_date,
+            }
+        ).fetchall()
+    else:
+        # preferences_array is expected to be a list of numbers (weights)
+        sql = text("""
+            SELECT e.*,
+                   (
+                       SELECT SUM(ec * pc)
+                       FROM unnest(e.categories, :preferences) AS t(ec, pc)
+                   ) AS relevance
+            FROM event e
+            WHERE e.start_date >= :start_date
+              AND e.end_date <= :end_date
+            ORDER BY relevance DESC NULLS LAST
+        """)
+        results = db.execute(
+            sql,
+            {
+                "start_date": start_date,
+                "end_date": end_date,
+                "preferences": preferences_array,
+            }
+        ).mappings().all()
+
+    # Map results to Event objects (assuming Event has all columns in SELECT *)
+    events = []
+    for row in results:
+        print(row)
+        event_data = dict(row)
+        event_data.pop("relevance", None)  # remove relevance if not in Event model
+        events.append(Event(**event_data))
+    return events

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
@@ -26,6 +26,22 @@ def read_all_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
     return event_crud.get_all_events(db, skip=skip, limit=limit)
 
 
+@router.get("/search", response_model=List[EventOut])
+def search_for_events(
+    start_date: datetime = Query(..., description="Start date in ISO format"),
+    end_date: datetime = Query(..., description="End date in ISO format"),
+    user_id: int = Query(..., description="User ID to filter events by user preferences"),
+    db: Session = Depends(get_db)
+):
+    events = event_crud.search_event(db, start_date, end_date, user_id)
+    if not events:
+        raise HTTPException(status_code=404, detail="No events found for the given criteria")
+    return events
+
+
+
+
+
 @router.get("/{event_id}", response_model=EventOut)
 def read_event(event_id: int, db: Session = Depends(get_db)):
     event = event_crud.get_event(db, event_id)
@@ -46,10 +62,3 @@ def delete_event(event_id: int, db: Session = Depends(get_db)):
     success = event_crud.delete_event(db, event_id)
     if not success:
         raise HTTPException(status_code=404, detail="Event not found")
-
-@router.post("/search")
-def search_for_events(start_date:datetime, end_date:datetime, preferences:List[int]):
-    event = event_crud.search_event(start_date, end_date, preferences)
-    if not event:
-        raise HTTPException(status_code=500, detail="Search function broke :(")
-    return event
