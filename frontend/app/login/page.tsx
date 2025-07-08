@@ -1,5 +1,7 @@
 "use client";
 // import { signIn } from "next-auth/react";
+import {ssoSignIn} from "@/app/api/apis";
+import { useSession} from "next-auth/react";
 
 
 import React, { useState } from "react";
@@ -31,7 +33,12 @@ export default function LoginPage() {
 
   const nextSign = async () => {
     console.log("Signing in with Google...");
-    nextSignIn("google", { callbackUrl: "/" });
+    try {
+      const result = await nextSignIn("google", { callbackUrl: "/" });
+      return result;
+    } catch (error) {
+      console.error("Google sign-in failed", error);
+    }
 
   };  
 

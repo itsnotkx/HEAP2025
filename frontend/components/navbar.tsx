@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import {
   Navbar,
@@ -25,6 +26,7 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
 
   const handleLoginClick = () => {
     router.push("/login");
+
   };
 
   const handleProfileClick = () => {

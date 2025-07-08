@@ -6,8 +6,7 @@ class User(Base):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True, index=True)
-    username = Column(Text, nullable=False)
-    image_url = Column(Text, nullable=True)
+    username = Column(Text, nullable=False) 
     preferences = Column(
         ARRAY(Integer),
         nullable=False,
@@ -15,5 +14,4 @@ class User(Base):
     )
     rating = Column(Float, nullable=True)
     email = Column(Text, unique=True, nullable=False, index=True)
-    password_hash = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())

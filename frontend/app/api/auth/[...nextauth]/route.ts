@@ -1,5 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { signIn } from "next-auth/react";
+import {ssoSignIn} from "@/app/api/apis";
+
 
 const authOptions = {
   providers: [
@@ -10,17 +13,18 @@ const authOptions = {
   ],
 //   secret: process.env.NEXTAUTH_SECRET,
 
-//   callbacks: {
-//     async redirect({ url, baseUrl }) {
-//         console.log(baseUrl);       
-//         return  baseUrl + "/home"
-//     },
-//     async session({ session, token }) {
-//       // Add custom session data here
-//       session.user.id = token.sub;
-//       return session;
-//     },
-//   }
+  callbacks: {
+    async signIn({ user }) {
+      ssoSignIn(user.email, user.name);
+      return true;
+    },
+
+
+    async session({ session, token }) {
+      session.user.id = token.sub;
+      return session;
+    },
+  }
 }
 
 const handler = NextAuth(authOptions)

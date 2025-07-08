@@ -32,7 +32,7 @@ class EventOut(EventBase):
     organiser_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class EventSearchRequest(BaseModel):
     start_date: datetime

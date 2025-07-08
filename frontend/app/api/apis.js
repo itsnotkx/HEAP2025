@@ -16,9 +16,19 @@ export const signIn = async (email, password) => {
   }
 };
 
+export const ssoSignIn = async (email, username) => {
+  try {
+    console.log('SSO Sign In:', { email, username });
+    const response = await axios.post(`${USERS_API}/signin/sso`, { email, username });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 /**
  * 2) Create account - POST /signup/traditional
- * @param {object} userData - { username, email, password, image_url, preferences, rating }
+ * @param {object} userData - 
  */
 export const signUp = async (userData) => {
   try {
@@ -28,6 +38,8 @@ export const signUp = async (userData) => {
     throw error.response?.data || error;
   }
 };
+
+
 
 /**
  * 3) Fetch all events - GET /

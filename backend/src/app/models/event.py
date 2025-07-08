@@ -12,4 +12,3 @@ class Event(Base):
     price = Column(DECIMAL(10, 2), nullable=True)
     categories = Column(ARRAY(Integer), nullable=True)
     description = Column(Text, nullable=True)
-    organiser_id = Column(Integer, ForeignKey(User.user_id, ondelete="CASCADE"))
