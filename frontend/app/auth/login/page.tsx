@@ -38,6 +38,7 @@ export default function LoginPage() {
       return result;
     } catch (error) {
       console.error("Google sign-in failed", error);
+      router.push("/home");
     }
 
   };  
@@ -54,7 +55,7 @@ export default function LoginPage() {
           />
           <h1 className="text-2xl font-bold mb-6 text-center">Sign in to your account</h1>
 
-          {/* SSO Buttons */}
+          {/* SSO uttons */}
           <div className="flex flex-col gap-4 mb-6">
             <Button onPress={nextSign} variant="bordered" className="w-full flex items-center gap-2" startContent={<FcGoogle className="text-xl" />}>
               Sign in with Google

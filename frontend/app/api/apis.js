@@ -18,8 +18,7 @@ export const signIn = async (email, password) => {
 
 export const ssoSignIn = async (email, username) => {
   try {
-    console.log('SSO Sign In:', { email, username });
-    const response = await axios.post(`${USERS_API}/signin/sso`, { email, username });
+     const response = await axios.post(`${USERS_API}/signin/sso`, { email, username });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
