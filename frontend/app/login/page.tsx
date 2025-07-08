@@ -1,12 +1,13 @@
 "use client";
-import { signIn } from "next-auth/react";
+// import { signIn } from "next-auth/react";
 
 
 import React, { useState } from "react";
 import { Input, Button, Card, CardBody } from "@heroui/react";
 import { FcGoogle } from "react-icons/fc";
-// import { signIn } from "../_apis/apis"; // Make sure this path matches your file structure
+import  {signIn}  from "@/app/api/apis"; // Make sure this path matches your file structure
 import { useRouter } from "next/navigation";
+import {signIn as nextSignIn} from "next-auth/react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function LoginPage() {
     e.preventDefault(); // Prevent form refresh
 
     try {
-    //   const user = await signIn(email, password);
+      const user = await signIn(email, password);
       console.log("Login successful", user);
       // Redirect to dashboard or homepage
       router.push("/planner");
@@ -27,6 +28,12 @@ export default function LoginPage() {
       setErrorMsg(error?.detail || "Invalid email or password");
     }
   };
+
+  const nextSign = async () => {
+    console.log("Signing in with Google...");
+    nextSignIn("google", { callbackUrl: "/" });
+
+  };  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -42,7 +49,7 @@ export default function LoginPage() {
 
           {/* SSO Buttons */}
           <div className="flex flex-col gap-4 mb-6">
-            <Button variant="bordered" className="w-full flex items-center gap-2" startContent={<FcGoogle className="text-xl" />}>
+            <Button onPress={nextSign} variant="bordered" className="w-full flex items-center gap-2" startContent={<FcGoogle className="text-xl" />}>
               Sign in with Google
             </Button>
           </div>

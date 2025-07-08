@@ -2,7 +2,7 @@
 
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/PlannerCard";
-import { fetchAllEvents, fetchFilteredEvents } from "../_apis/events";
+import { fetchAllEvents, fetchFilteredEvents } from "../api/events";
 import SearchForm from "@/components/FormBox";
 import React from "react";
 

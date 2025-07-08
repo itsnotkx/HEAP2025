@@ -7,11 +7,12 @@ import {
   Link,
   Button,
   Avatar,
+  Popover, PopoverTrigger, PopoverContent,
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut} from "next-auth/react";
 
-// import { useSession } from "next-auth/react"; // Replace with your auth hook if not NextAuth
+
 
 interface NavigationbarProps {
   shouldHideOnScroll?: boolean;
@@ -20,19 +21,16 @@ interface NavigationbarProps {
 export default function Navigationbar({ shouldHideOnScroll = true }: NavigationbarProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
-
-
-  // Get auth state (replace this with your own auth hook if needed)
-//   const { data: session, status } = useSession();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const handleLoginClick = () => {
     router.push("/login");
   };
 
   const handleProfileClick = () => {
-    // if (session?.user?.id) {
-    //   router.push(`/users/${session.user.id}`);
-    // }
+    if (session?.user?.name) {
+      router.push(`/users/${session.user.name}`);
+    }
   };
 
   return (
@@ -76,18 +74,29 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
           // Show nothing or a skeleton while loading session
           <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
         )
-        //  : session?.user ? (
-        //   // User is logged in → show avatar
-        //   <Avatar
-        //     isBordered
-        //     as="button"
-        //     src={session.user.image || "/default-avatar.png"}
-        //     name={session.user.name || "User"}
-        //     size="lg"
-        //     className="cursor-pointer"
-        //     onClick={handleProfileClick}
-        //   />
-        // ) 
+         : session?.user ? (
+          // User is logged in → show avatar
+          <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
+          <PopoverTrigger>
+          <Avatar
+            isBordered
+            as="button"
+            src={session.user.image || "/default-avatar.png"}
+            name={session.user.name || "User"}
+            size="lg"
+            className="cursor-pointer"
+          />
+          </PopoverTrigger>
+                  <PopoverContent>
+          <div className="px-1 py-2">
+            <div className="text-red-500">
+                <Button className="w-full text-red-500 bg-white" onPress={() => signOut()}>Log Out</Button>
+            </div>
+          </div>
+        </PopoverContent>
+
+          </Popover>
+        ) 
         : (
           // User not logged in → show login button
           <Button

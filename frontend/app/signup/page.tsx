@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Input, Button, Card, CardBody } from "@heroui/react";
-import { signUp } from "../_apis/apis";
+import { signUp } from "../api/apis";
 import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {

@@ -6,7 +6,7 @@ import SearchForm from "@/components/FormBox";
 
 import ScrollButton from "@/components/ScrollButton";
 
-import { useRouter } from 'next/navigation';
+
 
 export default async function App() {
     //    const router = useRouter();
