@@ -37,7 +37,18 @@ def search_for_events(
         raise HTTPException(status_code=404, detail="No events found for the given criteria")
     return events
 
-
+@router.get("/search/keyword", response_model=List[EventOut])
+def search_for_events_keyword(
+    start_date: datetime = Query(..., description="Start date in ISO format"),
+    end_date: datetime = Query(..., description="End date in ISO format"),
+    user_id: int = Query(..., description="User ID to filter events by user preferences"),
+    keyword: str = Query(..., description="The keyword to match"),
+    db: Session = Depends(get_db)
+):
+    events = event_crud.search_event_keyword(db, user_id, keyword, start_date, end_date)
+    if not events:
+        raise HTTPException(status_code=404, detail="No events found for the given criteria")
+    return events
 
 
 

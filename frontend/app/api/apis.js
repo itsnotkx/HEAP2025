@@ -38,8 +38,6 @@ export const signUp = async (userData) => {
   }
 };
 
-
-
 /**
  * 3) Fetch all events - GET /
  */
@@ -75,5 +73,24 @@ export const fetchEventById = async (eventId) => {
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
+  }
+};
+
+export const searchEventByKeyword = async (keyword, startdate, enddate) => {
+  try {
+    const params = new URLSearchParams();
+
+    if (keyword) params.append("keyword", keyword);
+    if (startdate) params.append("start_date", startdate);
+    if (enddate) params.append("end_date", enddate);
+
+    const response = await axios.get(`${EVENTS_API}/search/keyword`, {
+      params: params
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return [];
   }
 };

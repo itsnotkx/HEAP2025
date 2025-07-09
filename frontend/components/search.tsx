@@ -9,6 +9,7 @@ import {
   today,
   Time,
 } from "@internationalized/date";
+import { searchEventByKeyword } from "@/app/api/apis";
 
 export default function FormBox() {
     const router = useRouter();

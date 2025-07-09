@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, aliased
-from typing import List, Optional
+from typing import List, Optional, Any
 from models.event import Event
 from schemas.event import EventCreate, EventUpdate
 from datetime import datetime
@@ -27,7 +27,6 @@ def create_event(db: Session, event_data: EventCreate) -> Event:
     db.commit()
     db.refresh(db_event)
     return db_event
-
 
 def update_event(db: Session, event_id: int, updates: EventUpdate) -> Optional[Event]:
     event = get_event(db, event_id)
@@ -107,4 +106,68 @@ def search_event(db: Session, start_date: datetime, end_date: datetime, user_id:
         event_data = dict(row)
         event_data.pop("relevance", None)  # remove relevance if not in Event model
         events.append(Event(**event_data))
+    return events
+
+def search_event_keyword(
+    db: Session,
+    user_id: int,
+    keyword: Optional[str] = None,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None
+) -> list[Event]:
+    # Fetch user preferences
+    user = db.execute(
+        text("SELECT preferences FROM \"users\" WHERE user_id = :user_id"),
+        {"user_id": user_id}
+    ).fetchone()
+    
+    preferences_array = user[0] if user and user[0] else []
+
+    # Build WHERE clause dynamically
+    filters = []
+    params: dict[str, Any] = {"user_id": user_id}
+
+    if keyword:
+        filters.append("(e.title ILIKE :kw OR e.description ILIKE :kw)")
+        params["kw"] = f"%{keyword}%"
+    
+    if start_date:
+        filters.append("e.start_date >= :start_date")
+        params["start_date"] = start_date
+
+    if end_date:
+        filters.append("e.end_date <= :end_date")
+        params["end_date"] = end_date
+
+    where_clause = " AND ".join(filters) if filters else "TRUE"
+
+    # SQL Query
+    if preferences_array:
+        sql = text(f"""
+            SELECT e.*,
+                   (
+                       SELECT SUM(ec * pc)
+                       FROM unnest(e.categories, :preferences) AS t(ec, pc)
+                   ) AS relevance
+            FROM event e
+            WHERE {where_clause}
+            ORDER BY relevance DESC NULLS LAST
+        """)
+        params["preferences"] = preferences_array
+        results = db.execute(sql, params).mappings().all()
+    else:
+        sql = text(f"""
+            SELECT * FROM event e
+            WHERE {where_clause}
+            ORDER BY e.start_date
+        """)
+        results = db.execute(sql, params).mappings().all()
+
+    # Convert to Event model
+    events = []
+    for row in results:
+        row_dict = dict(row)
+        row_dict.pop("relevance", None)
+        events.append(Event(**row_dict))
+
     return events

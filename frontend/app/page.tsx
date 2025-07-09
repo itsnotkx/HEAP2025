@@ -1,4 +1,3 @@
-'use client';
 import Navigationbar from "../components/navbar";
 import { CheckCircle, Calendar, MapPin } from "lucide-react";
 
@@ -81,10 +80,6 @@ export default async function App() {
                     </div>
                 </section>
             </main>
-            <div id="searchForm">
-                <SearchForm />
-            </div>
-
             <footer className="text-left text-gray-400 py-4 mt-20">
                 © 2025 KiasuPlanner. All rights reserved.
             </footer>

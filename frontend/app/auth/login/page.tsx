@@ -40,7 +40,6 @@ export default function LoginPage() {
       console.error("Google sign-in failed", error);
       router.push("/home");
     }
-
   };  
 
   return (
@@ -61,46 +60,6 @@ export default function LoginPage() {
               Sign in with Google
             </Button>
           </div>
-
-          {/* Custom Divider */}
-          <div className="flex items-center gap-2 my-6">
-            <div className="flex-grow h-px bg-gray-300" />
-            <span className="text-sm text-gray-500">or continue with email</span>
-            <div className="flex-grow h-px bg-gray-300" />
-          </div>
-
-          {/* Email Login */}
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <Input
-              isRequired
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
-              className="w-full"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Input
-              isRequired
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              className="w-full"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
-            <Button type="submit" color="primary" className="w-full mt-4">
-              Sign In
-            </Button>
-          </form>
-
-          <p className="mt-6 text-sm text-center">
-            Don’t have an account?{' '}
-            <a href="/signup" className="text-blue-600 hover:underline">
-              Create one
-            </a>
-          </p>
         </CardBody>
       </Card>
     </div>
