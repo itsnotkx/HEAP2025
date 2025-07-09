@@ -18,11 +18,12 @@ const authOptions = {
   ],
 //   secret: process.env.NEXTAUTH_SECRET!,
 
-  callback: {
+  callbacks: {
     async signIn({ user }) {
       try {
+    
         const ssoResult = await ssoSignIn(user.email, user.name);
-        if (ssoResult?.success) {
+        if (ssoResult) {
             return true; 
         } else {
           return false; 
