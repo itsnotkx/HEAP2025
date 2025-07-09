@@ -29,7 +29,7 @@ class EventUpdate(BaseModel):
 
 class EventOut(EventBase):
     event_id: int
-    organiser_id: int
+
 
     class Config:
         from_attributes = True

@@ -28,18 +28,52 @@ export default function FormBox({ onSubmit }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { keyword, date, startTime, endTime } = formData;
-    const hasKeyword = keyword.trim() !== "";
-    const hasDateTime = date && startTime && endTime;
+    const params = new URLSearchParams({
+    });
+    router.push(`/planner?${params.toString()}`);
+  };
+/*
+  const handlePlanMyDay = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams({
+      date: formData.date.toString().replace(":", "-"),
+      startTime: formData.startTime.toString().replace(":", "-"),
+      endTime: formData.endTime.toString().replace(":", "-"),
+    });
+    router.push(`/planner?${params.toString()}`);
+  };
+*/
+  // In FormBox, before calling onSubmit:
+const pad = (n) => n.toString().padStart(2, "0");
 
-    if (!hasKeyword && !hasDateTime) {
-      setErrorMessage("Please enter a keyword or select a date and time range.");
-      return;
-    }
+const handlePlanMyDay = (e: React.FormEvent) => {
+  e.preventDefault();
 
-    setErrorMessage("");
+  // Convert CalendarDate to 'YYYY-MM-DD'
+  const dateStr = formData.date.toString();
 
-    const searchParams = new URLSearchParams();
+  // Convert Time to 'HH:MM'
+  const startTimeStr = `${pad(formData.startTime.hour)}:${pad(formData.startTime.minute)}`;
+  const endTimeStr = `${pad(formData.endTime.hour)}:${pad(formData.endTime.minute)}`;
+
+  onSubmit({
+    date: dateStr,
+    startTime: startTimeStr,
+    endTime: endTimeStr,
+  });
+};
+
+/*
+  const handlePlanMyDay = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Pass the form data up to the parent
+    onSubmit({
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+    });
+  };*/
+
 
     if (hasKeyword) {
       searchParams.set("keyword", keyword.trim());
@@ -100,7 +134,27 @@ export default function FormBox({ onSubmit }) {
               onChange={(val) => handleChange("endTime", val)}
             />
           </div>
-        </div>
+
+          
+          <div className="flex flex-row gap-4 justify-center mt-4">
+          
+            <Button
+              type="submit"
+              className="flex-1 px-6 py-3 bg-primary text-white rounded-xl shado transition"
+            >
+              Plan My Day
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSurpriseMe}
+              className="flex-1 px-6 py-3 bg-accent text-white rounded-xl shadow transition"
+            >
+              Surprise Me
+            </Button>
+          </div>
+        </form>
+      )}
+
 
         {errorMessage && (
           <p className="text-red-500 text-sm font-medium">{errorMessage}</p>

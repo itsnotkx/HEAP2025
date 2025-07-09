@@ -2,14 +2,36 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 import DayPlanner from "./DayPlanner";
+import {EventType} from "../../types/event";
+import type { TimelineEntry } from "../../types/event";
 
-export default function SideBar({
+
+interface SideBarProps {
+  events: EventType[];
+  loading: boolean;
+  error: string | null;
+  expanded: boolean;
+  setExpanded: (expanded: boolean) => void;
+  timeline: TimelineEntry[];
+  addEventToTimeline: (event: EventType, duration: number) => void;
+}
+
+interface DayPlannerProps {
+  events: EventType[];
+  timeline: TimelineEntry[];
+  addEventToTimeline: (event: EventType, duration: number) => void;
+}
+
+export default function SideBar({   
+  events,
+  loading,
+  error,
   expanded,
   setExpanded,
-}: {
-  expanded: boolean;
-  setExpanded: (v: boolean) => void;
-}) {
+  timeline,
+  addEventToTimeline
+}: SideBarProps)  
+{
 return (
   <div
     className={clsx(
@@ -41,7 +63,11 @@ return (
         </button>
       </div>
     )}
-    {expanded && <DayPlanner />}
+    {expanded && <DayPlanner
+  events={events}
+  timeline={timeline}
+  addEventToTimeline={addEventToTimeline}
+/>}
   </div>
 );
 }

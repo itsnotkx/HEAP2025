@@ -21,7 +21,7 @@ def create_event(db: Session, event_data: EventCreate) -> Event:
         price=event_data.price,
         categories=event_data.categories,
         description=event_data.description,
-        organiser_id=event_data.organiser_id
+
     )
     db.add(db_event)
     db.commit()

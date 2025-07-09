@@ -1,12 +1,17 @@
 import os
 import httpx
 from fastapi import APIRouter, HTTPException
+
 from pydantic import BaseModel
+
 
 router = APIRouter(
     prefix="/distance",
     tags=["distance"]
 )
+
+@router.post("/")
+
 
 class DistanceRequest(BaseModel):
     address1: str
@@ -16,6 +21,7 @@ class DistanceRequest(BaseModel):
 async def calculate_distance(request: DistanceRequest):
     address1 = request.address1
     address2 = request.address2
+
     api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
     if not api_key:
         raise HTTPException(status_code=500, detail="Google Maps API key not configured.")
