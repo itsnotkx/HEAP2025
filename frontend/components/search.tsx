@@ -24,7 +24,6 @@ export default function FormBox() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const params = new URLSearchParams({

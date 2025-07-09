@@ -1,8 +1,6 @@
 import Navigationbar from "../components/navbar";
 import { CheckCircle, Calendar, MapPin } from "lucide-react";
 
-import SearchForm from "@/components/FormBox";
-
 import ScrollButton from "@/components/ScrollButton";
 
 
@@ -83,7 +81,6 @@ export default async function App() {
             <footer className="text-left text-gray-400 py-4 mt-20">
                 © 2025 KiasuPlanner. All rights reserved.
             </footer>
-
         </>
     );
 }

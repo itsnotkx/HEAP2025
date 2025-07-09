@@ -8,54 +8,62 @@ import {
   today,
   Time,
 } from "@internationalized/date";
-import { ButtonGroup } from "@heroui/button";
+import { search } from "@/app/api/apis";
 
-export default function FormBox({onSubmit}) {
+export default function FormBox({ onSubmit }) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     date: today(getLocalTimeZone()),
-    startTime: new Time(8, 0),
-    endTime: new Time(17, 30),
+    startTime: null,
+    endTime: null,
+    keyword: ""
   });
 
-
-
-  const [mode, setMode] = useState("availability");
-
+  const [errorMessage, setErrorMessage] = useState("");
+  const [results, setResults] = useState([]);
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleActivitySearch = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const params = new URLSearchParams({
-    });
-    router.push(`/planner?${params.toString()}`);
+
+    const { keyword, date, startTime, endTime } = formData;
+    const hasKeyword = keyword.trim() !== "";
+    const hasDateTime = date && startTime && endTime;
+
+    if (!hasKeyword && !hasDateTime) {
+      setErrorMessage("Please enter a keyword or select a date and time range.");
+      return;
+    }
+
+    setErrorMessage("");
+
+    const searchParams = new URLSearchParams();
+
+    if (hasKeyword) {
+      searchParams.set("keyword", keyword.trim());
+    }
+
+    if (hasDateTime) {
+      const start = `${date.toString()}T${startTime}`;
+      const end = `${date.toString()}T${endTime}`;
+      searchParams.set("start_date", start);
+      searchParams.set("end_date", end);
+    }
+
+    // Update the browser URL and trigger navigation (optional: can use shallow routing)
+    const start_date = hasDateTime ? `${date.toString()}T${startTime}` : undefined;
+    const end_date = hasDateTime ? `${date.toString()}T${endTime}` : undefined;
+
+    try {
+      const data = await search(keyword.trim(), start_date, end_date);
+      setResults(data); // show results
+    } catch (err) {
+      console.log(err);
+      setErrorMessage("Something went wrong while searching.");
+    }
   };
-/*
-  const handlePlanMyDay = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams({
-      date: formData.date.toString().replace(":", "-"),
-      startTime: formData.startTime.toString().replace(":", "-"),
-      endTime: formData.endTime.toString().replace(":", "-"),
-    });
-    router.push(`/planner?${params.toString()}`);
-  };
-*/
-
-
-  const handlePlanMyDay = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Pass the form data up to the parent
-    onSubmit({
-      date: formData.date,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
-    });
-  };
-
-
 
   const handleSurpriseMe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,43 +71,24 @@ export default function FormBox({onSubmit}) {
   };
 
   return (
-    <div className="mx-auto p-6 rounded-2xl shadow-lg bg-white mt-10 top-0 left-0">
-      {/* Toggle Buttons */}
-      <div className="mb-6">
-        <ButtonGroup className="flex gap-2">
-          <Button
-            onClick={() => setMode("activity")}
-            className={`w-full py-2 rounded-lg text-base font-medium transition-all ${mode === "activity"
-              ? "bg-secondary shadow-inner"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-          >
-            I want to participate in...
-          </Button>
-          <Button
-            onClick={() => setMode("availability")}
-            className={`w-full py-2 rounded-lg text-base font-medium transition-all ${mode === "availability"
-              ? "bg-secondary shadow-inner"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-          >
-            When are you free?
-          </Button>
-        </ButtonGroup>
-      </div>
+    <div className="mx-auto p-6 rounded-2xl shadow-lg bg-white mt-10">
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <Input
+          label="Search by keyword"
+          placeholder="e.g. Sports, Politics, Volunteer..."
+          value={formData.keyword}
+          onChange={(e) => handleChange("keyword", e.target.value)}
+        />
 
-      {/* Form Based on Mode */}
-      {mode === "availability" && (
-        <form className="space-y-4" onSubmit={handlePlanMyDay}>
-          <div className="w-full flex flex-col gap-1">
-            <DatePicker
-              label="Date"
-              value={formData.date}
-              onChange={(val) => handleChange("date", val)}
-              minValue={today(getLocalTimeZone())}
-            />
-          </div>
-          <div className="w-full flex flex-row gap-2">
+        <div className="flex flex-col gap-2">
+          <DatePicker
+            label="Date"
+            value={formData.date}
+            onChange={(val) => handleChange("date", val)}
+            minValue={today(getLocalTimeZone())}
+          />
+
+          <div className="flex gap-2">
             <TimeInput
               label="Start Time"
               value={formData.startTime}
@@ -111,39 +100,38 @@ export default function FormBox({onSubmit}) {
               onChange={(val) => handleChange("endTime", val)}
             />
           </div>
-          <div className="flex flex-row gap-4 justify-center mt-4">
-            <Button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-primary text-white rounded-xl shado transition"
-            >
-              Plan My Day
-            </Button>
-            <Button
-              type="button"
-              onClick={handleSurpriseMe}
-              className="flex-1 px-6 py-3 bg-accent text-white rounded-xl shadow transition"
-            >
-              Surprise Me
-            </Button>
-          </div>
-        </form>
-      )}
+        </div>
 
-      {mode === "activity" && (
-        <Form className="space-y-4" onSubmit={handleActivitySearch}>
-          <Input
-            isRequired
-            errorMessage="Please enter a query"
-            placeholder="Arts and Crafts, Card Tournaments, Family events"
-          />
-          <Button
-            type="submit"
-            className="w-full px-6 py-3 bg-primary text-white rounded-xl shadow transition"
-          >
-            Find Activities
-          </Button>
-        </Form>
+        {errorMessage && (
+          <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
+        )}
+
+        <Button
+          type="submit"
+          className="w-full bg-primary text-white py-3 rounded-xl shadow"
+        >
+          Search
+        </Button>
+      </form>
+
+      {/* Results Section */}
+      {results.length > 0 && (
+        <div className="mt-8 space-y-4">
+          <h2 className="text-lg font-semibold">Results</h2>
+          {results.map((event) => (
+            <div
+              key={event.id}
+              className="p-4 bg-gray-50 border rounded-lg shadow-sm"
+            >
+              <h3 className="text-base font-bold">{event.title}</h3>
+              <p className="text-sm text-gray-600">{event.description}</p>
+              <p className="text-sm text-gray-500">
+                {event.start_time} → {event.end_time}
+              </p>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
-}
+};

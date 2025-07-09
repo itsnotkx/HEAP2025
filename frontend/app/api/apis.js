@@ -78,16 +78,16 @@ export const fetchEventById = async (eventId) => {
   }
 };
 
-export const searchEventByKeyword = async (keyword, startdate, enddate) => {
+export const search = async (keyword, start_date, end_date) => {
   try {
-    const params = new URLSearchParams();
+    const params = {};
 
-    if (keyword) params.append("keyword", keyword);
-    if (startdate) params.append("start_date", startdate);
-    if (enddate) params.append("end_date", enddate);
+    if (keyword) params.keyword = keyword;
+    if (start_date) params.start_date = start_date;
+    if (end_date) params.end_date = end_date;
 
-    const response = await axios.get(`${EVENTS_API}/search/keyword`, {
-      params: params
+    const response = await axios.get(`${EVENTS_API}/search`, {
+      params,
     });
 
     return response.data;
