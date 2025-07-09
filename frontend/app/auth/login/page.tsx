@@ -1,7 +1,4 @@
 "use client";
-// import { signIn } from "next-auth/react";
-import {ssoSignIn} from "@/app/api/apis";
-import { useSession} from "next-auth/react";
 
 
 import React, { useState } from "react";
@@ -55,7 +52,7 @@ export default function LoginPage() {
           />
           <h1 className="text-2xl font-bold mb-6 text-center">Sign in to your account</h1>
 
-          {/* SSO uttons */}
+          {/* SSO buttons */}
           <div className="flex flex-col gap-4 mb-6">
             <Button onPress={nextSign} variant="bordered" className="w-full flex items-center gap-2" startContent={<FcGoogle className="text-xl" />}>
               Sign in with Google

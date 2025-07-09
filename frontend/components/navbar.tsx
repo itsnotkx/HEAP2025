@@ -25,15 +25,10 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleLoginClick = () => {
-    router.push("/login");
-
+    router.push("/auth/login");
   };
 
-  const handleProfileClick = () => {
-    if (session?.user?.name) {
-      router.push(`/users/${session.user.name}`);
-    }
-  };
+
 
   return (
     <Navbar 
