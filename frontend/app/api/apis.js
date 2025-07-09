@@ -41,8 +41,6 @@ export const signUp = async (userData) => {
   }
 };
 
-
-
 /**
  * 3) Fetch all events - GET /
  */
@@ -81,6 +79,7 @@ export const fetchEventById = async (eventId) => {
   }
 };
 
+
 /*
 6) Gives the distance between two addresses
 */
@@ -90,5 +89,23 @@ export const getDistanceBetweenVenues = async (address1, address2) => {
     return response.data; // { distance: ..., duration: ... }
   } catch (error) {
     throw error.response?.data || error;
+
+export const search = async (keyword, start_date, end_date) => {
+  try {
+    const params = {};
+
+    if (keyword) params.keyword = keyword;
+    if (start_date) params.start_date = start_date;
+    if (end_date) params.end_date = end_date;
+
+    const response = await axios.get(`${EVENTS_API}/search`, {
+      params,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return [];
+
   }
 };

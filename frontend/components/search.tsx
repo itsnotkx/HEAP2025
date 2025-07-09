@@ -9,6 +9,7 @@ import {
   today,
   Time,
 } from "@internationalized/date";
+import { searchEventByKeyword } from "@/app/api/apis";
 
 export default function FormBox() {
     const router = useRouter();
@@ -22,7 +23,6 @@ export default function FormBox() {
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

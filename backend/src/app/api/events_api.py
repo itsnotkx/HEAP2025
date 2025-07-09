@@ -24,22 +24,18 @@ def read_all_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 
     return event_crud.get_all_events(db, skip=skip, limit=limit)
 
-
 @router.get("/search", response_model=List[EventOut])
-def search_for_events(
+def search_for_events_keyword(
     start_date: datetime = Query(..., description="Start date in ISO format"),
     end_date: datetime = Query(..., description="End date in ISO format"),
     user_id: int = Query(..., description="User ID to filter events by user preferences"),
+    keyword: str = Query(..., description="The keyword to match"),
     db: Session = Depends(get_db)
 ):
-    events = event_crud.search_event(db, start_date, end_date, user_id)
+    events = event_crud.search_event_keyword(db, user_id, keyword, start_date, end_date)
     if not events:
         raise HTTPException(status_code=404, detail="No events found for the given criteria")
     return events
-
-
-
-
 
 @router.get("/{event_id}", response_model=EventOut)
 def read_event(event_id: int, db: Session = Depends(get_db)):
@@ -47,7 +43,6 @@ def read_event(event_id: int, db: Session = Depends(get_db)):
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     return event
-
 
 @router.put("/{event_id}", response_model=EventOut)
 def update_event(event_id: int, event_update: EventUpdate, db: Session = Depends(get_db)):
