@@ -89,6 +89,8 @@ export const getDistanceBetweenVenues = async (address1, address2) => {
     return response.data; // { distance: ..., duration: ... }
   } catch (error) {
     throw error.response?.data || error;
+  }
+};
 
 export const search = async (keyword, start_date, end_date) => {
   try {
