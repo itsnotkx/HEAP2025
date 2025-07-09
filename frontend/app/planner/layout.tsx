@@ -15,6 +15,7 @@ import React, { createContext, useState, useEffect } from "react";
 import { mapRawEvent } from "../../types/event";
 import { fetchAllEvents, fetchFilteredEvents } from "../api/events";
 import type { EventType,TimelineEntry } from "../../types/event";
+import { getDistanceBetweenVenues } from "../api/apis";
 
 import { TimelineContext } from "../../components/Timeline/TimelineContext";
 
@@ -100,13 +101,56 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  /*
   const addEventToTimeline = (event: EventType, duration: number) => {
     setTimeline([...timeline, { type: 'event', event, duration }]);
   };
+  */
 
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const addEventToTimeline = async (event: EventType, duration: number) => {
+  setTimeline(prevTimeline => {
+    // We'll handle the async part outside this function
+    return prevTimeline;
+  });
+
+  // Get the current timeline (snapshot)
+  const prevTimeline = timeline;
+  const newTimeline = [...prevTimeline];
+
+  // Find the last event in the timeline
+  const lastEventEntry = [...prevTimeline].reverse().find(
+    entry => entry.type === 'event'
+  ) as { type: 'event'; event: EventType; duration: number } | undefined;
+
+  if (lastEventEntry) {
+    try {
+      const { duration: travelDuration } = await getDistanceBetweenVenues(
+        lastEventEntry.event.address,
+        event.address
+      );
+      newTimeline.push({
+        type: 'travel',
+        from: lastEventEntry.event.address,
+        to: event.address,
+        duration: travelDuration,
+      });
+    } catch (err) {
+      console.error("Failed to fetch travel duration", err);
+    }
+  }
+
+  newTimeline.push({
+    type: 'event',
+    event,
+    duration,
+  });
+
+  setTimeline(newTimeline);
+};
 
   useEffect(() => {
     setLoading(true);

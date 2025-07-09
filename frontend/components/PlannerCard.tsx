@@ -62,7 +62,7 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
     <Card
       sx={{
         width: 300,
-        height: 200,
+        height: 300,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',

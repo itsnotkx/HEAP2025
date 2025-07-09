@@ -55,8 +55,7 @@ export function mapRawEvent(raw: RawEvent): EventType {
   };
 }
 
-export interface TimelineEntry {
-  type: 'event'; // or other types if you support them
-  event: EventType;
-  duration: number;
-}
+// In types/event.ts or types/timeline.ts
+export type TimelineEntry =
+  | { type: 'event'; event: EventType; duration: number }
+  | { type: 'travel'; from: string; to: string; duration: number };
