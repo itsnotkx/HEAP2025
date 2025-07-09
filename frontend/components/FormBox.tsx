@@ -43,8 +43,27 @@ export default function FormBox({onSubmit}) {
     router.push(`/planner?${params.toString()}`);
   };
 */
+  // In FormBox, before calling onSubmit:
+const pad = (n) => n.toString().padStart(2, "0");
 
+const handlePlanMyDay = (e: React.FormEvent) => {
+  e.preventDefault();
 
+  // Convert CalendarDate to 'YYYY-MM-DD'
+  const dateStr = formData.date.toString();
+
+  // Convert Time to 'HH:MM'
+  const startTimeStr = `${pad(formData.startTime.hour)}:${pad(formData.startTime.minute)}`;
+  const endTimeStr = `${pad(formData.endTime.hour)}:${pad(formData.endTime.minute)}`;
+
+  onSubmit({
+    date: dateStr,
+    startTime: startTimeStr,
+    endTime: endTimeStr,
+  });
+};
+
+/*
   const handlePlanMyDay = (e: React.FormEvent) => {
     e.preventDefault();
     // Pass the form data up to the parent
@@ -53,7 +72,7 @@ export default function FormBox({onSubmit}) {
       startTime: formData.startTime,
       endTime: formData.endTime,
     });
-  };
+  };*/
 
 
 
@@ -111,7 +130,9 @@ export default function FormBox({onSubmit}) {
               onChange={(val) => handleChange("endTime", val)}
             />
           </div>
+          
           <div className="flex flex-row gap-4 justify-center mt-4">
+          
             <Button
               type="submit"
               className="flex-1 px-6 py-3 bg-primary text-white rounded-xl shado transition"

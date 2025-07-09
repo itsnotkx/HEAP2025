@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
 
+    google_maps_api_key: str
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
         return (

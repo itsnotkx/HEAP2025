@@ -3,6 +3,7 @@ import axios from 'axios';
 // Assuming you use something like Vite or CRA and these env variables are exposed correctly
 const USERS_API = process.env.USERS_API_BASE_ENDPOINT || 'http://localhost:8000/api/users';
 const EVENTS_API = process.env.EVENTS_API_BASE_ENDPOINT || 'http://localhost:8000/api/events';
+const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT || 'http://localhost:8000/api/distance';
 
 /**
  * 1) Sign in - POST /signin/traditional
@@ -75,6 +76,18 @@ export const fetchEventById = async (eventId) => {
   try {
     const response = await axios.get(`${EVENTS_API}/${eventId}`);
     return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+/*
+6) Gives the distance between two addresses
+*/
+export const getDistanceBetweenVenues = async (address1, address2) => {
+  try {
+    const response = await axios.post(DIST_API, { address1, address2 });
+    return response.data; // { distance: ..., duration: ... }
   } catch (error) {
     throw error.response?.data || error;
   }
