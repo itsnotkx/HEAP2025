@@ -28,11 +28,7 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
     router.push("/auth/login");
   };
 
-  const handleProfileClick = () => {
-    if (session?.user?.name) {
-      router.push(`/users/${session.user.name}`);
-    }
-  };
+
 
   return (
     <Navbar 

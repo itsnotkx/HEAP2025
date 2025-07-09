@@ -16,14 +16,14 @@ const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     })
   ],
-//   secret: process.env.NEXTAUTH_SECRET,
+//   secret: process.env.NEXTAUTH_SECRET!,
 
-  callbacks: {
+  callback: {
     async signIn({ user }) {
       try {
         const ssoResult = await ssoSignIn(user.email, user.name);
         if (ssoResult?.success) {
-          return true; 
+            return true; 
         } else {
           return false; 
         }
@@ -43,5 +43,3 @@ const authOptions = {
 const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST}
-
-// export default NextAuth(authOptions);

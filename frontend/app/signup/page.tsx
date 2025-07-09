@@ -32,7 +32,7 @@ export default function SignUpPage() {
         rating: undefined       // Optional — let backend default
       });
 
-      router.push("/login"); // Redirect to login after successful signup
+      router.push("/auth/login"); // Redirect to login after successful signup
     } catch (error) {
       console.error("Signup failed", error);
       setErrorMsg(error?.detail || "Signup failed. Please try again.");
@@ -94,7 +94,7 @@ export default function SignUpPage() {
           </form>
           <p className="mt-6 text-sm text-center">
             Already have an account?{" "}
-            <a href="/login" className="text-blue-600 hover:underline">
+            <a href="/auth/login" className="text-blue-600 hover:underline">
               Sign in
             </a>
           </p>
