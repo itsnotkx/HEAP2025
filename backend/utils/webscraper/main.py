@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from typing import List
@@ -6,6 +10,8 @@ from models import Event
 from STBScrapper import scrape_stb_events
 from TheSmartLocalScraper import scrape_tsl_events
 from TimeoutScraper import scrape_timeout_events
+from utils.classifier.classifier import classify_event
+from deduplication import deduplicate_events
 
 app = FastAPI()
 
@@ -46,41 +52,42 @@ def read_root():
     <body>
         <div class="gradient-text">
             Welcome to the Events API!<br><br>
-            Use the endpoint <br> <code>/scrape-stb-events</code> <br> to fetch curated STB event data.<br>
-            Use the endpoint <br> <code>/scrape-tsl-events</code> <br> to fetch curated TheSmartLocal event data.<br>
-            Use the endpoint <br> <code>/scrape-timeout-events</code> <br> to fetch curated Timeout event data.<br>
-            Use the endpoint <br> <code>/scrape-all-events</code> <br> to fetch all sources combined.<br><br>
+            Use the endpoint <br> <code>/scrape/stb</code> <br> to fetch curated STB event data.<br>
+            Use the endpoint <br> <code>/scrape/tsl</code> <br> to fetch curated TheSmartLocal event data.<br>
+            Use the endpoint <br> <code>/scrape/timeout</code> <br> to fetch curated Timeout event data.<br>
+            Use the endpoint <br> <code>/scrape/all</code> <br> to fetch all sources combined with classification and deduplication.<br><br>
         </div>
     </body>
     </html>
     """
 
-@app.post("/scrape-stb-events", response_model=List[Event])
-def api_stb_events():
+@app.get("/scrape/stb", response_model=List[Event])
+def get_stb_events():
     return scrape_stb_events()
 
-@app.post("/scrape-tsl-events", response_model=List[Event])
-def api_tsl_events():
+@app.get("/scrape/tsl", response_model=List[Event])
+def get_tsl_events():
     return scrape_tsl_events()
 
-@app.post("/scrape-timeout-events", response_model=List[Event])
-def api_timeout_events():
+@app.get("/scrape/timeout", response_model=List[Event])
+def get_timeout_events():
     return scrape_timeout_events()
 
-@app.post("/scrape-all-events", response_model=List[Event])
-def api_all_events():
-    events = []
+@app.get("/scrape/all", response_model=List[Event])
+def get_all_events():
+    all_events = []
 
-    for e in scrape_stb_events():
-        e.description = f"[STB] {e.description}"
-        events.append(e)
+    for event in scrape_stb_events():
+        event.description = f"[STB] {event.description}"
+        all_events.append(event)
 
-    for e in scrape_tsl_events():
-        e.description = f"[TSL] {e.description}"
-        events.append(e)
+    for event in scrape_tsl_events():
+        event.description = f"[TSL] {event.description}"
+        all_events.append(event)
 
-    for e in scrape_timeout_events():
-        e.description = f"[Timeout] {e.description}"
-        events.append(e)
+    for event in scrape_timeout_events():
+        event.description = f"[Timeout] {event.description}"
+        all_events.append(event)
 
-    return events
+    unique_events = deduplicate_events(all_events)
+    return unique_events

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -22,18 +22,24 @@ interface NavigationbarProps {
 export default function Navigationbar({ shouldHideOnScroll = true }: NavigationbarProps) {
   const router = useRouter();
   const pathname = usePathname();
-
-  const normalizedPath = (pathname ?? "/").toLowerCase().replace(/\/$/, "");
-  const isRootPath = (path: string) => path === "" || path === "/";
+  const [hydrated, setHydrated] = useState(false); // wait for client-side hydration
 
   const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = React.useState(false);
 
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  const normalizedPath = (pathname ?? "/").toLowerCase().replace(/\/$/, "");
+  const isRootPath = (path: string) => path === "" || path === "/";
+
   const handleLoginClick = () => {
-    signIn(); // Use NextAuth's signIn method for popup or redirect login
+    signIn(); // Uses NextAuth's signIn method
   };
 
   const linkClass = (href: string) => {
+    if (!hydrated) return "text-black font-bold hover:text-primary"; // avoid mismatches before hydration
     if (href === "/") {
       return isRootPath(normalizedPath)
         ? "text-teal-500 font-bold hover:text-primary"
@@ -53,9 +59,9 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
       <NavbarContent justify="between" className="items-center px-6 w-full">
         {/* Logo */}
         <NavbarBrand>
-          <Link href="/" passHref legacyBehavior>
+          <Link href="/" className="flex items-center">
             <Button
-              as="a"
+              as="div"
               aria-label="logo"
               style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
             >
@@ -72,14 +78,14 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
 
         {/* Navigation links */}
         <nav className="flex flex-grow justify-center space-x-16 text-lg font-bold">
-          <Link href="/" passHref legacyBehavior>
-            <a className={linkClass("/")}>Features</a>
+          <Link href="/" className={linkClass("/")}>
+            Features
           </Link>
-          <Link href="/aboutUs" passHref legacyBehavior>
-            <a className={linkClass("/aboutus")}>About Us</a>
+          <Link href="/aboutUs" className={linkClass("/aboutus")}>
+            About Us
           </Link>
-          <Link href="/support" passHref legacyBehavior>
-            <a className={linkClass("/support")}>Support</a>
+          <Link href="/support" className={linkClass("/support")}>
+            Support
           </Link>
         </nav>
 
