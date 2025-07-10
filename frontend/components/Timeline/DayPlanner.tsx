@@ -100,6 +100,59 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
         />
 
         <Timeline position="alternate">
+  {timeline.map((item, idx) => {
+    if (item.type === 'event' && item.event) {
+      return (
+        <TimelineItem key={idx}>
+          <TimelineOppositeContent color="text.secondary">
+            {item.duration} mins
+          </TimelineOppositeContent>
+          <TimelineSeparator>
+            <TimelineDot color="primary" />
+            {idx < timeline.length - 1 && <TimelineConnector />}
+          </TimelineSeparator>
+          <TimelineContent>
+            <Typography variant="h6" component="span">
+              {item.event.title}
+            </Typography>
+            <Typography variant="body2">{item.event.address}</Typography>
+          </TimelineContent>
+        </TimelineItem>
+      );
+    }
+    if (item.type === 'travel') {
+      return (
+        <TimelineItem key={idx}>
+          <TimelineOppositeContent color="text.secondary">
+            {item.duration} mins
+          </TimelineOppositeContent>
+          <TimelineSeparator>
+            <TimelineDot color="secondary" />
+            {idx < timeline.length - 1 && <TimelineConnector />}
+          </TimelineSeparator>
+          <TimelineContent>
+            <Typography variant="h6" color="secondary">
+              Travel
+            </Typography>
+            <Typography variant="body2">
+              {item.from} → {item.to}
+            </Typography>
+          </TimelineContent>
+        </TimelineItem>
+      );
+    }
+    return null;
+  })}
+</Timeline>
+
+
+      </div>
+    </>
+  );
+}
+
+/*
+        <Timeline position="alternate">
           {timeline.map((item, idx) => (
             <TimelineItem key={idx}>
               <TimelineOppositeContent color="text.secondary">
@@ -118,7 +171,6 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
             </TimelineItem>
           ))}
         </Timeline>
-      </div>
-    </>
-  );
-}
+
+
+        */
