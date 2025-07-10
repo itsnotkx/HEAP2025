@@ -136,7 +136,7 @@ def parse_timeout_article(url: str) -> Event:
         time=time,
         location="Singapore",
         postal_code=None,
-        category=None,
+        category="Things to do",
         price=price,
         description=description,
         image_urls=image_urls,

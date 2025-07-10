@@ -10,6 +10,7 @@ from models import Event
 from STBScrapper import scrape_stb_events
 from TheSmartLocalScraper import scrape_tsl_events
 from TimeoutScraper import scrape_timeout_events
+from utils.classifier.classifier import classify_event
 from deduplication import deduplicate_events
 
 app = FastAPI()
