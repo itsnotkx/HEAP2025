@@ -3,7 +3,7 @@ CREATE TABLE "users" (
     user_id SERIAL PRIMARY KEY,
     username TEXT NOT NULL,
     image_url TEXT,
-    preferences INTEGER[],  -- Array of integers
+    preferences FLOAT[],  -- Array of floats
     rating REAL             -- Optional: can be NULL
     email TEXT NOT NULL,
     password_hash TEXT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE Event (
     end_date TIMESTAMP NOT NULL,
     address TEXT,
     price DECIMAL(10, 2),
-    categories INTEGER[],   -- Array of integers
+    categories FLOAT[],   -- Array of floats
     description TEXT,
     organiser_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE
 );
@@ -51,7 +51,7 @@ CREATE TABLE Event (
     end_date TIMESTAMP NOT NULL,
     address TEXT,
     price DECIMAL(10, 2),
-    categories INTEGER[],   -- Array of integers
+    categories FLOAT[],   -- Array of integers
     description TEXT
     organiser_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE;
 )
