@@ -5,7 +5,7 @@ import DayPlanner from "./DayPlanner";
 import {EventType} from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
 
-
+type TravelMode = "transit" | "driving" | "walking" | "bicycling";
 interface SideBarProps {
   events: EventType[];
   loading: boolean;
@@ -13,13 +13,17 @@ interface SideBarProps {
   expanded: boolean;
   setExpanded: (expanded: boolean) => void;
   timeline: TimelineEntry[];
-  addEventToTimeline: (event: EventType, duration: number) => void;
+  addEventToTimeline: (event: EventType, duration: number, mode: TravelMode) => void;
+  mode: TravelMode;
+  setMode: (mode: TravelMode) => void;
 }
 
 interface DayPlannerProps {
   events: EventType[];
   timeline: TimelineEntry[];
-  addEventToTimeline: (event: EventType, duration: number) => void;
+  addEventToTimeline: (event: EventType, duration: number, mode: TravelMode) => void;
+  mode: TravelMode;
+  setMode: (mode: TravelMode) => void;
 }
 
 export default function SideBar({   
@@ -29,7 +33,9 @@ export default function SideBar({
   expanded,
   setExpanded,
   timeline,
-  addEventToTimeline
+  addEventToTimeline,
+  mode,
+  setMode
 }: SideBarProps)  
 {
 return (
@@ -67,6 +73,8 @@ return (
   events={events}
   timeline={timeline}
   addEventToTimeline={addEventToTimeline}
+  mode={mode}
+  setMode={setMode}
 />}
   </div>
 );

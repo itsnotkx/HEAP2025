@@ -23,7 +23,7 @@ import { TimelineContext } from "../../components/Timeline/TimelineContext";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-
+  const [mode, setMode] = useState<"transit" | "driving" | "walking" | "bicycling">("transit");
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   /*
   const addEventToTimeline = (event: EventType, duration: number) => {
@@ -35,17 +35,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addEventToTimeline = async (event: EventType, duration: number) => {
-  setTimeline(prevTimeline => {
-    // We'll handle the async part outside this function
-    return prevTimeline;
-  });
+  const addEventToTimeline = async (
+  event: EventType,
+  duration: number,
+  modeParam: "transit" | "driving" | "walking" | "bicycling" = "transit"
+) => {
+  setTimeline(prevTimeline => prevTimeline);
 
-  // Get the current timeline (snapshot)
   const prevTimeline = timeline;
   const newTimeline = [...prevTimeline];
 
-  // Find the last event in the timeline
   const lastEventEntry = [...prevTimeline].reverse().find(
     entry => entry.type === 'event'
   ) as { type: 'event'; event: EventType; duration: number } | undefined;
@@ -54,7 +53,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     try {
       const { duration: travelDuration } = await getDistanceBetweenVenues(
         lastEventEntry.event.address,
-        event.address
+        event.address,
+        modeParam // Use the selected mode here
       );
       newTimeline.push({
         type: 'travel',
@@ -75,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   setTimeline(newTimeline);
 };
+
 
   useEffect(() => {
     setLoading(true);
@@ -107,7 +108,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 expanded={sidebarExpanded}
                 setExpanded={setSidebarExpanded}
                 timeline={timeline}
-                addEventToTimeline={addEventToTimeline}
+                addEventToTimeline={(event, duration, modeParam) => addEventToTimeline(event, duration, modeParam)}
+                mode={mode}
+                setMode={setMode}
               />
             </div>
             <div

@@ -5,6 +5,8 @@ import NavigationBar from "@/components/navbar";
 import { Providers } from "../app/providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
+import { ThemeProvider } from "@mui/material/styles";
+
 
 export const metadata: Metadata = {
   title: {
@@ -24,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           fontSans.variable
         )}
       >
+
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <NavigationBar />
           <main className="flex justify-center px-6">
@@ -32,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </main>
         </Providers>
+
       </body>
     </html>
   );

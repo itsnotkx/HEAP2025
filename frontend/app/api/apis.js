@@ -83,17 +83,14 @@ export const fetchEventById = async (eventId) => {
 /*
 6) Gives the distance between two addresses
 */
-export const getDistanceBetweenVenues = async (address1, address2) => {
-  await fetch(DIST_API, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ address1, address2 })
-});
-
+export const getDistanceBetweenVenues = async (
+  address1,
+  address2,
+  mode = "transit"
+) => {
   try {
-    
-    const response = await axios.post(DIST_API, { address1, address2 });
-    return response.data; // { distance: ..., duration: ... }
+    const response = await axios.post(DIST_API, { address1, address2, mode });
+    return response.data; // { distance, duration }
   } catch (error) {
     throw error.response?.data || error;
   }

@@ -12,6 +12,7 @@ import { Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, 
 import PlannerCard from '../PlannerCard';
 import { EventType } from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 
 interface ModalProps {
@@ -19,6 +20,32 @@ interface ModalProps {
   onClose: () => void;
   onSubmit: (duration: number) => void;
   event: EventType | null;
+}
+
+type TravelMode = "transit" | "driving" | "walking" | "bicycling";
+
+interface TravelModeSelectorProps {
+  mode: TravelMode;
+  setMode: (mode: TravelMode) => void;
+}
+
+function TravelModeSelector({ mode, setMode }: TravelModeSelectorProps) {
+  return (
+    <FormControl size="small" sx={{ minWidth: 120, mb: 2 }}>
+      <InputLabel id="mode-label">Travel Mode</InputLabel>
+      <Select
+        labelId="mode-label"
+        value={mode}
+        label="Travel Mode"
+        onChange={e => setMode(e.target.value)}
+      >
+        <MenuItem value="transit">Transit</MenuItem>
+        <MenuItem value="driving">Driving</MenuItem>
+        <MenuItem value="walking">Walking</MenuItem>
+        <MenuItem value="bicycling">Bicycling</MenuItem>
+      </Select>
+    </FormControl>
+  );
 }
 
 function DurationModal({ open, onClose, onSubmit, event }: ModalProps) {
@@ -38,6 +65,7 @@ function DurationModal({ open, onClose, onSubmit, event }: ModalProps) {
   }, [open]);
 
   return (
+    <>
     <Dialog open={open} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <DialogTitle>Add "{event?.title}"</DialogTitle>
@@ -59,6 +87,7 @@ function DurationModal({ open, onClose, onSubmit, event }: ModalProps) {
         </DialogActions>
       </form>
     </Dialog>
+    </>
   );
 }
 
@@ -72,7 +101,7 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
   // REMOVE: const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [pendingEvent, setPendingEvent] = useState<EventType | null>(null);
-
+  const [mode, setMode] = useState<TravelMode>("transit");
   const handleAddEvent = (event: EventType) => {
     setPendingEvent(event);
     setShowModal(true);
@@ -89,6 +118,7 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
 
   return (
     <>
+      <TravelModeSelector mode={mode} setMode={setMode} />
       <Typography variant="h4" gutterBottom>Day Planner</Typography>
 
       <div>
