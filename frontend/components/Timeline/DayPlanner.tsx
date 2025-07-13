@@ -135,7 +135,7 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
       return (
         <TimelineItem key={idx}>
           <TimelineOppositeContent color="text.secondary">
-            {item.duration} mins
+
           </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineDot color="primary" />
@@ -154,7 +154,7 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
       return (
         <TimelineItem key={idx}>
           <TimelineOppositeContent color="text.secondary">
-            {item.duration} mins
+            {item.duration} 
           </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineDot color="secondary" />
