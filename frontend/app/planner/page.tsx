@@ -1,4 +1,4 @@
-'use client';
+// 'use client';
 
 /*
 import Navigationbar from "@/components/navbar";

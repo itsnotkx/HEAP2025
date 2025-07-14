@@ -28,9 +28,17 @@ export default async function App() {
                         <p className="text-gray-500 mb-6">
                             Spend less time planning schedules and have more time enjoying yourself!
                         </p>
-                        <ScrollButton targetId="searchForm" className="bg-accent text-white px-6 py-2 rounded-full" >
+                        {/* <ScrollButton targetId="searchForm" className="bg-accent text-white px-6 py-2 rounded-full" >
                             Get Started
-                        </ScrollButton>
+                        </ScrollButton> */}
+                        
+                        <a
+                        href="/planner"
+                        className="bg-accent text-white px-6 py-2 rounded-full inline-block text-center"
+                        >
+                        Get Started
+                        </a>
+
                     </div>
 
                     {/* Right Schedule */}
