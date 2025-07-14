@@ -48,53 +48,39 @@ function TravelModeSelector({ mode, setMode }: TravelModeSelectorProps) {
   );
 }
 
-function DurationModal({ open, onClose, onSubmit, event }: ModalProps) {
-  const [duration, setDuration] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (duration) {
-      onSubmit(Number(duration));
-      setDuration('');
-    }
-  };
-
-
-  React.useEffect(() => {
-    if (!open) setDuration('');
-  }, [open]);
-
-  return (
-    <>
-    <Dialog open={open} onClose={onClose}>
-      <form onSubmit={handleSubmit}>
-        <DialogTitle>Add "{event?.title}"</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="How long do you want to stay? (minutes)"
-            type="number"
-            fullWidth
-            required
-            value={duration}
-            onChange={e => setDuration(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained">Add to Planner</Button>
-        </DialogActions>
-      </form>
-    </Dialog>
-    </>
-  );
-}
 
 interface DayPlannerProps {
   events: EventType[];
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number) => void;
+}
+
+interface GoogleMapsRouteButtonProps {
+  from: string;
+  to: string;
+  mode: TravelMode;
+}
+
+function GoogleMapsRouteButton({ from, to, mode } : GoogleMapsRouteButtonProps) {
+  const handleClick = () => {
+    const origin = encodeURIComponent(from);
+    const destination = encodeURIComponent(to);
+    const travelMode = encodeURIComponent(mode); // e.g., driving, walking, transit, bicycling
+
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=${travelMode}`;
+    window.open(url, '_blank');
+  };
+
+  return (
+    <Button
+      variant="outlined"
+      color="primary"
+      onClick={handleClick}
+      sx={{ mt: 1 }}
+    >
+      View Route on Google Maps
+    </Button>
+  );
 }
 
 export default function DayPlanner({ events, timeline, addEventToTimeline }: DayPlannerProps) {
@@ -122,12 +108,7 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
       <Typography variant="h4" gutterBottom>Day Planner</Typography>
 
       <div>
-        <DurationModal
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          onSubmit={handleDurationSubmit}
-          event={pendingEvent}
-        />
+
 
         <Timeline position="alternate">
   {timeline.map((item, idx) => {
@@ -167,6 +148,7 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
             <Typography variant="body2">
               {item.from} → {item.to}
             </Typography>
+             <GoogleMapsRouteButton from={item.from} to={item.to} mode={mode} />
           </TimelineContent>
         </TimelineItem>
       );

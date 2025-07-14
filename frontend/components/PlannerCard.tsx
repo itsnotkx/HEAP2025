@@ -62,8 +62,12 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
   return (
     <Card
       sx={{
-        width: 300,
-        height: 300,
+        width: "100%",
+        minWidth: 200,
+        maxWidth: 340,
+        height: "100%",
+        maxheight: 350,
+        minHeight: 300,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -72,6 +76,7 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
         ...schibstedFont,
         boxShadow: 3,
         borderRadius: '16px',
+        '&:hover': { boxShadow: 8 }
         
       }}
     >
@@ -104,6 +109,7 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
         onClick={() => onAdd(event)}
         sx={{ mt: 2 }}
         className="w-full bg-primary text-white py-3 rounded-xl shadow"
+        color="primary"
       >
         Add to Timeline
       </Button>
