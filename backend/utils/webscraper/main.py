@@ -8,7 +8,7 @@ from typing import List
 
 from models import Event
 from STBScrapper import scrape_stb_events
-from TheSmartLocalScraper import scrape_tsl_events
+from backend.utils.webscraper.TheSmartLocalScraper import scrape_tsl_events
 from TimeoutScraper import scrape_timeout_events
 from deduplication import deduplicate_events
 

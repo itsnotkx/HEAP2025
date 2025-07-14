@@ -1,12 +1,10 @@
 import requests
-import re
 import dateparser
 from typing import List, Optional
 from bs4 import BeautifulSoup
-from fastapi import FastAPI, HTTPException
-from models import Event
+from eventLib.event import Event
+import re
 
-app = FastAPI()
 
 TIMEOUT_BASE_URL = "https://www.timeout.com"
 TIMEOUT_THINGS_TO_DO_URL = f"{TIMEOUT_BASE_URL}/singapore/things-to-do"
@@ -147,7 +145,6 @@ def parse_timeout_article(url: str) -> Event:
 
 # --- Route ---
 
-@app.get("/scrape-timeout", response_model=List[Event])
 def scrape_timeout_events():
     article_links = fetch_timeout_article_links()
     events = []
@@ -158,3 +155,18 @@ def scrape_timeout_events():
         except Exception as e:
             print(f"Failed to parse {link}: {e}")
     return events
+
+# print(scrape_timeout_events())
+
+def lambda_handler(event, context):
+    try:
+        events = scrape_timeout_events()
+        print(f"Scraped {len(events)} events.")
+        return [e.to_dict() for e in events] 
+    except Exception as e:
+        print(f"Error in Lambda: {e}")
+        return {
+            "statusCode": 500,
+            "body": f"Error scraping events: {str(e)}"
+        }
+    
