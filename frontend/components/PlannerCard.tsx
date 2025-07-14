@@ -48,7 +48,7 @@ export default function PlannerCard({ event, onAdd }: PlannerCardProps) {
   */
 
 import React from 'react';
-import { Card, CardContent, Typography, Button } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
 import { EventType } from '../types/event'; // Adjust path as needed
 
 interface PlannerCardProps {
@@ -56,9 +56,27 @@ interface PlannerCardProps {
   onAdd: (event: EventType) => void;
   className?: string
 }
+const PLACEHOLDER_IMAGE = "/KiasuPlanner.png";
+
+function getEventImage(images: unknown): string {
+  if (Array.isArray(images)) {
+    // Find the first non-null, non-empty string
+    const validImage = images.find(
+      (img) => typeof img === "string" && img.trim().length > 0
+    );
+    return validImage || "/KiasuPlanner.png";
+  }
+  // Handle if images is a single string
+  if (typeof images === "string" && images.trim().length > 0) {
+    return images;
+  }
+  return "/KiasuPlanner.png";
+}
 
 const schibstedFont = { fontFamily: '"Schibsted Grotesk", Arial, sans-serif' };
 export default function PlannerCard({ event, onAdd, className }: PlannerCardProps) {
+
+
   return (
     <Card
       sx={{
@@ -80,6 +98,21 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
         
       }}
     >
+        {event.images && (
+        <CardMedia
+          component="img"
+          height="140"
+          image={getEventImage(event.images)}
+          alt={event.title}
+          sx={{ 
+            borderRadius: 2, 
+            objectFit: 'cover',
+            width: "100%",          
+            height: 180,
+            backgroundColor: "#f3f4f6",
+           }}
+        />
+      )}
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography variant="h6" gutterBottom sx={schibstedFont}>
           {event.title}

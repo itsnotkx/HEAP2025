@@ -77,6 +77,7 @@ function GoogleMapsRouteButton({ from, to, mode } : GoogleMapsRouteButtonProps) 
       color="primary"
       onClick={handleClick}
       sx={{ mt: 1 }}
+      size="small" 
     >
       View Route on Google Maps
     </Button>

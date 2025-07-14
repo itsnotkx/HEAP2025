@@ -9,6 +9,7 @@ export interface RawEvent {
   categories: number[];
   description: string;
   organiser_id: number;
+  images: string[];
 
 }
 /*
@@ -34,6 +35,7 @@ export interface EventType {
   categories: number[];
   description: string;
   organiser_id: number;
+  images: string[];
 
 }
 
@@ -52,6 +54,7 @@ export function mapRawEvent(raw: RawEvent): EventType {
     categories: raw.categories,
     description: raw.description,
     organiser_id: raw.organiser_id,
+    images: raw.images,
   };
 }
 
