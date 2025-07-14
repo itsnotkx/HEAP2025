@@ -8,9 +8,9 @@ class User(Base):
     user_id = Column(Integer, primary_key=True, index=True)
     username = Column(Text, nullable=False) 
     preferences = Column(
-        ARRAY(Integer),
+        ARRAY(Float),
         nullable=False,
-        default=lambda: [0] * 51
+        default=lambda: [0.0] * 51
     )
     rating = Column(Float, nullable=True)
     email = Column(Text, unique=True, nullable=False, index=True)

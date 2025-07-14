@@ -10,5 +10,7 @@ class Event(Base):
     end_date = Column(TIMESTAMP, nullable=False)
     address = Column(Text, nullable=True)
     price = Column(DECIMAL(10, 2), nullable=True)
-    categories = Column(ARRAY(Integer), nullable=True)
+    categories = Column(ARRAY(float), nullable=True)
     description = Column(Text, nullable=True)
+    image_url = Column(Text, nullable=True)
+    organiser_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
