@@ -9,6 +9,7 @@ import {
   Time,
 } from "@internationalized/date";
 import { search } from "@/app/api/apis";
+import EventType from "../types/event";
 
 export default function FormBox({ onSubmit }) {
   const router = useRouter();

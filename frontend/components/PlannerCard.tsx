@@ -57,6 +57,7 @@ interface PlannerCardProps {
   className?: string
 }
 
+const schibstedFont = { fontFamily: '"Schibsted Grotesk", Arial, sans-serif' };
 export default function PlannerCard({ event, onAdd, className }: PlannerCardProps) {
   return (
     <Card
@@ -68,10 +69,14 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
         justifyContent: 'space-between',
         p: 2,
         boxSizing: 'border-box',
+        ...schibstedFont,
+        boxShadow: 3,
+        borderRadius: '16px',
+        
       }}
     >
       <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" gutterBottom sx={schibstedFont}>
           {event.title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -84,13 +89,13 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
             ? new Date(event.endDate).toLocaleDateString()
             : 'TBA'}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={schibstedFont}>
           <strong>Price:</strong> {event.price || 'TBA'}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={schibstedFont}>
           <strong>Address:</strong> {event.address || 'TBA'}
         </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
+        <Typography variant="body2" sx={{ mt: 1, ...schibstedFont }} >
           {event.description || 'No description available.'}
         </Typography>
       </CardContent>
@@ -98,6 +103,7 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
         variant="contained"
         onClick={() => onAdd(event)}
         sx={{ mt: 2 }}
+        className="w-full bg-primary text-white py-3 rounded-xl shadow"
       >
         Add to Timeline
       </Button>
