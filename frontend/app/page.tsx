@@ -3,8 +3,6 @@ import { CheckCircle, Calendar, MapPin } from "lucide-react";
 
 import ScrollButton from "@/components/ScrollButton";
 
-
-
 export default async function App() {
     //    const router = useRouter();
     // const handleLoginClick = () => {
@@ -20,10 +18,8 @@ export default async function App() {
 
     return (
         <>
-
-
             <main className="min-h-screen">
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-12 py-16 mt-20">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-12 py-16 mt-10">
                     {/* Left Text */}
                     <div>
                         <h1 className="text-4xl font-bold mb-4">
@@ -77,10 +73,10 @@ export default async function App() {
                         <p className="font-bold">Directions and<br />ETAs provided</p>
                     </div>
                 </section>
+                <footer className="text-left text-gray-400 py-4">
+                    © 2025 KiasuPlanner. All rights reserved.
+                </footer>
             </main>
-            <footer className="text-left text-gray-400 py-4 mt-20">
-                © 2025 KiasuPlanner. All rights reserved.
-            </footer>
         </>
     );
 }

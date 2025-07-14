@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 from schemas.event import EventCreate, EventUpdate, EventOut
@@ -26,10 +26,10 @@ def read_all_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 
 @router.get("/search", response_model=List[EventOut])
 def search_for_events_keyword(
-    start_date: datetime = Query(..., description="Start date in ISO format"),
-    end_date: datetime = Query(..., description="End date in ISO format"),
+    start_date: Optional[datetime] = Query(..., description="Start date in ISO format"),
+    end_date: Optional[datetime] = Query(..., description="End date in ISO format"),
     user_id: int = Query(..., description="User ID to filter events by user preferences"),
-    keyword: str = Query(..., description="The keyword to match"),
+    keyword: Optional[str] = Query(None, description="The keyword to match"),
     db: Session = Depends(get_db)
 ):
     events = event_crud.search_event_keyword(db, user_id, keyword, start_date, end_date)

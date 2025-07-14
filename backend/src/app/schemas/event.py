@@ -9,7 +9,7 @@ class EventBase(BaseModel):
     end_date: datetime
     address: Optional[str]
     price: Optional[float]
-    categories: Optional[List[int]]
+    categories: Optional[List[float]]
     description: Optional[str]
     images: Optional[List[str]]
 

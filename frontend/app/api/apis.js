@@ -96,13 +96,14 @@ export const getDistanceBetweenVenues = async (
   }
 };
 
-export const search = async (keyword, start_date, end_date) => {
+export const search = async (keyword, start_date, end_date, user_id) => {
   try {
     const params = {};
 
     if (keyword) params.keyword = keyword;
     if (start_date) params.start_date = start_date;
     if (end_date) params.end_date = end_date;
+    if (user_id) params.user_id = user_id;
 
     const response = await axios.get(`${EVENTS_API}/search`, {
       params,
@@ -112,6 +113,5 @@ export const search = async (keyword, start_date, end_date) => {
   } catch (error) {
     console.error("Error fetching events:", error);
     return [];
-
   }
 };

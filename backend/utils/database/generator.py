@@ -23,7 +23,7 @@ def generate_event_inserts(n):
     ]
     
     # Current date for reference
-    now = datetime.now()
+    now = datetime.now() + timedelta(days=365)
     
     # Generate n events
     inserts = []
@@ -44,11 +44,10 @@ def generate_event_inserts(n):
         price = round(random.uniform(0, 100), 2)  # Some free events
         categories = [random.randint(-10,10)/10 for _ in range(52)]
         description = random.choice(descriptions)
-        organiser_id = 5
         
         # Build the INSERT statement
         insert = f"""
-        INSERT INTO Event (title, start_date, end_date, address, price, categories, description, organiser_id)
+        INSERT INTO Event (title, start_date, end_date, address, price, categories, description)
         VALUES (
             '{title.replace("'", "''")}',
             '{start_date.isoformat()}',
@@ -56,8 +55,7 @@ def generate_event_inserts(n):
             {'NULL' if random.random() < 0.2 else f"'{address.replace("'", "''")}'"},  -- 20% chance no address
             {price},  -- Free events have NULL price
             ARRAY{categories},
-            '{description.replace("'", "''")}',
-            {organiser_id}
+            '{description.replace("'", "''")}'
         );"""
         
         inserts.append(insert)
@@ -65,4 +63,4 @@ def generate_event_inserts(n):
     return "\n".join(inserts)
 
 # Example usage:
-print(generate_event_inserts(50))
+print(generate_event_inserts(25))

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
-from schemas.user import UserBase
+from schemas.user import UserBase, UserOut, UserCreate
 from crud import user as user_crud
 from db.session import get_db
 
@@ -31,10 +31,10 @@ router = APIRouter(
 #                 "user":user_crud.get_user_by_email(db, credentials.email)}
 #     raise HTTPException(status_code=401, detail="Invalid credentials")
 
-@router.post("/signin/sso", response_model=UserBase)
-def signup_sso(user: UserBase, db: Session = Depends(get_db)):
+@router.post("/signin/sso", response_model=UserOut)
+def signup_sso(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = user_crud.get_user_by_email(db, user.email)
     print(f"SSO Sign In: {user.email}, {user.username}")
     if existing_user:
-        return existing_user  # Return the existing user if found
-    return user_crud.create_user_sso(db, user)  # Otherwise, create a new user
+        return existing_user  # must return a UserOut-compatible object
+    return user_crud.create_user_sso(db, user)
