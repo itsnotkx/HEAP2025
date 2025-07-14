@@ -5,7 +5,7 @@ from datetime import datetime
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    preferences: List[int] = Field(default_factory=lambda: [0] * 51)
+    preferences: List[float] = Field(default_factory=lambda: [0] * 51)
     rating: Optional[float] = None
 
 # class UserCreate(UserBase):

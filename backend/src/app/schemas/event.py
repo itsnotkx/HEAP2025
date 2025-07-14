@@ -11,6 +11,7 @@ class EventBase(BaseModel):
     price: Optional[float]
     categories: Optional[List[int]]
     description: Optional[str]
+    images: Optional[List[str]]
 
 
 class EventCreate(EventBase):
@@ -23,8 +24,9 @@ class EventUpdate(BaseModel):
     end_date: Optional[datetime]
     address: Optional[str]
     price: Optional[float]
-    categories: Optional[List[int]]
+    categories: Optional[List[float]]
     description: Optional[str]
+    images: Optional[List[str]]
 
 
 class EventOut(EventBase):
@@ -37,4 +39,4 @@ class EventOut(EventBase):
 class EventSearchRequest(BaseModel):
     start_date: datetime
     end_date: datetime
-    preferences: List[int]
+    preferences: List[float]

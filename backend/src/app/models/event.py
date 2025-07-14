@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, TIMESTAMP, ForeignKey, DECIMAL, ARRAY
+from sqlalchemy import Column, Integer, Text, TIMESTAMP, ForeignKey, DECIMAL, ARRAY, Float
 from db.base import Base
 from models.user import User
 class Event(Base):
@@ -10,5 +10,6 @@ class Event(Base):
     end_date = Column(TIMESTAMP, nullable=False)
     address = Column(Text, nullable=True)
     price = Column(DECIMAL(10, 2), nullable=True)
-    categories = Column(ARRAY(Integer), nullable=True)
+    categories = Column(ARRAY(Float), nullable=True)
     description = Column(Text, nullable=True)
+    images = Column(ARRAY(Text))

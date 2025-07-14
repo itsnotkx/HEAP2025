@@ -8,7 +8,7 @@ class User(Base):
     user_id = Column(Integer, primary_key=True, index=True)
     username = Column(Text, nullable=False) 
     preferences = Column(
-        ARRAY(Integer),
+        ARRAY(Float),
         nullable=False,
         default=lambda: [0] * 51
     )
