@@ -39,4 +39,5 @@ class EventOut(EventBase):
 class EventSearchRequest(BaseModel):
     start_date: datetime
     end_date: datetime
+
     preferences: List[float]

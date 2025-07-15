@@ -113,10 +113,9 @@ export default function Planner() {
   }, []);
 
  const handleAddEvent = (event: EventType) => {
-    const duration = prompt("How long do you want to stay (minutes)?");
-    if (duration) {
-      addEventToTimeline(event, Number(duration));
-    }
+
+      addEventToTimeline(event, Number(null));
+    
   };
   
   return (

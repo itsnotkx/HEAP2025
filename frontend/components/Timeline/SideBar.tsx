@@ -41,7 +41,7 @@ export default function SideBar({
 return (
   <div
     className={clsx(
-      "transition-all duration-0 bg-white h-full border-r shadow-md flex flex-col items-center",
+      "transition-all duration-0 bg-white h-100% border-r shadow-md flex flex-col items-center",
       expanded ? "w-[400px]" : "w-[70px]"
     )}
   >
