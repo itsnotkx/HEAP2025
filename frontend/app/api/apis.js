@@ -115,3 +115,18 @@ export const search = async (keyword, start_date, end_date, user_id) => {
     return [];
   }
 };
+
+export async function fetchSurpriseMe(params) {
+  try {
+    const response = await axios.get(`${EVENTS_API}/surpriseme`, { params });
+
+    if (response.status === 200 && response.data.result) {
+      return JSON.parse(response.data.result); // result is a JSON string
+    }
+
+    throw new Error('Failed to fetch surprise');
+  } catch (error) {
+    console.error('Error fetching surprise:', error);
+    throw error.response?.data || error;
+  }
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import { fetchSurpriseMe } from '../api/apis';
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/PlannerCard";
 import { fetchAllEvents, fetchFilteredEvents} from "../api/events";
@@ -8,6 +9,9 @@ import React from "react";
 import { useTimeline } from "../../components/Timeline/TimelineContext";
 import { mapRawEvent } from "../../types/event";
 import type { EventType } from "../../types/event";
+
+import type { TimelineEntry } from "../../types/event";
+import { useSession } from "next-auth/react";
 
 import { useSearchParams } from "next/navigation";
 
@@ -18,6 +22,7 @@ export default function Planner() {
   const date = searchParams?.get("date") ?? "";           // <-- Get from URL, fallback to empty string
 
   const { addEventToTimeline } = useTimeline();
+  const { data: session } = useSession();
   const [events, setEvents] = React.useState<EventType[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -42,14 +47,16 @@ export default function Planner() {
   );
 
 
-  const handleAddEvent = (event: EventType) => {
-    addEventToTimeline(event, Number(null));
+ const handleAddEvent = (event: EventType) => {
+
+      addEventToTimeline(event, Number(null));
+    
   };
 
   return (
     <>
       <Navigationbar />
-      <SearchForm date={date}/>
+      <SearchForm onSubmit={handleFormSubmit} />
 
       <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
         <div className="max-w-6xl mx-auto px-4">
