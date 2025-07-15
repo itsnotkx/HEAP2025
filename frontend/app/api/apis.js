@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Assuming you use something like Vite or CRA and these env variables are exposed correctly
 const USERS_API = process.env.USERS_API_BASE_ENDPOINT || 'http://localhost:8000/api/users';
 const EVENTS_API = process.env.EVENTS_API_BASE_ENDPOINT || 'http://localhost:8000/api/events';
 const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT || 'http://localhost:8000/api/distance';

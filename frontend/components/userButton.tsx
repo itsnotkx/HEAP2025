@@ -1,5 +1,6 @@
 import { Button } from "@heroui/button";
 import { UserIcon } from "lucide-react";
+import {Image} from "@heroui/react";
 
 interface UserButtonProps {
   user?: {
@@ -19,7 +20,7 @@ export default function UserButton({ user, onClick }: UserButtonProps) {
       variant="ghost"
     >
       {isSignedIn ? (
-        <img
+        <Image
           src={user?.profilePictureUrl}
           alt={`${user?.name} profile`}
           className="w-8 h-8 rounded-full object-cover"

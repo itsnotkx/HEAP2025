@@ -3,6 +3,7 @@ import React from "react";
 import Logo from "@/components/logo";
 import Navigationbar from "@/components/navbar";
 import { Calendar,Star,Handshake,Check } from "lucide-react"
+import {Image} from "@heroui/image";
 
 const team = [
   {
@@ -90,7 +91,7 @@ export default function AboutPage() {
                 key={member.name}
                 className="flex flex-col items-center bg-card p-5 rounded-xl shadow-sm w-48"
               >
-                <img
+                <Image
                   src={member.avatar}
                   alt={member.name}
                   className="w-20 h-20 rounded-full mb-3"

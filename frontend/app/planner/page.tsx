@@ -3,47 +3,54 @@
 import { fetchSurpriseMe } from '../api/apis';
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/PlannerCard";
-import { fetchAllEvents, fetchFilteredEvents } from "../api/events";
+import { fetchAllEvents, fetchFilteredEvents} from "../api/events";
 import SearchForm from "@/components/FormBox";
-import React, { useState, useContext } from "react";
-import { useTimeline, TimelineContext } from "../../components/Timeline/TimelineContext";
+import React from "react";
+import { useTimeline } from "../../components/Timeline/TimelineContext";
 import { mapRawEvent } from "../../types/event";
-import type { EventType } from "../../types/event"; // <-- Use type alias
+import type { EventType } from "../../types/event";
+
 import type { TimelineEntry } from "../../types/event";
 import { useSession } from "next-auth/react";
 
+import { useSearchParams } from "next/navigation";
+
+
+
 export default function Planner() {
+  const searchParams = useSearchParams();
+  const date = searchParams?.get("date") ?? "";           // <-- Get from URL, fallback to empty string
+
   const { addEventToTimeline } = useTimeline();
   const { data: session } = useSession();
   const [events, setEvents] = React.useState<EventType[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // Handler for FormBox submission
-  const handleFormSubmit = async (formData: { date: string; startTime: string; endTime: string }) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchFilteredEvents(formData);
-      setEvents(data.map(mapRawEvent));
-    } catch (err) {
-      setError("Unable to load events.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // React.useEffect(() => {
+  //   setLoading(true);
+  //   fetchAllEvents()
+  //     .then(data => setEvents(data.map(mapRawEvent)))
+  //     .catch(() => setError("Unable to load events."))
+  //     .finally(() => setLoading(false));
+  //   },[]
+  // );
 
-  // Optionally, load all events on first render
+
   React.useEffect(() => {
     setLoading(true);
-    fetchAllEvents()
+    fetchFilteredEvents({date: date, startTime: "00:00", endTime: "23:59"})
       .then(data => setEvents(data.map(mapRawEvent)))
       .catch(() => setError("Unable to load events."))
       .finally(() => setLoading(false));
-  }, []);
+    },[]
+  );
+
 
   const handleAddEvent = (event: EventType) => {
-    addEventToTimeline(event, Number(null));
+
+      addEventToTimeline(event, Number(null));
+    
   };
 
   const handleSurpriseMe = async (formData: { date: string; startTime: string; endTime: string }) => {
@@ -78,11 +85,13 @@ export default function Planner() {
     }
   };
 
+
+
   return (
     <>
       <Navigationbar />
       {/*Pass onSurprise to enable Surprise Me button */}
-      <SearchForm onSubmit={handleFormSubmit} onSurprise={handleSurpriseMe} />
+      <SearchForm onSurprise={handleSurpriseMe} date={date}/>
 
       <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
         <div className="max-w-6xl mx-auto px-4">

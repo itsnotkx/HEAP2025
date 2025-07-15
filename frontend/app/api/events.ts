@@ -9,6 +9,7 @@ export async function fetchAllEvents(): Promise<RawEvent[]> {
   return res.json();
 }
 
+
 export async function fetchFilteredEvents({   
   date,
   startTime,

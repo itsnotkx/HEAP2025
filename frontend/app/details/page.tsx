@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import {Image} from "@heroui/react";
 
 const event = {
   title: "McSpicy Museum",
@@ -214,7 +215,7 @@ const EventTabs: React.FC = () => {
                   key={idx}
                   className="flex items-start bg-gray-50 rounded-xl p-6 shadow-sm"
                 >
-                  <img
+                  <Image
                     src={review.avatar}
                     alt={review.name}
                     className="w-14 h-14 rounded-full mr-5 border-2 border-white shadow"
@@ -245,7 +246,7 @@ const EventInfoPage: React.FC = () => {
       <div className="pt-28 w-full flex flex-col items-center">
         {/* Large rectangular event image at the top */}
         <div className="w-full max-w-4xl h-64 md:h-96 overflow-hidden rounded-2xl shadow-lg mb-8">
-          <img
+          <Image
             src={event.imageUrl}
             alt={event.title}
             className="w-full h-full object-cover"
