@@ -5,6 +5,7 @@ import type { EventType, TimelineEntry } from "../../types/event";
 interface TimelineContextType {
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number) => void;
+  moveTimelineEntry: (fromIndex: number, direction:"up" | "down") => void;
 }
 
 export const TimelineContext = createContext<TimelineContextType | undefined>(undefined);

@@ -8,6 +8,12 @@ import {
   TimelineDot,
   TimelineOppositeContent,
 } from "@mui/lab";
+import { timelineItemClasses } from '@mui/lab/TimelineItem';
+import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+
+import { Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
+import {Link} from "@heroui/link";
+
 import { Button, ButtonGroup } from "@heroui/button";
 import PlannerCard from "../PlannerCard";
 import { EventType } from "../../types/event";
@@ -51,6 +57,7 @@ interface DayPlannerProps {
   events: EventType[];
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number) => void;
+  moveTimelineEntry: (fromIndex: number, direction:"up" | "down") => void;
 }
 
 interface GoogleMapsRouteButtonProps {
@@ -69,13 +76,14 @@ function GoogleMapsRouteButton({ from, to, mode }: GoogleMapsRouteButtonProps) {
     window.open(url, "_blank");
   };
 
-  return <Button onPress={handleClick}>View Route on Google Maps</Button>;
+  return <Link showAnchorIcon onPress={handleClick}>View Route</Link>;
 }
 
 export default function DayPlanner({
   events,
   timeline,
   addEventToTimeline,
+  moveTimelineEntry,
 }: DayPlannerProps) {
   // REMOVE: const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -97,22 +105,50 @@ export default function DayPlanner({
 
   return (
     <>
-      <TravelModeSelector mode={mode} setMode={setMode} />
-      <div>
-        <Timeline position="right">
+      <div className="pl-5 w-full flex justify-start">
+        <TravelModeSelector mode={mode} setMode={setMode} />
+      </div>
+
+      <div className="w-full">
+      <Timeline
+        sx={{
+          [`& .${timelineItemClasses.root}:before`]: {
+            flex: 0,
+            padding: 0,
+          },
+        }}
+      >
+
           {timeline.map((item, idx) => {
             if (item.type === "event" && item.event) {
               return (
                 <TimelineItem key={idx}>
-                  <TimelineOppositeContent color="text.secondary"></TimelineOppositeContent>
                   <TimelineSeparator>
-                    <TimelineDot className="bg-primary" />
+                    <TimelineDot sx={{ backgroundColor: '#2EC4B6'}}/>
                     {idx < timeline.length - 1 && <TimelineConnector />}
                   </TimelineSeparator>
 
-                  <TimelineContent>
-                    <h2>{item.event.title}</h2>
-                    <h2>{item.event.address}</h2>
+
+                  <TimelineContent className="w-full">
+                    <Card className="w-full max-w-sm h-full shadow-md hover:shadow-lg rounded-2xl pr-3">
+                      <div className="flex justify-between items-start">
+                        
+                        <div className="flex flex-col">
+                          <CardHeader className="pb-1 pt-1 font-bold">{item.event.title}</CardHeader>
+                          <CardBody className="pb-2 text-sm tracking-tight text-default-400">
+                            {item.event.address}
+                          </CardBody>
+                        </div>
+
+                        <div className="flex flex-col gap-1 ml-2">
+
+                          <Button onPress={() => moveTimelineEntry(idx, "up")} isIconOnly color="primary" className="h-7 w-7 text-white px-2 mt-2 mb-0"><ChevronUpIcon/></Button>
+                          <Button onPress={() => moveTimelineEntry(idx, "down")} isIconOnly color="secondary" className="h-7 w-7 text-white px-2 mt-0"><ChevronDownIcon/></Button>
+                          
+                        </div>
+                      </div>
+                    </Card>
+
                   </TimelineContent>
                 </TimelineItem>
               );
@@ -120,23 +156,27 @@ export default function DayPlanner({
             if (item.type === "travel") {
               return (
                 <TimelineItem key={idx}>
-                  <TimelineOppositeContent color="text.secondary">
-                    {item.duration}
-                  </TimelineOppositeContent>
                   <TimelineSeparator>
-                    <TimelineDot color="secondary" />
+                    <TimelineDot sx={{ backgroundColor: '#FF6B6B'}}/>
                     {idx < timeline.length - 1 && <TimelineConnector />}
                   </TimelineSeparator>
                   <TimelineContent>
-                    <h6>Travel</h6>
-                    <h6>
-                      {item.from} → {item.to}
-                    </h6>
-                    <GoogleMapsRouteButton
-                      from={item.from}
-                      to={item.to}
-                      mode={mode}
-                    />
+                    <Card className="w-full max-w-sm h-full shadow-md hover:shadow-lg rounded-2xl">
+                      <CardHeader className="pb-0 font-bold">Travel</CardHeader>
+                      <CardBody className="pb-0 pt-1">
+                        <p>{item.duration}</p>
+                        <p className="text-small tracking-tight text-default-400">
+                          From: {item.from}<br/> To: {item.to}
+                        </p>
+                        </CardBody>
+                      <CardBody>
+                        <GoogleMapsRouteButton
+                          from={item.from}
+                          to={item.to}
+                          mode={mode}
+                        />
+                    </CardBody>
+                    </Card>
                   </TimelineContent>
                 </TimelineItem>
               );

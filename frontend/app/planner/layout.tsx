@@ -1,6 +1,6 @@
 "use client";
 import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
+import next, { Metadata, Viewport } from "next";
 
 import clsx from "clsx";
 import NavigationBar from "@/components/navbar";
@@ -20,18 +20,17 @@ import { getDistanceBetweenVenues } from "../api/apis";
 import { TimelineContext } from "../../components/Timeline/TimelineContext";
 
 import { useSearchParams } from "next/navigation";
+import { time } from "console";
+import { start } from "repl";
 
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [mode, setMode] = useState<"transit" | "driving" | "walking" | "bicycling">("transit");
+  const [mode, setMode] = useState<"Transit" | "driving" | "walking" | "bicycling">("Transit");
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
-  /*
-  const addEventToTimeline = (event: EventType, duration: number) => {
-    setTimeline([...timeline, { type: 'event', event, duration }]);
-  };
-  */
+
 
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,6 +38,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const searchParams = useSearchParams();
   const date = searchParams?.get("date") ?? ""; 
+
+
 
   const addEventToTimeline = async (
   event: EventType,
@@ -81,19 +82,91 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   setTimeline(newTimeline);
 };
 
+const buildTimelineWithTravel = async (
+  entries,
+  modeParam: "Transit" | "driving" | "walking" | "bicycling" = "Transit"
+): Promise<TimelineEntry[]> => {
+  const timeline: TimelineEntry[] = [];
+  for (let i = 0; i < entries.length; i++) {
+    if (entries[i].type !== 'event') {
+      continue;
+    }
+    const currentEvent = entries[i].event;
 
-  // useEffect(() => {
-  //   setLoading(true);
-  //   fetchAllEvents()
-  //     .then(data => setEvents(data.map(mapRawEvent)))
-  //     .catch(() => setError("Unable to load events."))
-  //     .finally(() => setLoading(false));
-  // }, []);
+    // Insert the current event
+    timeline.push({
+      type: "event",
+      event: currentEvent,
+      duration: null,
+    });
+
+    // If there's a next event, compute travel
+    if (i < entries.length - 1) {
+      try {
+        const { duration: travelDuration } = await getDistanceBetweenVenues(
+          currentEvent.address,
+          entries[i + 1].event.address,
+          mode
+        );
+        const travelEntry: TimelineEntry = {
+          type: "travel",
+          from: currentEvent.address,
+          to: entries[i + 1].event.address,
+          duration: travelDuration,
+        }
+
+        timeline.push(travelEntry);
+      } catch (err) {
+        console.error(`Failed to get travel time between ${currentEvent.address} and ${events[i + 1].address}`, err);
+      }
+    }
+  }
+
+  return timeline;
+};
+
+  const moveTimelineEntry = async(idx: number, direction:"up" | "down") => {
+    console.log("Moving entry from", idx, "direction", direction);
+    if (idx < 0 || idx > timeline.length - 1) return;
+    const tempTimeline = [...timeline];
+    let startIdx = 0;
+    let endIdx = tempTimeline.length - 1;
+    if(direction === "up") {
+      if (idx === 0) return; 
+      startIdx = idx - 4;
+      endIdx = idx + 2;
+    }
+    else if(direction === "down") {
+      if (idx === tempTimeline.length - 1) return; 
+      startIdx = idx - 2;
+      endIdx = idx + 4;
+    }
+    startIdx = Math.max(startIdx, 0);
+    endIdx = Math.min(endIdx, tempTimeline.length - 1);
+    const toRebuild: TimelineEntry[] = [];
+    for(let i = startIdx; i <= endIdx; i++) {
+      if(tempTimeline[i].type === "event") {
+        toRebuild.push(tempTimeline[i]);
+      }
+    }
+    
+    console.log("toRebuild", toRebuild);
+
+    const rebuilt = await buildTimelineWithTravel(toRebuild, mode);
+    console.log("rebuilt", rebuilt);
+    
+    tempTimeline.splice(startIdx, rebuilt.length,...rebuilt);
+    console.log("old timeline", timeline);
+
+    console.log("new timeline", tempTimeline);
+    // const updated = recalculateTravelTimes(newTimeline);
+    setTimeline(tempTimeline);
+  };
 
 
 
   return (
-    <TimelineContext.Provider value={{ timeline, addEventToTimeline }}>
+    <TimelineContext.Provider value={{ timeline, addEventToTimeline,  moveTimelineEntry}}>
     <div className={clsx(
       "min-h-screen text-foreground bg-background font-sans antialiased",
       fontSans.variable
@@ -116,6 +189,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 setExpanded={setSidebarExpanded}
                 timeline={timeline}
                 addEventToTimeline={(event, duration, modeParam) => addEventToTimeline(event, duration, modeParam)}
+                moveTimelineEntry={moveTimelineEntry}
                 mode={mode}
                 setMode={setMode}
               />

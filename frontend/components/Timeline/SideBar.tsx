@@ -4,6 +4,7 @@ import clsx from "clsx";
 import DayPlanner from "./DayPlanner";
 import {EventType} from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
+import { useTimeline } from "../../components/Timeline/TimelineContext";
 
 type TravelMode = "transit" | "driving" | "walking" | "bicycling";
 interface SideBarProps {    
@@ -14,6 +15,7 @@ interface SideBarProps {
   setExpanded: (expanded: boolean) => void;
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number, mode: TravelMode) => void;
+  moveTimelineEntry:(fromIndex: number, direction:"up" | "down") => void;
   mode: TravelMode;
   setMode: (mode: TravelMode) => void;
 }
@@ -22,6 +24,7 @@ interface DayPlannerProps {
   events: EventType[];
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number, mode: TravelMode) => void;
+  moveTimelineEntry:(fromIndex: number, direction:"up" | "down") => void;
   mode: TravelMode;
   setMode: (mode: TravelMode) => void;
 }
@@ -34,10 +37,14 @@ export default function SideBar({
   setExpanded,
   timeline,
   addEventToTimeline,
+  moveTimelineEntry,
   mode,
   setMode
 }: SideBarProps)  
 {
+
+  
+
 return (
   <div
     className={clsx(
@@ -75,6 +82,7 @@ return (
   events={events}
   timeline={timeline}
   addEventToTimeline={addEventToTimeline}
+  moveTimelineEntry={moveTimelineEntry}
   mode={mode}
   setMode={setMode}
 />}
