@@ -1,6 +1,6 @@
 // types/Event.ts
 export interface RawEvent {
-  id: number;
+  event_id: number;
   title: string;
   start_date: string;
   end_date: string;
@@ -45,7 +45,7 @@ export interface EventType {
 
 export function mapRawEvent(raw: RawEvent): EventType {
   return {
-    id: raw.id,
+    id: raw.event_id,
     title: raw.title,
     startDate: raw.start_date,
     endDate: raw.end_date,

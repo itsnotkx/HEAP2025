@@ -70,6 +70,7 @@ export const createEvent = async (eventData) => {
  * 5) Fetch event by id - GET /{event_id}
  * @param {string|number} eventId
  */
+
 export const fetchEventById = async (eventId) => {
   try {
     const response = await axios.get(`${EVENTS_API}/${eventId}`);
@@ -78,6 +79,7 @@ export const fetchEventById = async (eventId) => {
     throw error.response?.data || error;
   }
 };
+
 
 
 /*

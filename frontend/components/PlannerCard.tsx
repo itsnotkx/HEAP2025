@@ -47,6 +47,7 @@ export default function PlannerCard({ event, onAdd }: PlannerCardProps) {
 }
   */
 
+import { useRouter } from "next/navigation";
 import React from 'react';
 import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
 import { EventType } from '../types/event'; // Adjust path as needed
@@ -76,10 +77,21 @@ function getEventImage(images: unknown): string {
 const schibstedFont = { fontFamily: '"Schibsted Grotesk", Arial, sans-serif' };
 export default function PlannerCard({ event, onAdd, className }: PlannerCardProps) {
 
+  const router = useRouter();
+  const handleCardClick = () => {
+    console.log("PlannerCard clicked", event);
+    if (event.id) {
+      router.push(`/events/${event.id}`);
+    } else {
+      console.warn("No event ID found!", event);
+    }
+  };
 
   return (
     <Card
+      onClick={handleCardClick}
       sx={{
+        cursor: "pointer",
         width: "100%",
         minWidth: 200,
         maxWidth: 340,
@@ -93,10 +105,12 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
         boxSizing: 'border-box',
         ...schibstedFont,
         boxShadow: 3,
+        transition: 'box-shadow 0.2s, transform 0.2s',
         borderRadius: '16px',
-        '&:hover': { boxShadow: 8 }
-        
+        '&:hover': { boxShadow: 8, transform: 'scale(1.02)' },
+               
       }}
+ 
     >
         {event.images && (
         <CardMedia
@@ -139,7 +153,7 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
       </CardContent>
       <Button
         variant="contained"
-        onClick={() => onAdd(event)}
+        onClick={e =>{ e.stopPropagation(); onAdd(event);}}
         sx={{ mt: 2 }}
         className="w-full bg-primary text-white py-3 rounded-xl shadow"
         color="primary"
