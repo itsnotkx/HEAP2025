@@ -73,6 +73,7 @@ export default function Planner() {
 
 'use client';
 
+import { fetchSurpriseMe } from '../api/apis';
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/PlannerCard";
 import { fetchAllEvents, fetchFilteredEvents } from "../api/events";
@@ -82,9 +83,11 @@ import { useTimeline, TimelineContext } from "../../components/Timeline/Timeline
 import { mapRawEvent } from "../../types/event";
 import type { EventType } from "../../types/event"; // <-- Use type alias
 import type { TimelineEntry } from "../../types/event";
+import { useSession } from "next-auth/react";
 
 export default function Planner() {
   const { addEventToTimeline } = useTimeline();
+  const { data: session } = useSession();
   const [events, setEvents] = React.useState<EventType[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -112,16 +115,44 @@ export default function Planner() {
       .finally(() => setLoading(false));
   }, []);
 
- const handleAddEvent = (event: EventType) => {
-
-      addEventToTimeline(event, Number(null));
-    
+  const handleAddEvent = (event: EventType) => {
+    addEventToTimeline(event, Number(null));
   };
-  
+
+  const handleSurpriseMe = async (formData: { date: string; startTime: string; endTime: string }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { date, startTime, endTime } = formData;
+
+      if (!date || !startTime || !endTime) {
+        setError("Please select a date and time range for surprise events.");
+        return;
+      }
+
+      const starttime = `${date.toString()}T${startTime}`;
+      const endtime = `${date.toString()}T${endTime}`;
+
+      const result = await fetchSurpriseMe({
+        starttime,
+        endtime,
+        userId: session?.user?.id || 'guest',
+      });
+
+      setEvents(result.selected_events || []);
+    } catch (err) {
+      setError("Unable to surprise.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Navigationbar />
-      <SearchForm onSubmit={handleFormSubmit} />
+      {/*Pass onSurprise to enable Surprise Me button */}
+      <SearchForm onSubmit={handleFormSubmit} onSurprise={handleSurpriseMe} />
 
       <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
         <div className="max-w-6xl mx-auto px-4">

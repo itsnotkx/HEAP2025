@@ -11,8 +11,7 @@ import {
 import { search } from "@/app/api/apis";
 import { useSession } from "next-auth/react";
 
-export default function FormBox({ onSubmit }) {
-
+export default function FormBox({ onSubmit, onSurprise }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -25,7 +24,7 @@ export default function FormBox({ onSubmit }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -47,7 +46,6 @@ export default function FormBox({ onSubmit }) {
       return;
     }
 
-    // Check if session exists
     if (!session?.user?.id) {
       setErrorMessage("Please log in to search for events.");
       return;
@@ -70,35 +68,30 @@ export default function FormBox({ onSubmit }) {
       searchParams.set("user_id", session.user.id)
     }
 
-    // Update the browser URL and trigger navigation (optional: can use shallow routing)
     const start_date = hasDateTime ? `${date.toString()}T${startTime}` : undefined;
     const end_date = hasDateTime ? `${date.toString()}T${endTime}` : undefined;
 
     try {
       const data = await search(keyword.trim(), start_date, end_date, session.user.id);
-      setResults(data); // show results
-      
-      // If no results found, show a message
+      setResults(data);
       if (data.length === 0) {
         setErrorMessage("No events found for your search criteria.");
       }
     } catch (err) {
       console.error("Search error:", err);
-      
-      // Enhanced error handling with detailed messages
+
       let errorMsg = "Something went wrong while searching.";
-      
+
       if (err.response) {
-        // Server responded with error status
         const status = err.response.status;
         const data = err.response.data;
-        
+
         console.error("Error response:", {
           status,
           data,
           headers: err.response.headers
         });
-        
+
         switch (status) {
           case 422:
             errorMsg = `Validation error: ${data.detail || 'Invalid parameters provided'}`;
@@ -119,25 +112,26 @@ export default function FormBox({ onSubmit }) {
             errorMsg = `Error ${status}: ${data.detail || data.message || 'Unknown error occurred'}`;
         }
       } else if (err.request) {
-        // Request was made but no response received
         console.error("No response received:", err.request);
         errorMsg = "Network error. Please check your connection and try again.";
       } else {
-        // Something else happened
         console.error("Request setup error:", err.message);
         errorMsg = `Request error: ${err.message}`;
       }
-      
+
       setErrorMessage(errorMsg);
-      setResults([]); // Clear any previous results
+      setResults([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSurpriseMe = (e: React.FormEvent) => {
+  // handleSurpriseClick - only calls onSurprise if provided
+  const handleSurpriseClick = (e) => {
     e.preventDefault();
-    router.push("/surprise");
+    if (onSurprise) {
+      onSurprise(formData);
+    }
   };
 
   return (
@@ -185,6 +179,18 @@ export default function FormBox({ onSubmit }) {
         >
           {isLoading ? "Searching..." : "Search"}
         </Button>
+
+        {/* Only show Surprise Me if onSurprise is provided */}
+        {onSurprise && (
+          <Button
+            type="button"
+            className="w-full bg-indigo-500 text-white py-3 rounded-xl shadow mt-2"
+            onClick={handleSurpriseClick}
+            disabled={isLoading}
+          >
+            Surprise Me!
+          </Button>
+        )}
       </form>
 
       {/* Results Section */}
@@ -207,4 +213,4 @@ export default function FormBox({ onSubmit }) {
       )}
     </div>
   );
-};
+}
