@@ -21,14 +21,13 @@ def create_event(event: EventCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=List[EventOut])
 def read_all_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-
     return event_crud.get_all_events(db, skip=skip, limit=limit)
 
 @router.get("/search", response_model=List[EventOut])
 def search_for_events_keyword(
-    start_date: Optional[datetime] = Query(..., description="Start date in ISO format"),
-    end_date: Optional[datetime] = Query(..., description="End date in ISO format"),
-    user_id: int = Query(..., description="User ID to filter events by user preferences"),
+    start_date: Optional[datetime] = Query(None, description="Start date in ISO format"),
+    end_date: Optional[datetime] = Query(None, description="End date in ISO format"),
+    user_id: int = Query(None, description="User ID to filter events by user preferences"),
     keyword: Optional[str] = Query(None, description="The keyword to match"),
     db: Session = Depends(get_db)
 ):

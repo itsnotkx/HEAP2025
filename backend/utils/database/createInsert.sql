@@ -21,18 +21,27 @@ CREATE TABLE Event (
     price DECIMAL(10, 2),
     categories FLOAT[],   -- Array of floats
     description TEXT,
-    organiser_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE,
+    organiser_id INTEGER REFERENCES "users"(user_id) ON DELETE CASCADE,
     images TEXT[]
 );
 
 -- Participation History Table
 CREATE TABLE participation_history (
     participant_history_id SERIAL PRIMARY KEY,
-    participant_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE,
+    participant_id INTEGER REFERENCES "users"(user_id) ON DELETE CASCADE,
     event_id INTEGER REFERENCES Event(event_id) ON DELETE CASCADE,
     is_over BOOLEAN DEFAULT FALSE,
     rating REAL,
     comments TEXT
+);
+
+CREATE TABLE day (
+    day_id SERIAL,
+    user_id INTEGER REFERENCES "users"(user_id),
+    day_date TIMESTAMP,
+    events_list INTEGER[],
+
+    PRIMARY KEY (day_id, user_id)
 );
 
 -- User Table
