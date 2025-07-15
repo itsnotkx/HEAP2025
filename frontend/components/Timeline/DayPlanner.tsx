@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   Timeline,
   TimelineItem,
@@ -15,17 +16,12 @@ import { Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
 import {Link} from "@heroui/link";
 
 import { Button, ButtonGroup } from "@heroui/button";
-import PlannerCard from "../PlannerCard";
 import { EventType } from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { useTimeline } from "../../components/Timeline/TimelineContext";
 
-interface ModalProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (duration: number) => void;
-  event: EventType | null;
-}
+
 
 type TravelMode = "transit" | "driving" | "walking" | "bicycling";
 
@@ -55,9 +51,9 @@ function TravelModeSelector({ mode, setMode }: TravelModeSelectorProps) {
 
 interface DayPlannerProps {
   events: EventType[];
-  timeline: TimelineEntry[];
+  // timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number) => void;
-  moveTimelineEntry: (fromIndex: number, direction:"up" | "down") => void;
+  // moveTimelineEntry: (fromIndex: number, direction:"up" | "down") => void;
 }
 
 interface GoogleMapsRouteButtonProps {
@@ -79,11 +75,12 @@ function GoogleMapsRouteButton({ from, to, mode }: GoogleMapsRouteButtonProps) {
   return <Link showAnchorIcon onPress={handleClick}>View Route</Link>;
 }
 
+
 export default function DayPlanner({
+  
   events,
-  timeline,
+  // timeline,
   addEventToTimeline,
-  moveTimelineEntry,
 }: DayPlannerProps) {
   // REMOVE: const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -93,6 +90,10 @@ export default function DayPlanner({
     setPendingEvent(event);
     setShowModal(true);
   };
+  const { timeline, moveTimelineEntry } = useTimeline();
+  useEffect(() => {
+    console.log("🚀 Timeline updated:", timeline);
+  }, [timeline]);
 
   const handleDurationSubmit = (duration: number) => {
     if (pendingEvent) {
@@ -118,7 +119,6 @@ export default function DayPlanner({
           },
         }}
       >
-
           {timeline.map((item, idx) => {
             if (item.type === "event" && item.event) {
               return (
@@ -127,8 +127,6 @@ export default function DayPlanner({
                     <TimelineDot sx={{ backgroundColor: '#2EC4B6'}}/>
                     {idx < timeline.length - 1 && <TimelineConnector />}
                   </TimelineSeparator>
-
-
                   <TimelineContent className="w-full">
                     <Card className="w-full max-w-sm h-full shadow-md hover:shadow-lg rounded-2xl pr-3">
                       <div className="flex justify-between items-start">

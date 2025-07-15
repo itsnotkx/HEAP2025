@@ -27,19 +27,9 @@ export default function Planner() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // React.useEffect(() => {
-  //   setLoading(true);
-  //   fetchAllEvents()
-  //     .then(data => setEvents(data.map(mapRawEvent)))
-  //     .catch(() => setError("Unable to load events."))
-  //     .finally(() => setLoading(false));
-  //   },[]
-  // );
-
-
   React.useEffect(() => {
     setLoading(true);
-    fetchFilteredEvents({date: date, startTime: "00:00", endTime: "23:59"})
+    fetchAllEvents()
       .then(data => setEvents(data.map(mapRawEvent)))
       .catch(() => setError("Unable to load events."))
       .finally(() => setLoading(false));
@@ -47,10 +37,18 @@ export default function Planner() {
   );
 
 
-  const handleAddEvent = (event: EventType) => {
+  // React.useEffect(() => {
+  //   setLoading(true);
+  //   fetchFilteredEvents({date: date, startTime: "00:00", endTime: "23:59"})
+  //     .then(data => setEvents(data.map(mapRawEvent)))
+  //     .catch(() => setError("Unable to load events."))
+  //     .finally(() => setLoading(false));
+  //   },[]
+  // );
 
-      addEventToTimeline(event, Number(null));
-    
+
+  const handleAddEvent = (event: EventType) => {
+    addEventToTimeline(event, Number(null)); 
   };
 
   const handleSurpriseMe = async (formData: { date: string; startTime: string; endTime: string }) => {

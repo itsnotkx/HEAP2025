@@ -15,7 +15,6 @@ interface SideBarProps {
   setExpanded: (expanded: boolean) => void;
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number, mode: TravelMode) => void;
-  moveTimelineEntry:(fromIndex: number, direction:"up" | "down") => void;
   mode: TravelMode;
   setMode: (mode: TravelMode) => void;
 }
@@ -24,7 +23,6 @@ interface DayPlannerProps {
   events: EventType[];
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number, mode: TravelMode) => void;
-  moveTimelineEntry:(fromIndex: number, direction:"up" | "down") => void;
   mode: TravelMode;
   setMode: (mode: TravelMode) => void;
 }
@@ -37,14 +35,13 @@ export default function SideBar({
   setExpanded,
   timeline,
   addEventToTimeline,
-  moveTimelineEntry,
+  // moveTimelineEntry,
   mode,
   setMode
 }: SideBarProps)  
 {
 
-  
-
+ 
 return (
   <div
     className={clsx(
@@ -82,7 +79,6 @@ return (
   events={events}
   timeline={timeline}
   addEventToTimeline={addEventToTimeline}
-  moveTimelineEntry={moveTimelineEntry}
   mode={mode}
   setMode={setMode}
 />}
