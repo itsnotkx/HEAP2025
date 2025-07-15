@@ -15,17 +15,10 @@ import {
 import { search } from "@/app/api/apis";
 import { useSession } from "next-auth/react";
 
-export default function FormBox({ onSubmit, onSurprise }, { date }: { date?: string }) {
-// ✅ Props typing
-interface FormBoxProps {
-  date?: string; // date passed in from URL param
-}
-
-export default function FormBox({ date}: FormBoxProps) {
+export default function FormBox({onSurprise, date } ) {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // ✅ Parse the incoming date string to DateValue
   const parsedDate: DateValue = date ? parseDate(date) : today(getLocalTimeZone());
 
   const [formData, setFormData] = useState({

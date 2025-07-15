@@ -8,7 +8,6 @@ import {
   TimelineDot,
   TimelineOppositeContent,
 } from '@mui/lab';
-import { Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import {Button, ButtonGroup} from "@heroui/button";
 import PlannerCard from '../PlannerCard';
 import { EventType } from "../../types/event";
@@ -103,12 +102,11 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
   return (
     <>
       <TravelModeSelector mode={mode} setMode={setMode} />
-      <Typography variant="h4" gutterBottom>Day Planner</Typography>
 
       <div>
 
 
-        <Timeline position="alternate">
+        <Timeline position="right">
   {timeline.map((item, idx) => {
     if (item.type === 'event' && item.event) {
       return (
@@ -117,14 +115,15 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
 
           </TimelineOppositeContent>
           <TimelineSeparator>
-            <TimelineDot color="primary" />
+            <TimelineDot className='bg-primary' />
             {idx < timeline.length - 1 && <TimelineConnector />}
           </TimelineSeparator>
+          
           <TimelineContent>
-            <Typography variant="h6" component="span">
+            <h2>
               {item.event.title}
-            </Typography>
-            <Typography variant="body2">{item.event.address}</Typography>
+            </h2>
+            <h2>{item.event.address}</h2>
           </TimelineContent>
         </TimelineItem>
       );

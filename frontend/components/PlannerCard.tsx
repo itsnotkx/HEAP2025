@@ -2,6 +2,9 @@ import React from "react";
 import { Button } from "@heroui/button";
 import { Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
 import { EventType } from "../types/event"; // Adjust path as needed
+import {Image} from "@heroui/react";
+import NextImage from "next/image";
+
 
 interface PlannerCardProps {
   event: EventType;
@@ -30,10 +33,11 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
   return (
     <Card className={`w-full max-w-sm h-full shadow-md hover:shadow-lg rounded-2xl ${className}`}>
       <CardHeader className="p-0">
-        <img
+        <Image
           src={imageUrl}
           alt={event.title}
-          className="w-full h-44 object-cover rounded-t-2xl bg-gray-100"
+          // as={NextImae}
+          className="w-full object-cover rounded-t-2xl bg-gray-100"
         />
       </CardHeader>
 

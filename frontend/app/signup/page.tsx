@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Input, Button, Card, CardBody } from "@heroui/react";
 import { signUp } from "../api/apis";
 import { useRouter } from "next/navigation";
+import {Image} from "@heroui/react";
 
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
@@ -43,7 +44,7 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md shadow-xl rounded-2xl p-6 bg-white">
         <CardBody>
-          <img
+          <Image
             src="/logo.svg"
             alt="KiasuPlanner Logo"
             className="w-48 h-48 object-contain mx-auto mb-4"

@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut, signIn } from "next-auth/react";
+import {Image} from "@heroui/react";
 
 interface NavigationbarProps {
   shouldHideOnScroll?: boolean;
@@ -65,7 +66,7 @@ export default function Navigationbar({ shouldHideOnScroll = true }: Navigationb
               aria-label="logo"
               style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
             >
-              <img
+              <Image
                 src="/logo.svg"
                 alt="Favicon"
                 width={100}
