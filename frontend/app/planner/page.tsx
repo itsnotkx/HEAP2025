@@ -58,25 +58,28 @@ export default function Planner() {
     setError(null);
 
     try {
-      const { date, startTime, endTime } = formData;
-
-      if (!date || !startTime || !endTime) {
+      // const { date, startTime, endTime } = formData;
+      if (!formData) {
         setError("Please select a date and time range for surprise events.");
         return;
       }
 
-      const starttime = `${date.toString()}T${startTime}`;
-      const endtime = `${date.toString()}T${endTime}`;
+      if (!session?.user?.id) {
+        setErrorMessage("Please log in to use this function.");
+        return;
+      }
+
+      console.log("user preferences--------");
+      console.log(session.user.preferences);
 
       const result = await fetchSurpriseMe({
-        starttime,
-        endtime,
-        userId: session?.user?.id || 'guest',
+        formData,
+        user_id: session.user.id,
+        user_preferences: session.user.preferences
       });
-
       setEvents(result.selected_events || []);
     } catch (err) {
-      setError("Unable to surprise.");
+      setError("An error in Surprise Me has occured.");
     } finally {
       setLoading(false);
     }
