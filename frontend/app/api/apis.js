@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const USERS_API = process.env.USERS_API_BASE_ENDPOINT || 'http://localhost:8000/api/users';
 const EVENTS_API = process.env.EVENTS_API_BASE_ENDPOINT || 'http://localhost:8000/api/events';
-const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT || 'http://localhost:8000/api/distance';
+const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT || 'http://localhost:8000/api/distance/';
 
 /**
  * 1) Sign in - POST /signin/traditional
@@ -82,15 +82,16 @@ export const fetchEventById = async (eventId) => {
 /*
 6) Gives the distance between two addresses
 */
-export const getDistanceBetweenVenues = async (
-  address1,
-  address2,
-  mode = "transit"
-) => {
+export const getDistanceBetweenVenues = async (address1, address2, mode = "Transit") => {
   try {
-    const response = await axios.post(DIST_API, { address1, address2, mode });
-    return response.data; // { distance, duration }
+    // address1 = encodeURIComponent(address1);
+    // address2 = encodeURIComponent(address2);
+    const response = await axios.get(DIST_API, {
+      params: { address1, address2, mode },
+    });
+    return response.data;
   } catch (error) {
+    console.error(error.response?.data || error);
     throw error.response?.data || error;
   }
 };

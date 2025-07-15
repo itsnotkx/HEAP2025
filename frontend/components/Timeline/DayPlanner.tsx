@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Timeline,
   TimelineItem,
@@ -7,13 +7,12 @@ import {
   TimelineContent,
   TimelineDot,
   TimelineOppositeContent,
-} from '@mui/lab';
-import {Button, ButtonGroup} from "@heroui/button";
-import PlannerCard from '../PlannerCard';
+} from "@mui/lab";
+import { Button, ButtonGroup } from "@heroui/button";
+import PlannerCard from "../PlannerCard";
 import { EventType } from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-
+import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 
 interface ModalProps {
   open: boolean;
@@ -37,7 +36,7 @@ function TravelModeSelector({ mode, setMode }: TravelModeSelectorProps) {
         labelId="mode-label"
         value={mode}
         label="Travel Mode"
-        onChange={e => setMode(e.target.value)}
+        onChange={(e) => setMode(e.target.value)}
       >
         <MenuItem value="transit">Transit</MenuItem>
         <MenuItem value="driving">Driving</MenuItem>
@@ -47,7 +46,6 @@ function TravelModeSelector({ mode, setMode }: TravelModeSelectorProps) {
     </FormControl>
   );
 }
-
 
 interface DayPlannerProps {
   events: EventType[];
@@ -61,26 +59,24 @@ interface GoogleMapsRouteButtonProps {
   mode: TravelMode;
 }
 
-function GoogleMapsRouteButton({ from, to, mode } : GoogleMapsRouteButtonProps) {
+function GoogleMapsRouteButton({ from, to, mode }: GoogleMapsRouteButtonProps) {
   const handleClick = () => {
     const origin = encodeURIComponent(from);
     const destination = encodeURIComponent(to);
     const travelMode = encodeURIComponent(mode); // e.g., driving, walking, transit, bicycling
 
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=${travelMode}`;
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
-  return (
-    <Button
-      onPress={handleClick}
-     >
-      View Route on Google Maps
-    </Button>
-  );
+  return <Button onPress={handleClick}>View Route on Google Maps</Button>;
 }
 
-export default function DayPlanner({ events, timeline, addEventToTimeline }: DayPlannerProps) {
+export default function DayPlanner({
+  events,
+  timeline,
+  addEventToTimeline,
+}: DayPlannerProps) {
   // REMOVE: const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [pendingEvent, setPendingEvent] = useState<EventType | null>(null);
@@ -102,84 +98,53 @@ export default function DayPlanner({ events, timeline, addEventToTimeline }: Day
   return (
     <>
       <TravelModeSelector mode={mode} setMode={setMode} />
-
       <div>
-
-
         <Timeline position="right">
-  {timeline.map((item, idx) => {
-    if (item.type === 'event' && item.event) {
-      return (
-        <TimelineItem key={idx}>
-          <TimelineOppositeContent color="text.secondary">
+          {timeline.map((item, idx) => {
+            if (item.type === "event" && item.event) {
+              return (
+                <TimelineItem key={idx}>
+                  <TimelineOppositeContent color="text.secondary"></TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineDot className="bg-primary" />
+                    {idx < timeline.length - 1 && <TimelineConnector />}
+                  </TimelineSeparator>
 
-          </TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot className='bg-primary' />
-            {idx < timeline.length - 1 && <TimelineConnector />}
-          </TimelineSeparator>
-          
-          <TimelineContent>
-            <h2>
-              {item.event.title}
-            </h2>
-            <h2>{item.event.address}</h2>
-          </TimelineContent>
-        </TimelineItem>
-      );
-    }
-    if (item.type === 'travel') {
-      return (
-        <TimelineItem key={idx}>
-          <TimelineOppositeContent color="text.secondary">
-            {item.duration} 
-          </TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot color="secondary" />
-            {idx < timeline.length - 1 && <TimelineConnector />}
-          </TimelineSeparator>
-          <TimelineContent>
-            <Typography variant="h6" color="secondary">
-              Travel
-            </Typography>
-            <Typography variant="body2">
-              {item.from} → {item.to}
-            </Typography>
-             <GoogleMapsRouteButton from={item.from} to={item.to} mode={mode} />
-          </TimelineContent>
-        </TimelineItem>
-      );
-    }
-    return null;
-  })}
-</Timeline>
-
-
+                  <TimelineContent>
+                    <h2>{item.event.title}</h2>
+                    <h2>{item.event.address}</h2>
+                  </TimelineContent>
+                </TimelineItem>
+              );
+            }
+            if (item.type === "travel") {
+              return (
+                <TimelineItem key={idx}>
+                  <TimelineOppositeContent color="text.secondary">
+                    {item.duration}
+                  </TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineDot color="secondary" />
+                    {idx < timeline.length - 1 && <TimelineConnector />}
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <h6>Travel</h6>
+                    <h6>
+                      {item.from} → {item.to}
+                    </h6>
+                    <GoogleMapsRouteButton
+                      from={item.from}
+                      to={item.to}
+                      mode={mode}
+                    />
+                  </TimelineContent>
+                </TimelineItem>
+              );
+            }
+            return null;
+          })}
+        </Timeline>
       </div>
     </>
   );
 }
-
-/*
-        <Timeline position="alternate">
-          {timeline.map((item, idx) => (
-            <TimelineItem key={idx}>
-              <TimelineOppositeContent color="text.secondary">
-                {item.duration} mins
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot color="primary" />
-                {idx < timeline.length - 1 && <TimelineConnector />}
-              </TimelineSeparator>
-              <TimelineContent>
-                <Typography variant="h6" component="span">
-                  {item.event.title}
-                </Typography>
-                <Typography variant="body2">{item.event.address}</Typography>
-              </TimelineContent>
-            </TimelineItem>
-          ))}
-        </Timeline>
-
-
-        */

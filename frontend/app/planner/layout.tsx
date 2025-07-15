@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const addEventToTimeline = async (
   event: EventType,
   duration: number,
-  modeParam: "transit" | "driving" | "walking" | "bicycling" = "transit"
+  modeParam: "Transit" | "driving" | "walking" | "bicycling" = "Transit"
 ) => {
   setTimeline(prevTimeline => prevTimeline);
 
