@@ -6,7 +6,7 @@ import {EventType} from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
 
 type TravelMode = "transit" | "driving" | "walking" | "bicycling";
-interface SideBarProps {
+interface SideBarProps {    
   events: EventType[];
   loading: boolean;
   error: string | null;

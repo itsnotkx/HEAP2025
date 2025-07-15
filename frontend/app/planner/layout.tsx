@@ -19,6 +19,8 @@ import { getDistanceBetweenVenues } from "../api/apis";
 
 import { TimelineContext } from "../../components/Timeline/TimelineContext";
 
+import { useSearchParams } from "next/navigation";
+
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -34,6 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const date = searchParams?.get("date") ?? ""; 
 
   const addEventToTimeline = async (
   event: EventType,
@@ -77,13 +82,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 };
 
 
-  useEffect(() => {
-    setLoading(true);
-    fetchAllEvents()
-      .then(data => setEvents(data.map(mapRawEvent)))
-      .catch(() => setError("Unable to load events."))
-      .finally(() => setLoading(false));
-  }, []);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   fetchAllEvents()
+  //     .then(data => setEvents(data.map(mapRawEvent)))
+  //     .catch(() => setError("Unable to load events."))
+  //     .finally(() => setLoading(false));
+  // }, []);
+
+
 
   return (
     <TimelineContext.Provider value={{ timeline, addEventToTimeline }}>

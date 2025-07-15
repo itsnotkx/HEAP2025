@@ -3,34 +3,46 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, DatePicker, Form, Input, TimeInput } from "@heroui/react";
+import {I18nProvider} from "@react-aria/i18n";
+
 import {
   getLocalTimeZone,
+  parseDate,
   today,
   Time,
+  DateValue,
 } from "@internationalized/date";
 import { search } from "@/app/api/apis";
 import { useSession } from "next-auth/react";
 
-export default function FormBox({ onSubmit }) {
+// ✅ Props typing
+interface FormBoxProps {
+  date?: string; // date passed in from URL param
+}
 
+export default function FormBox({ date}: FormBoxProps) {
   const { data: session } = useSession();
   const router = useRouter();
+
+  // ✅ Parse the incoming date string to DateValue
+  const parsedDate: DateValue = date ? parseDate(date) : today(getLocalTimeZone());
+
   const [formData, setFormData] = useState({
-    date: today(getLocalTimeZone()),
+    date: parsedDate,
     startTime: null,
-    endTime: null,
+    endTime: null, 
     keyword: ""
   });
 
   const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const { keyword, date, startTime, endTime } = formData;
@@ -42,12 +54,11 @@ export default function FormBox({ onSubmit }) {
       return;
     }
 
-    if (hasDateTime && formData.startTime > formData.endTime) {
+    if (hasDateTime && startTime > endTime) {
       setErrorMessage("End time must be after start time.");
       return;
     }
 
-    // Check if session exists
     if (!session?.user?.id) {
       setErrorMessage("Please log in to search for events.");
       return;
@@ -56,80 +67,50 @@ export default function FormBox({ onSubmit }) {
     setErrorMessage("");
     setIsLoading(true);
 
-    const searchParams = new URLSearchParams();
-
-    if (hasKeyword) {
-      searchParams.set("keyword", keyword.trim());
-    }
-
-    if (hasDateTime) {
-      const start = `${date.toString()}T${startTime}`;
-      const end = `${date.toString()}T${endTime}`;
-      searchParams.set("start_date", start);
-      searchParams.set("end_date", end);
-      searchParams.set("user_id", session.user.id)
-    }
-
-    // Update the browser URL and trigger navigation (optional: can use shallow routing)
-    const start_date = hasDateTime ? `${date.toString()}T${startTime}` : undefined;
-    const end_date = hasDateTime ? `${date.toString()}T${endTime}` : undefined;
+    const start = hasDateTime ? `${date.toString()}T${startTime}` : undefined;
+    const end = hasDateTime ? `${date.toString()}T${endTime}` : undefined;
 
     try {
-      const data = await search(keyword.trim(), start_date, end_date, session.user.id);
-      setResults(data); // show results
-      
-      // If no results found, show a message
+      const data = await search(keyword.trim(), start, end, session.user.id);
+      setResults(data);
+
       if (data.length === 0) {
         setErrorMessage("No events found for your search criteria.");
       }
     } catch (err) {
       console.error("Search error:", err);
-      
-      // Enhanced error handling with detailed messages
       let errorMsg = "Something went wrong while searching.";
-      
+
       if (err.response) {
-        // Server responded with error status
         const status = err.response.status;
         const data = err.response.data;
-        
-        console.error("Error response:", {
-          status,
-          data,
-          headers: err.response.headers
-        });
-        
         switch (status) {
           case 422:
-            errorMsg = `Validation error: ${data.detail || 'Invalid parameters provided'}`;
+            errorMsg = `Validation error: ${data.detail || 'Invalid parameters'}`;
             break;
           case 404:
-            errorMsg = data.detail || "No events found for the given criteria";
+            errorMsg = data.detail || "No events found.";
             break;
           case 401:
-            errorMsg = "Authentication required. Please log in again.";
+            errorMsg = "Authentication required.";
             break;
           case 403:
-            errorMsg = "Access denied. You don't have permission to perform this action.";
+            errorMsg = "Access denied.";
             break;
           case 500:
-            errorMsg = "Server error. Please try again later.";
+            errorMsg = "Server error.";
             break;
           default:
-            errorMsg = `Error ${status}: ${data.detail || data.message || 'Unknown error occurred'}`;
+            errorMsg = `Error ${status}: ${data.detail || 'Unknown error'}`;
         }
       } else if (err.request) {
-        // Request was made but no response received
-        console.error("No response received:", err.request);
-        errorMsg = "Network error. Please check your connection and try again.";
+        errorMsg = "Network error. Please try again.";
       } else {
-        // Something else happened
-        console.error("Request setup error:", err.message);
         errorMsg = `Request error: ${err.message}`;
       }
-      
+
       setErrorMessage(errorMsg);
-      setResults([]); // Clear any previous results
+      setResults([]);
     } finally {
       setIsLoading(false);
     }
@@ -151,12 +132,14 @@ export default function FormBox({ onSubmit }) {
         />
 
         <div className="flex flex-col gap-2">
+          <I18nProvider locale="en-SG">
           <DatePicker
             label="Date"
             value={formData.date}
             onChange={(val) => handleChange("date", val)}
             minValue={today(getLocalTimeZone())}
           />
+          </I18nProvider>
 
           <div className="flex gap-2">
             <TimeInput
@@ -187,7 +170,6 @@ export default function FormBox({ onSubmit }) {
         </Button>
       </form>
 
-      {/* Results Section */}
       {results.length > 0 && (
         <div className="mt-8 space-y-4">
           <h2 className="text-lg font-semibold">Results ({results.length})</h2>
@@ -207,4 +189,4 @@ export default function FormBox({ onSubmit }) {
       )}
     </div>
   );
-};
+}

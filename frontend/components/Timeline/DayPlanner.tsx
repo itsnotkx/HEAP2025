@@ -8,7 +8,8 @@ import {
   TimelineDot,
   TimelineOppositeContent,
 } from '@mui/lab';
-import { Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import {Button, ButtonGroup} from "@heroui/button";
 import PlannerCard from '../PlannerCard';
 import { EventType } from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
@@ -73,12 +74,8 @@ function GoogleMapsRouteButton({ from, to, mode } : GoogleMapsRouteButtonProps) 
 
   return (
     <Button
-      variant="outlined"
-      color="primary"
-      onClick={handleClick}
-      sx={{ mt: 1 }}
-      size="small" 
-    >
+      onPress={handleClick}
+     >
       View Route on Google Maps
     </Button>
   );
