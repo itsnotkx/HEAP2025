@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-// Assuming you use something like Vite or CRA and these env variables are exposed correctly
 const USERS_API = process.env.USERS_API_BASE_ENDPOINT || 'http://localhost:8000/api/users';
 const EVENTS_API = process.env.EVENTS_API_BASE_ENDPOINT || 'http://localhost:8000/api/events';
-const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT || 'http://localhost:8000/api/distance';
+const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT || 'http://localhost:8000/api/distance/';
 
 /**
  * 1) Sign in - POST /signin/traditional
@@ -19,8 +18,8 @@ export const signIn = async (email, password) => {
 
 export const ssoSignIn = async (email, username) => {
   try {
-     const response = await axios.post(`${USERS_API}/signin/sso`, { email, username });
-     console.log("response.data:", response.data);
+    const response = await axios.post(`${USERS_API}/signin/sso`, { email, username });
+    console.log("response.data:", response.data);
     return response.data;
   } catch (error) {
     console.log("Error in ssoSignIn:", error);
@@ -85,15 +84,16 @@ export const fetchEventById = async (eventId) => {
 /*
 6) Gives the distance between two addresses
 */
-export const getDistanceBetweenVenues = async (
-  address1,
-  address2,
-  mode = "transit"
-) => {
+export const getDistanceBetweenVenues = async (address1, address2, mode = "Transit") => {
   try {
-    const response = await axios.post(DIST_API, { address1, address2, mode });
-    return response.data; // { distance, duration }
+    // address1 = encodeURIComponent(address1);
+    // address2 = encodeURIComponent(address2);
+    const response = await axios.get(DIST_API, {
+      params: { address1, address2, mode },
+    });
+    return response.data;
   } catch (error) {
+    console.error(error.response?.data || error);
     throw error.response?.data || error;
   }
 };
@@ -103,8 +103,8 @@ export const search = async (keyword, start_date, end_date, user_id) => {
     const params = {};
 
     if (keyword) params.keyword = keyword;
-    if (start_date) params.start_date = start_date;
-    if (end_date) params.end_date = end_date;
+    if (start_date) params.start_date = start_date.toString();
+    if (end_date) params.end_date = end_date.toString();
     if (user_id) params.user_id = user_id;
 
     const response = await axios.get(`${EVENTS_API}/search`, {
@@ -117,3 +117,38 @@ export const search = async (keyword, start_date, end_date, user_id) => {
     return [];
   }
 };
+
+export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
+  try {
+    const { date, startTime, endTime } = formData;
+
+    const starttime = new Date(`${date}T${startTime}`);
+    const endtime = new Date(`${date}T${endTime}`);
+
+    // Convert to ISO strings like "2025-07-15T08:00:00"
+    const startISO = starttime.toISOString();
+    const endISO = endtime.toISOString();
+
+    // Call your search API
+    const events = await search(null, startISO, endISO, user_id);
+
+    // const startDate = `${startISO.toString()}T${startTime.toString()}:00`;
+    // const endDate = `${endISO.toString()}T${endTime.toString()}:00`;
+
+    // const events = await search(null, startDate, endDate, user_id);
+    
+    const response = await axios.post(`${EVENTS_API}/surpriseme`, {
+      event_results: events,
+      user_tags: user_preferences
+    });
+
+    if (response.status === 200 && response.data.result) {
+      return JSON.parse(response.data.result); // assuming it's a JSON string
+    }
+
+    throw new Error('Failed to fetch surprise');
+  } catch (error) {
+    console.error('Error fetching surprise:', error);
+    throw error.response?.data || error;
+  }
+}

@@ -2,7 +2,7 @@
 
 
 import React, { useState } from "react";
-import { Input, Button, Card, CardBody } from "@heroui/react";
+import { Input, Button, Card, CardBody, Image } from "@heroui/react";
 import { FcGoogle } from "react-icons/fc";
 import  {signIn}  from "@/app/api/apis"; // Make sure this path matches your file structure
 import { useRouter } from "next/navigation";
@@ -43,7 +43,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md shadow-xl rounded-2xl p-6 bg-white">
         <CardBody>
-          <img
+          <Image
             src="/logo.svg"
             alt="KiasuPlanner Logo"
             className="w-48 h-48 object-contain mx-auto mb-4"

@@ -26,7 +26,8 @@ const authOptions = {
         if (ssoResult) {
           console.log(ssoResult)
           user.dbUserId = ssoResult.user_id
-          console.log(user.dbUserId)
+          user.preferences = ssoResult.preferences;
+          // console.log(user.dbUserId)
           return true;
         } else {
           return false;
@@ -41,13 +42,18 @@ const authOptions = {
       // When user signs in, store the SSO user_id in the token
       if (user) {
         token.dbUserId = user.dbUserId;
+        token.preferences = user.preferences;
       }
+
+      // console.log(token.preferences)
       return token;
     },
 
     async session({ session, token }) {
       // Pass the SSO user_id from token to session
       session.user.id = token.dbUserId;
+      session.user.preferences = token.preferences;
+      // console.log(session.user.preferences)
       return session;
     },
   }

@@ -19,6 +19,8 @@ import { getDistanceBetweenVenues } from "../api/apis";
 
 import { TimelineContext } from "../../components/Timeline/TimelineContext";
 
+import { useSearchParams } from "next/navigation";
+
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -35,10 +37,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const searchParams = useSearchParams();
+  const date = searchParams?.get("date") ?? ""; 
+
   const addEventToTimeline = async (
   event: EventType,
   duration: number,
-  modeParam: "transit" | "driving" | "walking" | "bicycling" = "transit"
+  modeParam: "Transit" | "driving" | "walking" | "bicycling" = "Transit"
 ) => {
   setTimeline(prevTimeline => prevTimeline);
 
@@ -77,13 +82,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 };
 
 
-  useEffect(() => {
-    setLoading(true);
-    fetchAllEvents()
-      .then(data => setEvents(data.map(mapRawEvent)))
-      .catch(() => setError("Unable to load events."))
-      .finally(() => setLoading(false));
-  }, []);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   fetchAllEvents()
+  //     .then(data => setEvents(data.map(mapRawEvent)))
+  //     .catch(() => setError("Unable to load events."))
+  //     .finally(() => setLoading(false));
+  // }, []);
+
+
 
   return (
     <TimelineContext.Provider value={{ timeline, addEventToTimeline }}>
@@ -96,10 +103,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="relative">
           <div className="flex">
             <div
-              className="fixed left-0 top-[60px] h-[calc(100vh-20px)] border-r bg-white shadow z-20"
+              className="fixed left-0 top-[60px] h-[calc(100%)] border-r bg-white overflow-y-auto z-20"
               style={{
                 width: sidebarExpanded ? 400 : 70,
-                transition: "width 0.3s",
+                transition: "width 0.1s",
               }}>
               <SideBar
                 events={events}
@@ -114,14 +121,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               />
             </div>
             <div
-              className="w-full"
+              className="w-full pl-[70px]"
               style={{
-                paddingLeft: sidebarExpanded ? 400 : 70,
-                transition: "padding-left 0.3s",
+                // paddingLeft: sidebarExpanded ? 400 : 70,
+                // transition: "padding-left 0.3s",
               }}
             >
               <div className="flex justify-center mx-auto">
-                <div className="w-full md:max-w-6xl px-4 py-8">
+                <div className="w-full md:max-w-6xl px-1 py-8">
                   {children}
                 </div>
               </div>

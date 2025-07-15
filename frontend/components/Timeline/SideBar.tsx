@@ -6,7 +6,7 @@ import {EventType} from "../../types/event";
 import type { TimelineEntry } from "../../types/event";
 
 type TravelMode = "transit" | "driving" | "walking" | "bicycling";
-interface SideBarProps {
+interface SideBarProps {    
   events: EventType[];
   loading: boolean;
   error: string | null;
@@ -41,15 +41,17 @@ export default function SideBar({
 return (
   <div
     className={clsx(
-      "transition-all duration-0 bg-white h-full border-r shadow-md flex flex-col items-center",
+      "transition-all duration-0 bg-white h-100% border-r shadow-md flex flex-col items-center",
       expanded ? "w-[400px]" : "w-[70px]"
     )}
   >
     {expanded && (
       <div className="w-full flex flex-row items-center justify-between px-2 mt-4 mb-4">
-        <div className="">
-        <h1 className="text-l font-bold">Plan your day! </h1>
-        <p>Drag and drop events into this sidebar.</p>
+          <div className="px-4 pb-2">
+          <h2 className="text-xl font-semibold text-gray-800 mb-1">Plan Your Day</h2>
+          <p className="text-sm text-gray-500">
+            Add events to this planner and create your ideal schedule.
+          </p>
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
@@ -69,7 +71,7 @@ return (
         </button>
       </div>
     )}
-    {expanded && <DayPlanner
+  {expanded && <DayPlanner
   events={events}
   timeline={timeline}
   addEventToTimeline={addEventToTimeline}

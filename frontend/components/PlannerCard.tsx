@@ -1,165 +1,73 @@
-/*
+import React from "react";
+import { Button } from "@heroui/button";
+import { Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
+import { EventType } from "../types/event"; // Adjust path as needed
+import {Image} from "@heroui/react";
+import NextImage from "next/image";
 
-import { Button, Card, CardContent, Typography } from '@mui/material';
-import { Event } from "../types/event";
-import { useContext } from 'react';
-import { TimelineContext } from '../app/planner/layout';
-interface PlannerCardProps {
-  event: Event;
-  onAdd: (event: Event) => void;
-}
-
-export default function PlannerCard({ event, onAdd }: PlannerCardProps) {
-  return (
-    <Card
-        sx={{
-        width: 300,           // Set a fixed width (e.g., 300px)
-        height: 250,          // Set a fixed height (e.g., 180px)
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: 2,
-        boxSizing: 'border-box'}}>
-      <CardContent>
-        <Typography variant="h6">{event.title}</Typography>
-        <Typography>
-      <strong>Date:</strong>{" "}
-      {event.startDate ? new Date(event.startDate).toLocaleDateString() : "TBA"} –{" "}
-      {event.endDate ? new Date(event.endDate).toLocaleDateString() : "TBA"}
-        </Typography>
-        <Typography>
-          <strong>Address: </strong>
-          {event.address}
-        </Typography>
-        <Typography>
-        <strong>Price:</strong> {event.price || "TBA"}
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={() => onAdd(event)}
-          style={{ marginTop: 8 }}
-        >
-          Add to Timeline
-        </Button>
-      </CardContent>
-    </Card>
-  );
-}
-  */
-
-import { useRouter } from "next/navigation";
-import React from 'react';
-import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
-import { EventType } from '../types/event'; // Adjust path as needed
 
 interface PlannerCardProps {
   event: EventType;
   onAdd: (event: EventType) => void;
-  className?: string
+  className?: string;
 }
+
 const PLACEHOLDER_IMAGE = "/KiasuPlanner.png";
 
 function getEventImage(images: unknown): string {
   if (Array.isArray(images)) {
-    // Find the first non-null, non-empty string
     const validImage = images.find(
       (img) => typeof img === "string" && img.trim().length > 0
     );
-    return validImage || "/KiasuPlanner.png";
+    return validImage || PLACEHOLDER_IMAGE;
   }
-  // Handle if images is a single string
   if (typeof images === "string" && images.trim().length > 0) {
     return images;
   }
-  return "/KiasuPlanner.png";
+  return PLACEHOLDER_IMAGE;
 }
 
-const schibstedFont = { fontFamily: '"Schibsted Grotesk", Arial, sans-serif' };
 export default function PlannerCard({ event, onAdd, className }: PlannerCardProps) {
-
-  const router = useRouter();
-  const handleCardClick = () => {
-    console.log("PlannerCard clicked", event);
-    if (event.id) {
-      router.push(`/events/${event.id}`);
-    } else {
-      console.warn("No event ID found!", event);
-    }
-  };
+  const imageUrl = getEventImage(event.images);
 
   return (
-    <Card
-      onClick={handleCardClick}
-      sx={{
-        cursor: "pointer",
-        width: "100%",
-        minWidth: 200,
-        maxWidth: 340,
-        height: "100%",
-        maxheight: 350,
-        minHeight: 300,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        p: 2,
-        boxSizing: 'border-box',
-        ...schibstedFont,
-        boxShadow: 3,
-        transition: 'box-shadow 0.2s, transform 0.2s',
-        borderRadius: '16px',
-        '&:hover': { boxShadow: 8, transform: 'scale(1.02)' },
-               
-      }}
- 
-    >
-        {event.images && (
-        <CardMedia
-          component="img"
-          height="140"
-          image={getEventImage(event.images)}
+    <Card className={`w-full max-w-sm h-full shadow-md hover:shadow-lg rounded-2xl ${className}`}>
+      <CardHeader className="p-0">
+        <Image
+          src={imageUrl}
           alt={event.title}
-          sx={{ 
-            borderRadius: 2, 
-            objectFit: 'cover',
-            width: "100%",          
-            height: 180,
-            backgroundColor: "#f3f4f6",
-           }}
+          // as={NextImae}
+          className="w-full object-cover rounded-t-2xl bg-gray-100"
         />
-      )}
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" gutterBottom sx={schibstedFont}>
+      </CardHeader>
+
+        <CardHeader className="text-lg font-semibold">
           {event.title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Date:</strong>{' '}
+        </CardHeader>
+        <CardBody className="text-sm text-gray-600">
+          <strong>Date:</strong>{" "}
           {event.startDate
             ? new Date(event.startDate).toLocaleDateString()
-            : 'TBA'}
-          {' – '}
+            : "TBA"}
+          {" – "}
           {event.endDate
             ? new Date(event.endDate).toLocaleDateString()
-            : 'TBA'}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={schibstedFont}>
-          <strong>Price:</strong> {event.price || 'TBA'}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={schibstedFont}>
-          <strong>Address:</strong> {event.address || 'TBA'}
-        </Typography>
-        <Typography variant="body2" sx={{ mt: 1, ...schibstedFont }} >
-          {event.description || 'No description available.'}
-        </Typography>
-      </CardContent>
-      <Button
-        variant="contained"
-        onClick={e =>{ e.stopPropagation(); onAdd(event);}}
-        sx={{ mt: 2 }}
-        className="w-full bg-primary text-white py-3 rounded-xl shadow"
-        color="primary"
-      >
-        Add to Timeline
-      </Button>
+            : "TBA"}
+          <strong>Price:</strong> {event.price || "TBA"}
+          <strong>Address:</strong> {event.address || "TBA"}
+        <p className="text-sm text-gray-700 mt-1">
+          {event.description || "No description available."}
+        </p>
+      </CardBody>
+
+      <CardFooter className="p-4 pt-0">
+        <Button
+          onPress={() => onAdd(event)}
+          className="w-full bg-primary text-white py-2 rounded-xl shadow"
+        >
+          ADD TO DAY
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

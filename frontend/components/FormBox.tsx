@@ -3,34 +3,40 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, DatePicker, Form, Input, TimeInput } from "@heroui/react";
+import {I18nProvider} from "@react-aria/i18n";
+
 import {
   getLocalTimeZone,
+  parseDate,
   today,
   Time,
+  DateValue,
 } from "@internationalized/date";
 import { search } from "@/app/api/apis";
 import { useSession } from "next-auth/react";
 
-export default function FormBox({ onSubmit }) {
-
+export default function FormBox({onSurprise, date } ) {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const parsedDate: DateValue = date ? parseDate(date) : today(getLocalTimeZone());
+
   const [formData, setFormData] = useState({
-    date: today(getLocalTimeZone()),
+    date: parsedDate,
     startTime: null,
-    endTime: null,
+    endTime: null, 
     keyword: ""
   });
 
   const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const { keyword, date, startTime, endTime } = formData;
@@ -42,12 +48,11 @@ export default function FormBox({ onSubmit }) {
       return;
     }
 
-    if (hasDateTime && formData.startTime > formData.endTime) {
+    if (hasDateTime && startTime > endTime) {
       setErrorMessage("End time must be after start time.");
       return;
     }
 
-    // Check if session exists
     if (!session?.user?.id) {
       setErrorMessage("Please log in to search for events.");
       return;
@@ -87,9 +92,8 @@ export default function FormBox({ onSubmit }) {
       
       // Enhanced error handling with detailed messages
       let errorMsg = "Something went wrong while searching.";
-      
+
       if (err.response) {
-        // Server responded with error status
         const status = err.response.status;
         const data = err.response.data;
         
@@ -101,22 +105,22 @@ export default function FormBox({ onSubmit }) {
         
         switch (status) {
           case 422:
-            errorMsg = `Validation error: ${data.detail || 'Invalid parameters provided'}`;
+            errorMsg = `Validation error: ${data.detail || 'Invalid parameters'}`;
             break;
           case 404:
-            errorMsg = data.detail || "No events found for the given criteria";
+            errorMsg = data.detail || "No events found.";
             break;
           case 401:
-            errorMsg = "Authentication required. Please log in again.";
+            errorMsg = "Authentication required.";
             break;
           case 403:
-            errorMsg = "Access denied. You don't have permission to perform this action.";
+            errorMsg = "Access denied.";
             break;
           case 500:
-            errorMsg = "Server error. Please try again later.";
+            errorMsg = "Server error.";
             break;
           default:
-            errorMsg = `Error ${status}: ${data.detail || data.message || 'Unknown error occurred'}`;
+            errorMsg = `Error ${status}: ${data.detail || 'Unknown error'}`;
         }
       } else if (err.request) {
         // Request was made but no response received
@@ -127,17 +131,20 @@ export default function FormBox({ onSubmit }) {
         console.error("Request setup error:", err.message);
         errorMsg = `Request error: ${err.message}`;
       }
-      
+
       setErrorMessage(errorMsg);
-      setResults([]); // Clear any previous results
+      setResults([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSurpriseMe = (e: React.FormEvent) => {
+  // handleSurpriseClick - only calls onSurprise if provided
+  const handleSurpriseClick = (e) => {
     e.preventDefault();
-    router.push("/surprise");
+    if (onSurprise) {
+      onSurprise(formData);
+    }
   };
 
   return (
@@ -151,12 +158,14 @@ export default function FormBox({ onSubmit }) {
         />
 
         <div className="flex flex-col gap-2">
+          <I18nProvider locale="en-SG">
           <DatePicker
             label="Date"
             value={formData.date}
             onChange={(val) => handleChange("date", val)}
             minValue={today(getLocalTimeZone())}
           />
+          </I18nProvider>
 
           <div className="flex gap-2">
             <TimeInput
@@ -185,9 +194,20 @@ export default function FormBox({ onSubmit }) {
         >
           {isLoading ? "Searching..." : "Search"}
         </Button>
+
+        {/* Only show Surprise Me if onSurprise is provided */}
+        {onSurprise && (
+          <Button
+            type="button"
+            className="w-full bg-indigo-500 text-white py-3 rounded-xl shadow mt-2"
+            onClick={handleSurpriseClick}
+            disabled={isLoading}
+          >
+            Surprise Me!
+          </Button>
+        )}
       </form>
 
-      {/* Results Section */}
       {results.length > 0 && (
         <div className="mt-8 space-y-4">
           <h2 className="text-lg font-semibold">Results ({results.length})</h2>
@@ -207,4 +227,4 @@ export default function FormBox({ onSubmit }) {
       )}
     </div>
   );
-};
+}

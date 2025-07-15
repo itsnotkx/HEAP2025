@@ -6,8 +6,6 @@ from schemas.user import UserBase, UserCreate
 def get_user_by_email(db: Session, email: str):
     return db.query(User_Model).filter(User_Model.email == email).first()
 
-
-
 def verify_user_sso(db: Session, email: str, sso_id: str) -> bool:
     user = get_user_by_email(db, email)
     return user is not None and user.sso_id == sso_id

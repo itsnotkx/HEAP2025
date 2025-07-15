@@ -1,22 +1,66 @@
+import os
+import psycopg2
 from pulp import LpProblem, LpMaximize, LpVariable, lpSum, LpBinary, LpStatus, LpStatusOptimal
 from datetime import datetime, timedelta
 from math import radians, cos, sin, asin, sqrt, inf
 import json
-from fastapi import APIRouter, Depends, HTTPException, status, Query
 
-router = APIRouter(
-    prefix="/events",
-    tags=["events"]
-)
 
-@router.get("/surpriseme")
-def handler(event_results, user_tags, meal_one, meal_two, meal_three):
+def fetch_travel_time(lat1, lon1, lat2, lon2):
+    R = 6371
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    distance = R * c * 1.25 #distance in km, 1.25 multiplier to account for urban buildings
+    
+    if distance < 2:
+        #estimate with walking speed:
+        return distance / 5 * 60 #returns time in minutes
+    else:
+        return distance #returns time in minutes, estimates car time
+
+def handler(event, context):
     #parameters needed to schedule: start time, end time, user object
     #output: json object, array of events(in order)
 
     #1) fetch related events from database that fall within this timing
     try:
+        conn = psycopg2.connect(
+            host = os.getenv("DB_HOST"),
+            database=os.getenv('DB_NAME'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            port=os.getenv('DB_PORT', 5432)
+        )
+
+        cursor = conn.cursor()
+        start_time = event["queryStringParameters"]["starttime"]
+        end_time = event["queryStringParameters"]["endtime"]
+        userId = event["queryStringParameters"]["userId"]
+        meal_one = event["queryStringParameters"]["meal1"] #default: None
+        meal_two = event["queryStringParameters"]["meal2"] #default: None
+        meal_three = event["queryStringParameters"]["meal3"] #default: None
+        
+        params = (start_time, end_time)
+
+        event_query = """
+                SELECT * FROM events
+                WHERE start_date >= %s
+                AND (start_date + (duration || ' hours')::interval) <= %s
+                """
+        cursor.execute(event_query, params)
+        event_results = cursor.fetchall()
+
+        user_query = f"""
+                    SELECT * FROM user
+                    WHERE user_id = {userId}
+                    """
+        user = cursor.execute(user_query)
+        user_results = cursor.fetchall()
+        user_tags = user_results[3] #3 = preferences array
         specified_mealtimes = False
+        
         results_score_map = generate_score_map(event_results, user_tags)
 
         if meal_one:
@@ -168,18 +212,3 @@ def generate_schedule(results_score_map, specified_mealtimes):
             'status': prob.status,
             'status_description': LpStatus[prob.status]
         }
-    
-
-def fetch_travel_time(lat1, lon1, lat2, lon2):
-    R = 6371
-    dlat = radians(lat2 - lat1)
-    dlon = radians(lon2 - lon1)
-    a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a))
-    distance = R * c * 1.25 #distance in km, 1.25 multiplier to account for urban buildings
-    
-    if distance < 2:
-        #estimate with walking speed:
-        return distance / 5 * 60 #returns time in minutes
-    else:
-        return distance #returns time in minutes, estimates car time
