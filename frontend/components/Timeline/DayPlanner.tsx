@@ -10,7 +10,7 @@ import {
   TimelineOppositeContent,
 } from "@mui/lab";
 import { timelineItemClasses } from '@mui/lab/TimelineItem';
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { ChevronUpIcon, ChevronDownIcon, XCircleIcon} from "@heroicons/react/24/solid";
 
 import { Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
 import {Link} from "@heroui/link";
@@ -51,9 +51,7 @@ function TravelModeSelector({ mode, setMode }: TravelModeSelectorProps) {
 
 interface DayPlannerProps {
   events: EventType[];
-  // timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number) => void;
-  // moveTimelineEntry: (fromIndex: number, direction:"up" | "down") => void;
 }
 
 interface GoogleMapsRouteButtonProps {
@@ -90,7 +88,7 @@ export default function DayPlanner({
     setPendingEvent(event);
     setShowModal(true);
   };
-  const { timeline, moveTimelineEntry } = useTimeline();
+  const { timeline, moveTimelineEntry, removeTimeLineEntry} = useTimeline();
   useEffect(() => {
     console.log("🚀 Timeline updated:", timeline);
   }, [timeline]);
@@ -100,12 +98,13 @@ export default function DayPlanner({
       // Use the prop function to update timeline in parent!
       addEventToTimeline(pendingEvent, duration);
     }
-    setShowModal(false);
+    setShowModal(false);  
     setPendingEvent(null);
   };
 
   return (
     <>
+
       <div className="pl-5 w-full flex justify-start">
         <TravelModeSelector mode={mode} setMode={setMode} />
       </div>
@@ -124,15 +123,36 @@ export default function DayPlanner({
               return (
                 <TimelineItem key={idx}>
                   <TimelineSeparator>
-                    <TimelineDot sx={{ backgroundColor: '#2EC4B6'}}/>
+                    <TimelineDot sx={{ backgroundColor: '#2EC4B6'}}></TimelineDot>
                     {idx < timeline.length - 1 && <TimelineConnector />}
                   </TimelineSeparator>
                   <TimelineContent className="w-full">
-                    <Card className="w-full max-w-sm h-full shadow-md hover:shadow-lg rounded-2xl pr-3">
+                    <Card className="w-full max-w-sm shadow-md hover:shadow-lg rounded-2xl pr-3">
                       <div className="flex justify-between items-start">
+                        {/* <div className="flex flex-col p-0 m-0">
+                          <CardHeader className="pb-1 pt-1 font-bold">
+                            <Button  isIconOnly color="default" className=" text-white px-2"><XCircleIcon/></Button>
+                          </CardHeader>
+                        </div> */}
                         
                         <div className="flex flex-col">
-                          <CardHeader className="pb-1 pt-1 font-bold">{item.event.title}</CardHeader>
+                          <CardHeader className="pb-1 pt-1 font-bold">
+                            <span>{item.event.title}</span>
+
+                            <Button
+                              isIconOnly
+                              fullWidth={true}
+                              size="sm"
+                              color="default"
+                              radius="none"
+                              disableAnimation={true}
+                              className="m-0 p-0 rounded-full text-gray-500 "
+                              variant="light"
+                              onPress={() => removeTimeLineEntry(idx)}
+                            >
+                              <XCircleIcon className="h-5 w-5" />
+                            </Button>
+                          </CardHeader>
                           <CardBody className="pb-2 text-sm tracking-tight text-default-400">
                             {item.event.address}
                           </CardBody>
@@ -155,7 +175,7 @@ export default function DayPlanner({
               return (
                 <TimelineItem key={idx}>
                   <TimelineSeparator>
-                    <TimelineDot sx={{ backgroundColor: '#FF6B6B'}}/>
+                    <TimelineDot sx={{ backgroundColor: '#FF6B6B'}}></TimelineDot>
                     {idx < timeline.length - 1 && <TimelineConnector />}
                   </TimelineSeparator>
                   <TimelineContent>

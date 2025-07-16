@@ -6,6 +6,7 @@ interface TimelineContextType {
   timeline: TimelineEntry[];
   addEventToTimeline: (event: EventType, duration: number) => void;
   moveTimelineEntry: (fromIndex: number, direction:"up" | "down") => void;
+  removeTimeLineEntry: (idx: number) => void;
 }
 
 export const TimelineContext = createContext<TimelineContextType | undefined>(undefined);

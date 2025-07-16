@@ -20,7 +20,7 @@ interface NavigationbarProps {
   shouldHideOnScroll?: boolean;
 }
 
-export default function Navigationbar({ shouldHideOnScroll = true }: NavigationbarProps) {
+export default function Navigationbar({ shouldHideOnScroll = false }: NavigationbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [hydrated, setHydrated] = useState(false); // wait for client-side hydration
