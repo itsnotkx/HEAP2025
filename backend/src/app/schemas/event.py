@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 
 class EventBase(BaseModel):
@@ -12,11 +12,11 @@ class EventBase(BaseModel):
     categories: Optional[List[float]]
     description: Optional[str]
     images: Optional[List[str]]
-
+    lat: Optional[float]
+    long: Optional[float]
 
 class EventCreate(EventBase):
     organiser_id: int
-
 
 class EventUpdate(BaseModel):
     title: Optional[str]
@@ -27,7 +27,8 @@ class EventUpdate(BaseModel):
     categories: Optional[List[float]]
     description: Optional[str]
     images: Optional[List[str]]
-
+    lat: Optional[float]
+    long: Optional[float]
 
 class EventOut(EventBase):
     event_id: int
