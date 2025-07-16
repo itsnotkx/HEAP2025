@@ -62,9 +62,10 @@ CREATE TABLE Event (
     address TEXT,
     price DECIMAL(10, 2),
     categories FLOAT[],   -- Array of integers
-    description TEXT
-    organiser_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE;
-)
+    description TEXT,
+    organiser_id INTEGER REFERENCES "User"(user_id) ON DELETE CASCADE,
+    coords POINT
+);
 
 -- Participation History Table
 CREATE TABLE participation_history (
