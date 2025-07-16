@@ -202,10 +202,10 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <NavigationBar shouldHideOnScroll={false} />
-          <div className="relative">
-            <div className="flex">
+          <div className="relative min-h-screen">
+            <div className="flex min-h-screen">
               <div
-                className="fixed left-0 top-[60px] h-[calc(100%)] border-r bg-white overflow-y-auto z-20"
+                className="fixed left-0 top-[60px] min-h-screen border-r bg-white overflow-y-auto z-20"
                 style={{
                   width: sidebarExpanded ? 400 : 70,
                   transition: "width 0.1s",
@@ -227,7 +227,7 @@ export default function RootLayout({
               </div>
               <div className="w-full pl-[70px]">
                 <div className="flex justify-center mx-auto">
-                  <div className="w-full md:max-w-6xl px-1 py-8">
+                  <div className="w-full md:max-w-6xl px-1 p-[45px]">
                     {children}
                   </div>
                 </div>

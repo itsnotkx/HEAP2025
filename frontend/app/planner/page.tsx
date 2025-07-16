@@ -90,6 +90,7 @@ export default function Planner() {
       <Navigationbar />
       {/*Pass onSurprise to enable Surprise Me button */}
       <SearchForm onSurprise={handleSurpriseMe} date={date}/>
+      <main className="bg-gray-50 min-h-screen">
 
       <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
         <div className="max-w-6xl mx-auto px-4">
@@ -109,6 +110,7 @@ export default function Planner() {
           )}
         </div>
       </section>
+      </main>
 
       <footer className="text-left text-gray-400 py-4">
         © 2025 KiasuPlanner. All rights reserved.
