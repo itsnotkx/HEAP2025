@@ -31,13 +31,12 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
   const imageUrl = getEventImage(event.images);
 
   return (
-    <Card className={`w-full max-w-sm h-full shadow-md hover:shadow-lg rounded-2xl ${className}`}>
-      <CardHeader className="p-0">
+    <Card className={`w-full max-w-sm h-full shadow-md hover:shadow-lg ${className}`}>
+      <CardHeader className="p-0 justify-center">
         <Image
           src={imageUrl}
           alt={event.title}
-          // as={NextImae}
-          className="w-full object-cover rounded-t-2xl bg-gray-100"
+          className="w-full object-cover bg-gray-100"
         />
       </CardHeader>
 
@@ -55,9 +54,9 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
             : "TBA"}
           <strong>Price:</strong> {event.price || "TBA"}
           <strong>Address:</strong> {event.address || "TBA"}
-        <p className="text-sm text-gray-700 mt-1">
+        {/* <p className="text-sm text-gray-700 mt-1">
           {event.description || "No description available."}
-        </p>
+        </p> */}
       </CardBody>
 
       <CardFooter className="p-4 pt-0">
