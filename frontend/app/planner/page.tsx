@@ -1,35 +1,37 @@
 'use client';
 
+import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/PlannerCard";
 import SearchForm from "@/components/FormBox";
 import { useTimeline } from "@/components/Timeline/TimelineContext";
 
-import { fetchSurpriseMe } from "../api/apis";
 import { fetchAllEvents } from "../api/events";
+import { fetchSurpriseMe } from "../api/apis";
 import { mapRawEvent } from "../../types/event";
 
-import React from "react";
-import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
-
-// Types
 import type { EventType } from "../../types/event";
 
 export default function Planner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const date = searchParams?.get("date") ?? "";
   const surprise = searchParams?.get("surprise") === "true";
 
-  const { addEventToTimeline } = useTimeline();
   const { data: session } = useSession();
+  const { addEventToTimeline } = useTimeline();
 
-  const [events, setEvents] = React.useState<EventType[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [events, setEvents] = useState<EventType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch all events initially, unless "surprise" is true
-  React.useEffect(() => {
+  /**
+   * Initial fetch of all events (if not a surprise request).
+   */
+  useEffect(() => {
     if (!surprise) {
       setLoading(true);
       fetchAllEvents()
@@ -39,25 +41,27 @@ export default function Planner() {
     }
   }, [surprise]);
 
-  // Auto-trigger Surprise Me if ?surprise=true&date=YYYY-MM-DD and session is present
-  React.useEffect(() => {
+  /**
+   * Automatically trigger 'Surprise Me' if ?surprise=true in URL
+   */
+  useEffect(() => {
     if (surprise && date && session?.user?.id) {
       handleSurpriseMe({
         date,
         startTime: "09:00",
-        endTime: "18:00"
+        endTime: "18:00",
       });
     }
-    // Only run when these values change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surprise, date, session]);
 
-  const handleAddEvent = (event: EventType) => {
-    addEventToTimeline(event);
-  };
-
-  // Receives user trigger from SearchForm
-  const handleSurpriseMe = async (formData: { date: string; startTime: string; endTime: string }) => {
+  /**
+   * Handle manual 'Surprise Me' or SearchForm request
+   */
+  const handleSurpriseMe = async (formData: {
+    date: string;
+    startTime: string;
+    endTime: string;
+  }) => {
     setLoading(true);
     setError(null);
 
@@ -70,7 +74,7 @@ export default function Planner() {
       const result = await fetchSurpriseMe({
         formData,
         user_id: session.user.id,
-        user_preferences: session.user.preferences
+        user_preferences: session.user.preferences,
       });
 
       setEvents(result.selected_events || []);
@@ -81,20 +85,33 @@ export default function Planner() {
     }
   };
 
-  // To support manual filtering/searching (if SearchForm has this functionality)
+  /**
+   * Called when SearchForm returns custom-filtered results.
+   */
   const handleSearchResults = (data: EventType[]) => {
     setEvents(data.map(mapRawEvent));
   };
 
+  /**
+   * Add event to timeline (via Timeline Provider context).
+   */
+  const handleAddEvent = (event: EventType) => {
+    addEventToTimeline(event);
+  };
+
   return (
     <>
+      {/* Top Navbar */}
       <Navigationbar />
+
+      {/* Search bar with 'Surprise Me' + filters */}
       <SearchForm
         onSurprise={handleSurpriseMe}
         onSearchResults={handleSearchResults}
         date={date}
       />
 
+      {/* Main Event List Grid */}
       <main className="bg-gray-50 min-h-screen">
         <section id="event-cards" className="py-12 pt-16 mt-16">
           <div className="max-w-6xl mx-auto px-4">
@@ -122,6 +139,8 @@ export default function Planner() {
           </div>
         </section>
       </main>
+
+      {/* Footer */}
       <footer className="text-left text-gray-400 py-4">
         © 2025 KiasuPlanner. All rights reserved.
       </footer>

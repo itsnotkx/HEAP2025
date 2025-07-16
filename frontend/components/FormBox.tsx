@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, DatePicker, Form, Input, TimeInput } from "@heroui/react";
-import {I18nProvider} from "@react-aria/i18n";
+import { I18nProvider } from "@react-aria/i18n";
 
 import {
   getLocalTimeZone,
@@ -15,7 +15,15 @@ import {
 import { search } from "@/app/api/apis";
 import { useSession } from "next-auth/react";
 
-export default function FormBox({onSurprise, date } ) {
+export default function FormBox({
+  onSurprise,
+  onSearchResults,
+  date,
+}: {
+  onSurprise?: (formData: any) => void;
+  onSearchResults?: (results: any[]) => void;
+  date?: string;
+}) {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -24,7 +32,7 @@ export default function FormBox({onSurprise, date } ) {
   const [formData, setFormData] = useState({
     date: parsedDate,
     startTime: null,
-    endTime: null, 
+    endTime: null,
     keyword: ""
   });
 
@@ -82,27 +90,30 @@ export default function FormBox({onSurprise, date } ) {
     try {
       const data = await search(keyword.trim(), start_date, end_date, session.user.id);
       setResults(data); // show results
-      
+      if (onSearchResults) {
+        onSearchResults(data); // pass to parent
+      }
+
       // If no results found, show a message
       if (data.length === 0) {
         setErrorMessage("No events found for your search criteria.");
       }
     } catch (err) {
       console.error("Search error:", err);
-      
+
       // Enhanced error handling with detailed messages
       let errorMsg = "Something went wrong while searching.";
 
       if (err.response) {
         const status = err.response.status;
         const data = err.response.data;
-        
+
         console.error("Error response:", {
           status,
           data,
           headers: err.response.headers
         });
-        
+
         switch (status) {
           case 422:
             errorMsg = `Validation error: ${data.detail || 'Invalid parameters'}`;
@@ -159,12 +170,12 @@ export default function FormBox({onSurprise, date } ) {
 
         <div className="flex flex-col gap-2">
           <I18nProvider locale="en-SG">
-          <DatePicker
-            label="Date"
-            value={formData.date}
-            onChange={(val) => handleChange("date", val)}
-            minValue={today(getLocalTimeZone())}
-          />
+            <DatePicker
+              label="Date"
+              value={formData.date}
+              onChange={(val) => handleChange("date", val)}
+              minValue={today(getLocalTimeZone())}
+            />
           </I18nProvider>
 
           <div className="flex gap-2">
@@ -195,7 +206,6 @@ export default function FormBox({onSurprise, date } ) {
           {isLoading ? "Searching..." : "Search"}
         </Button>
 
-        {/* Only show Surprise Me if onSurprise is provided */}
         {onSurprise && (
           <Button
             type="button"
@@ -208,7 +218,7 @@ export default function FormBox({onSurprise, date } ) {
         )}
       </form>
 
-      {results.length > 0 && (
+      {/* {results.length > 0 && (
         <div className="mt-8 space-y-4">
           <h2 className="text-lg font-semibold">Results ({results.length})</h2>
           {results.map((event) => (
@@ -224,7 +234,7 @@ export default function FormBox({onSurprise, date } ) {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
