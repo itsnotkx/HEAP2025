@@ -3,7 +3,6 @@ import os
 import re
 import requests
 from typing import List, Optional
-from eventLib.event import Event
 
 
 API_KEY = os.getenv("STB_API_KEY")
@@ -76,7 +75,7 @@ def fetch_events(auth_header, limit=50, offset=0, keywords=None) -> dict:
     response.raise_for_status()
     return response.json()
 
-def parse_events(events: List[dict]) -> List[Event]:
+def parse_events(events: List[dict]) -> List[dict]:
     parsed = []
     for event in events:
         try:
@@ -121,21 +120,21 @@ def parse_events(events: List[dict]) -> List[Event]:
             official_link = event.get("website")
             url_list = [event.get("slug")] if event.get("slug") else []
 
-            parsed.append(Event(
-                title=title,
-                start_date=start_date,
-                end_date=end_date,
-                time=time,
-                location=location,
-                postal_code=postal_code,
-                category=None,
-                price=price,
-                description=description,
-                image_urls=image_urls,
-                organizer=organizer,
-                official_link=official_link,
-                url=url_list,
-            ))
+            parsed.append({
+                "title":title,
+                "start_date":start_date,
+                "end_date":end_date,
+                "time":time,
+                "location":location,
+                "postal_code":postal_code,
+                "category":None,
+                "price":price,
+                "description":description,
+                "image_urls":image_urls,
+                "organizer":organizer,
+                "official_link":official_link,
+                "url":url_list,
+            })
 
         except Exception as e:
             print(f"Unexpected error parsing event: {e}")
@@ -143,7 +142,7 @@ def parse_events(events: List[dict]) -> List[Event]:
     return parsed
 
 
-def scrape_stb_events() -> List[Event]:
+def scrape_stb_events() -> List[dict]:
     if not API_KEY:
         raise RuntimeError("Missing STB_API_KEY in environment.")
 
@@ -181,19 +180,17 @@ def scrape_stb_events() -> List[Event]:
 
     return all_events
 
-
-
-
 def lambda_handler(event, context):
     try:
         events = scrape_stb_events()
         print(f"Scraped {len(events)} events.")
-        return [e.to_dict() for e in events] 
+        return {
+            "statusCode":200,
+            "events":events
+        }
     except Exception as e:
         print(f"Error in Lambda: {e}")
         return {
             "statusCode": 500,
             "body": f"Error scraping events: {str(e)}"
         }
-    
-# print(lambda_handler({}, {}))  # For local testing, remove in production

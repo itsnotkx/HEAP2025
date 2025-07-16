@@ -1,25 +1,18 @@
 import re
 from datetime import datetime
 from typing import List, Optional, Tuple
-
 import requests
 from bs4 import BeautifulSoup
-from fastapi import FastAPI, HTTPException
 from dateutil import parser as date_parser
 
-from models import Event
-
-app = FastAPI()
 YEAR = 2025
 
-# ---------- Improved Regex Patterns ---------- #
-# More precise time regex that handles various formats
+
 TIME_REGEX = re.compile(
     r'(\d{1,2}(?:[:.]\d{2})?\s*(?:am|pm))\s*[-–—to]+\s*(\d{1,2}(?:[:.]\d{2})?\s*(?:am|pm))',
     re.IGNORECASE
 )
 
-# Enhanced price patterns with better boundary detection
 PRICE_PATTERNS = [
     re.compile(r'(?:admission|price|tickets?)[:\s]*(?:from\s+)?\$?(\d+(?:\.\d+)?)', re.I),
     re.compile(r'(?:from|starting\s+(?:at|from))\s+\$(\d+(?:\.\d+)?)', re.I),
@@ -27,7 +20,6 @@ PRICE_PATTERNS = [
     re.compile(r'\$(\d+(?:\.\d+)?)', re.I)
 ]
 
-# ---------- Helper Functions ---------- #
 def extract_postal_code(location: Optional[str]) -> Optional[str]:
     """Extract 6-digit postal code from location string."""
     if location:
@@ -195,18 +187,15 @@ def find_official_link(sibling) -> Optional[str]:
     return None
 
 # ---------- Main Scraper Function ---------- #
-def scrape_tsl_events() -> List[Event]:
+def scrape_tsl_events() -> List[dict]:
     """Main scraping function with improved extraction logic."""
     url = "https://thesmartlocal.com/read/things-to-do-this-weekend-singapore/"
     
-    try:
-        response = requests.get(url, timeout=15)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}")
+    response = requests.get(url, timeout=15)
+    response.raise_for_status()
     
     soup = BeautifulSoup(response.content, "html.parser")
-    events: List[Event] = []
+    events = []
     
     for header in soup.find_all('h3'):
         title = header.get_text(strip=True)
@@ -284,12 +273,23 @@ def scrape_tsl_events() -> List[Event]:
             event["image_urls"].append(img['src'])
         
         # Create Event object and add to list
-        events.append(Event(**event))
+        events.append(event)
     
     return events
 
-# ---------- FastAPI Route ---------- #
-@app.post("/scrape-tsl-events", response_model=List[Event])
-async def trigger_scraper():
-    """FastAPI endpoint to trigger the scraper."""
-    return scrape_tsl_events()
+
+
+def lambda_handler(event, context):
+    try:
+        events = scrape_tsl_events()
+        print(f"Scraped {len(events)} events.")
+        return {
+            "statusCode":200,
+            "events":events
+        }
+    except Exception as e:
+        print(f"Error in Lambda: {e}")
+        return {
+            "statusCode": 500,
+            "body": f"Error scraping events: {str(e)}"
+        }

@@ -4,7 +4,6 @@ from typing import List, Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser as date_parser
-from eventLib.event import Event
 
 YEAR = 2025
 
@@ -188,7 +187,7 @@ def find_official_link(sibling) -> Optional[str]:
     return None
 
 # ---------- Main Scraper Function ---------- #
-def scrape_tsl_events() -> List[Event]:
+def scrape_tsl_events() -> List[dict]:
     """Main scraping function with improved extraction logic."""
     url = "https://thesmartlocal.com/read/things-to-do-this-weekend-singapore/"
     
@@ -196,7 +195,7 @@ def scrape_tsl_events() -> List[Event]:
     response.raise_for_status()
     
     soup = BeautifulSoup(response.content, "html.parser")
-    events: List[Event] = []
+    events = []
     
     for header in soup.find_all('h3'):
         title = header.get_text(strip=True)
@@ -274,7 +273,7 @@ def scrape_tsl_events() -> List[Event]:
             event["image_urls"].append(img['src'])
         
         # Create Event object and add to list
-        events.append(Event(**event))
+        events.append(event)
     
     return events
 
@@ -284,7 +283,10 @@ def lambda_handler(event, context):
     try:
         events = scrape_tsl_events()
         print(f"Scraped {len(events)} events.")
-        return [e.to_dict() for e in events] 
+        return {
+            "statusCode":200,
+            "events":events
+        }
     except Exception as e:
         print(f"Error in Lambda: {e}")
         return {

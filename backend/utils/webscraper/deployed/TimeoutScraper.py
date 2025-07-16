@@ -2,7 +2,6 @@ import requests
 from typing import List, Optional
 from bs4 import BeautifulSoup
 from dateutil import parser as date_parser
-from eventLib.event import Event
 import re
 
 TIMEOUT_BASE_URL = "https://www.timeout.com"
@@ -60,7 +59,7 @@ def extract_price(text: str) -> Optional[str]:
 
 # --- Main Parser ---
 
-def parse_timeout_article(url: str) -> Event:
+def parse_timeout_article(url: str) -> dict:
     response = requests.get(url)
     response.raise_for_status()
     
@@ -122,21 +121,21 @@ def parse_timeout_article(url: str) -> Event:
             image_urls.append(src)
     image_urls = list(dict.fromkeys(image_urls))
 
-    return Event(
-        title=title,
-        start_date=start_date,
-        end_date=end_date,
-        time=time,
-        location="Singapore",
-        postal_code=None,
-        category=None,
-        price=price,
-        description=description,
-        image_urls=image_urls,
-        organizer="Time Out Singapore",
-        official_link=url,
-        url=[url]
-    )
+    return {
+                "title":title,
+                "start_date":start_date,
+                "end_date":end_date,
+                "time":time,
+                "location":"Singapore",
+                "postal_code":None,
+                "category":None,
+                "price":price,
+                "description":description,
+                "image_urls":image_urls,
+                "organizer":None,
+                "official_link":url,
+                "url":[url],
+            }
 
 # --- Route ---
 
@@ -155,7 +154,10 @@ def lambda_handler(event, context):
     try:
         events = scrape_timeout_events()
         print(f"Scraped {len(events)} events.")
-        return [e.to_dict() for e in events] 
+        return {
+            "statusCode":200,
+            "events":events
+        }
     except Exception as e:
         print(f"Error in Lambda: {e}")
         return {

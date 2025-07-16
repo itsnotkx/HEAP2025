@@ -1,18 +1,12 @@
+
 import os
 import re
 import requests
-from fastapi import FastAPI, HTTPException
 from typing import List, Optional
-from pydantic import BaseModel, ValidationError
-from dotenv import load_dotenv
-from models import Event
 
-load_dotenv()
 
 API_KEY = os.getenv("STB_API_KEY")
 EVENTS_API_URL = "https://api.stb.gov.sg/content/events/v2/search"
-
-app = FastAPI()
 
 EXCLUDED_TITLES = [
     "National Day 2025", "Hari Raya Haji 2025", "Chinese New Year", "Good Friday 2025",
@@ -48,8 +42,6 @@ SEARCH_KEYWORDS = [
     "park event"
 ]
 
-# --------- Helper Functions ---------
-
 def extract_postal_code(address: Optional[str]) -> Optional[str]:
     if not address:
         return None
@@ -83,12 +75,11 @@ def fetch_events(auth_header, limit=50, offset=0, keywords=None) -> dict:
     response.raise_for_status()
     return response.json()
 
-def parse_events(events: List[dict]) -> List[Event]:
+def parse_events(events: List[dict]) -> List[dict]:
     parsed = []
     for event in events:
         try:
             if not isinstance(event, dict):
-                print("Skipping non-dict event:", event)
                 continue
 
             name_data = event.get("name")
@@ -129,36 +120,31 @@ def parse_events(events: List[dict]) -> List[Event]:
             official_link = event.get("website")
             url_list = [event.get("slug")] if event.get("slug") else []
 
-            parsed.append(Event(
-                title=title,
-                start_date=start_date,
-                end_date=end_date,
-                time=time,
-                location=location,
-                postal_code=postal_code,
-                category=None,
-                price=price,
-                description=description,
-                image_urls=image_urls,
-                organizer=organizer,
-                official_link=official_link,
-                url=url_list,
-            ))
+            parsed.append({
+                "title":title,
+                "start_date":start_date,
+                "end_date":end_date,
+                "time":time,
+                "location":location,
+                "postal_code":postal_code,
+                "category":None,
+                "price":price,
+                "description":description,
+                "image_urls":image_urls,
+                "organizer":organizer,
+                "official_link":official_link,
+                "url":url_list,
+            })
 
-        except ValidationError as ve:
-            print(f"Validation error: {ve}")
         except Exception as e:
             print(f"Unexpected error parsing event: {e}")
 
     return parsed
 
 
-# --------- Route ---------
-
-@app.post("/scrape-stb-events", response_model=List[Event])
-def scrape_stb_events():
+def scrape_stb_events() -> List[dict]:
     if not API_KEY:
-        raise HTTPException(status_code=500, detail="Missing STB_API_KEY in environment.")
+        raise RuntimeError("Missing STB_API_KEY in environment.")
 
     auth_header = {"X-Api-Key": API_KEY}
     all_events = []
@@ -171,6 +157,7 @@ def scrape_stb_events():
         while True:
             try:
                 data = fetch_events(auth_header, limit=limit, offset=offset, keywords=[kw])
+                print(data)
             except Exception as e:
                 print(f"Error fetching events for keyword '{kw}': {e}")
                 break
@@ -192,3 +179,18 @@ def scrape_stb_events():
                 break
 
     return all_events
+
+def lambda_handler(event, context):
+    try:
+        events = scrape_stb_events()
+        print(f"Scraped {len(events)} events.")
+        return {
+            "statusCode":200,
+            "events":events
+        }
+    except Exception as e:
+        print(f"Error in Lambda: {e}")
+        return {
+            "statusCode": 500,
+            "body": f"Error scraping events: {str(e)}"
+        }
