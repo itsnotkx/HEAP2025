@@ -3,7 +3,7 @@
 import { fetchSurpriseMe } from '../api/apis';
 import Navigationbar from "@/components/navbar";
 import EventCard from "@/components/PlannerCard";
-import { fetchAllEvents, fetchFilteredEvents} from "../api/events";
+import { fetchAllEvents, fetchFilteredEvents } from "../api/events";
 import SearchForm from "@/components/FormBox";
 import React from "react";
 import { useTimeline } from "../../components/Timeline/TimelineContext";
@@ -33,22 +33,15 @@ export default function Planner() {
       .then(data => setEvents(data.map(mapRawEvent)))
       .catch(() => setError("Unable to load events."))
       .finally(() => setLoading(false));
-    },[]
+  }, []
   );
 
-
-  // React.useEffect(() => {
-  //   setLoading(true);
-  //   fetchFilteredEvents({date: date, startTime: "00:00", endTime: "23:59"})
-  //     .then(data => setEvents(data.map(mapRawEvent)))
-  //     .catch(() => setError("Unable to load events."))
-  //     .finally(() => setLoading(false));
-  //   },[]
-  // );
-
+  const handleSearchResults = (data: EventType[]) => {
+    setEvents(data.map(mapRawEvent)); // Same transformation as fetchAllEvents
+  };
 
   const handleAddEvent = (event: EventType) => {
-    addEventToTimeline(event, Number(null)); 
+    addEventToTimeline(event, Number(null));
   };
 
   const handleSurpriseMe = async (formData: { date: string; startTime: string; endTime: string }) => {
@@ -67,9 +60,6 @@ export default function Planner() {
         return;
       }
 
-      console.log("user preferences--------");
-      console.log(session.user.preferences);
-
       const result = await fetchSurpriseMe({
         formData,
         user_id: session.user.id,
@@ -83,33 +73,35 @@ export default function Planner() {
     }
   };
 
-
-
   return (
     <>
       <Navigationbar />
       {/*Pass onSurprise to enable Surprise Me button */}
-      <SearchForm onSurprise={handleSurpriseMe} date={date}/>
+      <SearchForm
+        onSurprise={handleSurpriseMe}
+        onSearchResults={handleSearchResults}
+        date={date}
+      />
       <main className="bg-gray-50 min-h-screen">
 
-      <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
-        <div className="max-w-6xl mx-auto px-4">
-          {loading && <p className="text-center text-gray-500">Loading events...</p>}
-          {error && <p className="text-center text-red-500">{error}</p>}
-          {!loading && !error && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
-              {events.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  onAdd={handleAddEvent}
-                  className="max-w-xs w-full"
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+        <section id="event-cards" className="bg-gray-50 min-h-screen py-12 pt-16 mt-16">
+          <div className="max-w-6xl mx-auto px-4">
+            {loading && <p className="text-center text-gray-500">Loading events...</p>}
+            {error && <p className="text-center text-red-500">{error}</p>}
+            {!loading && !error && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+                {events.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    onAdd={handleAddEvent}
+                    className="max-w-xs w-full"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       </main>
 
       <footer className="text-left text-gray-400 py-4">
