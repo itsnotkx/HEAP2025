@@ -22,14 +22,14 @@ export default function Planner() {
   const surprise = searchParams?.get("surprise") === "true";
 
   const { data: session } = useSession();
-  const { addEventToTimeline } = useTimeline();
+  const { addEventToTimeline, setSidebarExpanded } = useTimeline(); // ✅ includes sidebar trigger
 
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Initial fetch of all events (if not a surprise request).
+   * Fetch all available events unless surprise flag is set
    */
   useEffect(() => {
     if (!surprise) {
@@ -42,7 +42,7 @@ export default function Planner() {
   }, [surprise]);
 
   /**
-   * Automatically trigger 'Surprise Me' if ?surprise=true in URL
+   * Automatically trigger Surprise Me if flag is set in URL
    */
   useEffect(() => {
     if (surprise && date && session?.user?.id) {
@@ -55,7 +55,7 @@ export default function Planner() {
   }, [surprise, date, session]);
 
   /**
-   * Handle manual 'Surprise Me' or SearchForm request
+   * User-triggered or auto-triggered surprise
    */
   const handleSurpriseMe = async (formData: {
     date: string;
@@ -77,8 +77,19 @@ export default function Planner() {
         user_preferences: session.user.preferences,
       });
 
-      setEvents(result.selected_events || []);
+      const surpriseEvents = result.selected_events || [];
+
+      setEvents(surpriseEvents);
+
+      // Automatically add all events to timeline
+      surpriseEvents.forEach((event) => {
+        addEventToTimeline(event, 60); // default 60 minutes
+      });
+
+      // Automatically expand sidebar
+      setSidebarExpanded(true);
     } catch (err) {
+      console.error(err);
       setError("An error occurred while fetching Surprise Me events.");
     } finally {
       setLoading(false);
@@ -86,32 +97,29 @@ export default function Planner() {
   };
 
   /**
-   * Called when SearchForm returns custom-filtered results.
+   * SearchForm filters
    */
   const handleSearchResults = (data: EventType[]) => {
     setEvents(data.map(mapRawEvent));
   };
 
   /**
-   * Add event to timeline (via Timeline Provider context).
+   * Manual event add
    */
   const handleAddEvent = (event: EventType) => {
-    addEventToTimeline(event);
+    addEventToTimeline(event, 60);
   };
 
   return (
     <>
-      {/* Top Navbar */}
       <Navigationbar />
 
-      {/* Search bar with 'Surprise Me' + filters */}
       <SearchForm
         onSurprise={handleSurpriseMe}
         onSearchResults={handleSearchResults}
         date={date}
       />
 
-      {/* Main Event List Grid */}
       <main className="bg-gray-50 min-h-screen">
         <section id="event-cards" className="py-12 pt-16 mt-16">
           <div className="max-w-6xl mx-auto px-4">
@@ -140,7 +148,6 @@ export default function Planner() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="text-left text-gray-400 py-4">
         © 2025 KiasuPlanner. All rights reserved.
       </footer>

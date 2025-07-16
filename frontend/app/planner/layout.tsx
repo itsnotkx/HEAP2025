@@ -1,259 +1,128 @@
 "use client";
-import "@/styles/globals.css";
 
+import React, { useState } from "react";
 import clsx from "clsx";
-import NavigationBar from "@/components/navbar";
 import SideBar from "@/components/Timeline/SideBar";
+import { TimelineContext } from "@/components/Timeline/TimelineContext";
+import type { EventType, TimelineEntry } from "@/types/event";
+import { getDistanceBetweenVenues } from "@/app/api/apis";
 
-import { Providers } from "@/app/providers";
-
-import { fontSans } from "@/config/fonts";
-
-import React, { createContext, useState, useEffect } from "react";
-
-import type { EventType, TimelineEntry } from "../../types/event";
-import { getDistanceBetweenVenues } from "../api/apis";
-
-import { TimelineContext } from "../../components/Timeline/TimelineContext";
-
-import { useSearchParams } from "next/navigation";
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PlannerLayout({ children }: { children: React.ReactNode }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [mode, setMode] = useState<
-    "Transit" | "driving" | "walking" | "bicycling"
-  >("Transit");
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const [modeOverrides, setModeOverrides] = useState<Record<number, string>>({});
 
-  const [events, setEvents] = useState<EventType[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Helper: get just event entries
+  const getEventEntries = () =>
+    timeline.filter(e => e.type === "event") as TimelineEntry[];
 
-  const searchParams = useSearchParams();
-
+  // Add event
   const addEventToTimeline = async (
     event: EventType,
-    duration: number,
-    modeParam: "Transit" | "driving" | "walking" | "bicycling" = "Transit"
+    duration = 60,
+    defaultMode = "transit"
   ) => {
-    const prevTimeline = timeline;
-    const newTimeline = [...prevTimeline];
-
-    const lastEventEntry = [...prevTimeline]
-      .reverse()
-      .find((entry) => entry.type === "event") as
-      | { type: "event"; event: EventType; duration: number }
-      | undefined;
-
-    if (lastEventEntry) {
-      try {
-        const { duration: travelDuration } = await getDistanceBetweenVenues(
-          lastEventEntry.event.address,
-          event.address,
-          modeParam // Use the selected mode here
-        );
-        newTimeline.push({
-          type: "travel",
-          from: lastEventEntry.event.address,
-          to: event.address,
-          duration: travelDuration,
-        });
-      } catch (err) {
-        console.error("Failed to fetch travel duration", err);
-      }
-    }
-
-    newTimeline.push({
-      type: "event",
-      event,
-      duration,
-    });
-
-    setTimeline(newTimeline);
+    const eventEntries = getEventEntries();
+    eventEntries.push({ type: "event", event, duration } as TimelineEntry);
+    const rebuilt = await buildTimelineWithTravel(eventEntries, modeOverrides);
+    setTimeline(rebuilt);
   };
 
+  // Move event
+  const moveTimelineEntry = async (index: number, direction: "up" | "down") => {
+    const eventEntries = getEventEntries();
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= eventEntries.length) return;
+    [eventEntries[index], eventEntries[target]] = [eventEntries[target], eventEntries[index]];
+    const rebuilt = await buildTimelineWithTravel(eventEntries, modeOverrides);
+    setTimeline(rebuilt);
+  };
+
+  // Remove event
+  const removeTimeLineEntry = async (index: number) => {
+    const eventEntries = getEventEntries();
+    if (index < 0 || index > eventEntries.length - 1) return;
+    eventEntries.splice(index, 1);
+    const rebuilt = await buildTimelineWithTravel(eventEntries, modeOverrides);
+    setTimeline(rebuilt);
+  };
+
+  // 🔑 Update mode for **this travel segment (timeline index, not event index!)**
+  const updateSegmentMode = async (timelineIndex: number, mode: string) => {
+    const updated = { ...modeOverrides, [timelineIndex]: mode };
+    setModeOverrides(updated);
+
+    // 🎯 Always build from events only, not the timeline-with-travels
+    const eventEntries = getEventEntries();
+    const rebuilt = await buildTimelineWithTravel(eventEntries, updated);
+    setTimeline(rebuilt);
+  };
+
+  // This is the magic: build a [event, travel, event, ...] timeline, so each travel segment
+  // can be identified by its own index, matching the rendered dropdown!
   const buildTimelineWithTravel = async (
-    entries,
-    modeParam: "Transit" | "driving" | "walking" | "bicycling" = "Transit"
+    eventsOnly: TimelineEntry[], // Only events!
+    overrides: Record<number, string>
   ): Promise<TimelineEntry[]> => {
-    console.log("Building timeline with travel for entries:", entries);
-    const timeline: TimelineEntry[] = [];
-    for (let i = 0; i < entries.length; i++) {
-      if (entries[i].type !== "event") {
-        continue;
-      }
-      const currentEvent = entries[i].event;
-
-      // Insert the current event
-      timeline.push({
-        type: "event",
-        event: currentEvent,
-        duration: null,
-      });
-
-      // If there's a next event, compute travel
-      if (i < entries.length - 1) {
+    const result: TimelineEntry[] = [];
+    let travelTimelineIdx = 0;
+    for (let i = 0; i < eventsOnly.length; i++) {
+      const current = eventsOnly[i];
+      result.push(current);
+      if (i < eventsOnly.length - 1) {
+        const from = (current as any).event.address;
+        const to = (eventsOnly[i + 1] as any).event.address;
+        // The trick: use the precise index the segment will have in result
+        // It's always the current result.length (i.e. the next element)
+        const actualTravelIdx = result.length;
+        const mode = overrides[actualTravelIdx] || "transit";
         try {
-          const { duration: travelDuration } = await getDistanceBetweenVenues(
-            currentEvent.address,
-            entries[i + 1].event.address,
-            mode
-          );
-          const travelEntry: TimelineEntry = {
+          const { duration } = await getDistanceBetweenVenues(from, to, mode);
+          result.push({
             type: "travel",
-            from: currentEvent.address,
-            to: entries[i + 1].event.address,
-            duration: travelDuration,
-          };
-
-          timeline.push(travelEntry);
+            from,
+            to,
+            duration,
+            mode,
+          });
         } catch (err) {
-          console.error(
-            `Failed to get travel time between ${currentEvent.address} and ${
-              events[i + 1].address
-            }`,
-            err
-          );
+          result.push({
+            type: "travel",
+            from,
+            to,
+            duration: 0,
+            mode,
+          });
         }
       }
     }
-
-    return timeline;
+    return result;
   };
-
-  const moveTimelineEntry = async (idx: number, direction: "up" | "down") => {
-    if (idx < 0 || idx > timeline.length - 1) return;
-    const tempTimeline = [...timeline];
-    let startIdx = 0;
-    let endIdx = tempTimeline.length - 1;
-    if (direction === "up") {
-      if (idx === 0) return;
-      startIdx = idx - 4;
-      endIdx = idx + 2;
-    } else if (direction === "down") {
-      if (idx === tempTimeline.length - 1) return;
-      startIdx = idx - 2;
-      endIdx = idx + 4;
-    }
-    startIdx = Math.max(startIdx, 0);
-    endIdx = Math.min(endIdx, tempTimeline.length - 1);
-    const toRebuild: TimelineEntry[] = [];
-    let miniIdx = 0;
-    for (let i = startIdx; i <= endIdx; i++) {
-      const entry = tempTimeline[i];
-      if (entry == null || entry.type !== "event") continue;
-      toRebuild.push(entry);
-      if (i === idx) {
-        miniIdx = toRebuild.length - 1; // relative index in toRebuild
-      }
-    }
-    const undefRemoved = toRebuild.filter((item) => item !== undefined);
-    if (direction === "up" && miniIdx > 0) {
-      // Swap with element above
-      [undefRemoved[miniIdx], undefRemoved[miniIdx - 1]] = [
-        undefRemoved[miniIdx - 1],
-        undefRemoved[miniIdx],
-      ];
-    } else if (direction === "down" && miniIdx < undefRemoved.length - 1) {
-      // Swap with element below
-      [undefRemoved[miniIdx], undefRemoved[miniIdx + 1]] = [
-        undefRemoved[miniIdx + 1],
-        undefRemoved[miniIdx],
-      ];
-    }
-
-    const rebuilt = await buildTimelineWithTravel(undefRemoved, mode);
-
-    const newTimeline = [
-      ...timeline.slice(0, startIdx),
-      ...rebuilt,
-      ...timeline.slice(endIdx + 1),
-    ];
-    
-    setTimeline((prev) => newTimeline);
-  };
-const removeTimeLineEntry = async (idx: number) => {
-  if (idx < 0 || idx > timeline.length - 1) return;
-
-  const tempTimeline = [...timeline];
-  const entryToRemove = tempTimeline[idx];
-
-  // Only allow removal of events
-  if (entryToRemove == null || entryToRemove.type !== "event") return;
-
-  // Define range to rebuild — adjust padding as needed
-  let startIdx = Math.max(0, idx - 4);
-  let endIdx = Math.min(tempTimeline.length - 1, idx + 4);
-
-  const toRebuild: TimelineEntry[] = [];
-
-  for (let i = startIdx; i <= endIdx; i++) {
-    const entry = tempTimeline[i];
-    if (entry == null || entry.type !== "event" || i === idx) continue;
-    toRebuild.push(entry);
-  }
-
-  const rebuilt = await buildTimelineWithTravel(toRebuild, mode);
-
-  const newTimeline = [
-    ...timeline.slice(0, startIdx),
-    ...rebuilt,
-    ...timeline.slice(endIdx + 1),
-  ];
-
-  setTimeline((prev) => newTimeline);
-};
-
 
   return (
     <TimelineContext.Provider
-      value={{ timeline, addEventToTimeline, moveTimelineEntry, removeTimeLineEntry}}
+      value={{
+        timeline,
+        addEventToTimeline,
+        moveTimelineEntry,
+        removeTimeLineEntry,
+        setSidebarExpanded,
+        updateSegmentMode,
+      }}
     >
-      <div
-        className={clsx(
-          "text-foreground bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <NavigationBar shouldHideOnScroll={true} />
-          <div className="relative">
-            <div className="flex">
-              <div
-                className="fixed left-0 top-[60px] border-r bg-white overflow-y-auto z-20 h-screen pb-16"
-                style={{
-                  width: sidebarExpanded ? 400 : 70,
-                  transition: "width 0.1s",
-                }}
-              >
-                <SideBar
-                  events={events}
-                  loading={loading}
-                  error={error}
-                  expanded={sidebarExpanded}
-                  setExpanded={setSidebarExpanded}
-                  timeline={timeline}
-                  addEventToTimeline={(event, duration, modeParam) =>
-                    addEventToTimeline(event, duration, modeParam)
-                  }
-                  mode={mode}
-                  setMode={setMode}
-                />
-              </div>
-              <div className="w-full pl-[70px]">
-                <div className="flex justify-center mx-auto">
-                  <div className="w-full md:max-w-6xl px-1 p-[45px]">
-                    {children}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Providers>
+      <div className="flex">
+        <aside
+          className="fixed left-0 top-[60px] h-screen z-20 bg-white border-r transition-all overflow-y-auto"
+          style={{ width: sidebarExpanded ? 400 : 70 }}
+        >
+          <SideBar
+            expanded={sidebarExpanded}
+            setExpanded={setSidebarExpanded}
+          />
+        </aside>
+        <main className="w-full pl-[70px] md:pl-[400px] px-6 pt-[60px]">
+          {children}
+        </main>
       </div>
     </TimelineContext.Provider>
   );

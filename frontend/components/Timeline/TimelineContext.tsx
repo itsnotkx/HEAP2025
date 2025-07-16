@@ -1,12 +1,17 @@
-
-import React, { createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 import type { EventType, TimelineEntry } from "../../types/event";
 
-interface TimelineContextType {
+export interface TimelineContextType {
   timeline: TimelineEntry[];
-  addEventToTimeline: (event: EventType, duration: number) => void;
-  moveTimelineEntry: (fromIndex: number, direction:"up" | "down") => void;
-  removeTimeLineEntry: (idx: number) => void;
+  addEventToTimeline: (
+    event: EventType,
+    duration?: number,
+    mode?: string
+  ) => void;
+  moveTimelineEntry: (from: number, direction: "up" | "down") => void;
+  removeTimeLineEntry: (index: number) => void;
+  setSidebarExpanded: (expanded: boolean) => void;
+  updateSegmentMode: (index: number, mode: string) => void;
 }
 
 export const TimelineContext = createContext<TimelineContextType | undefined>(undefined);
