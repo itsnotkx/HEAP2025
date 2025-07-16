@@ -35,7 +35,6 @@ export default function SideBar({
   setExpanded,
   timeline,
   addEventToTimeline,
-  // moveTimelineEntry,
   mode,
   setMode
 }: SideBarProps)  
@@ -45,12 +44,12 @@ export default function SideBar({
 return (
   <div
     className={clsx(
-      "transition-all duration-0 bg-white min-h-screen border-r shadow-md flex flex-col items-center",
+      "transition-all duration-0 bg-white min-h-screen border-r shadow-md flex flex-col items-center overflow-y-auto",
       expanded ? "w-[400px]" : "w-[70px]"
     )}
   >
     {expanded && (
-      <div className="w-full flex flex-row items-center justify-between px-2 mt-4 mb-4">
+      <div className="w-full flex flex-row items-center justify-between px-2 mt-4 mb-4 overflow-y-auto">
           <div className="px-4 pb-2">
           <h2 className="text-xl font-semibold text-gray-800 mb-1">Plan Your Day</h2>
           <p className="text-sm text-gray-500">

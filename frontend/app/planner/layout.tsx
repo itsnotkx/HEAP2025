@@ -126,7 +126,6 @@ export default function RootLayout({
   };
 
   const moveTimelineEntry = async (idx: number, direction: "up" | "down") => {
-    console.log("moveTimelineEntry", idx, direction);
     if (idx < 0 || idx > timeline.length - 1) return;
     const tempTimeline = [...timeline];
     let startIdx = 0;
@@ -152,18 +151,9 @@ export default function RootLayout({
         miniIdx = toRebuild.length - 1; // relative index in toRebuild
       }
     }
-     // Swap with element above
-    // console.log("Swapping up", miniIdx, toRebuild[miniIdx], toRebuild[miniIdx - 1]);
     const undefRemoved = toRebuild.filter((item) => item !== undefined);
-    console.log("undefRemoved", undefRemoved);
     if (direction === "up" && miniIdx > 0) {
       // Swap with element above
-      console.log(
-        "Swapping up",
-        miniIdx,
-        undefRemoved[miniIdx],
-        undefRemoved[miniIdx - 1]
-      );
       [undefRemoved[miniIdx], undefRemoved[miniIdx - 1]] = [
         undefRemoved[miniIdx - 1],
         undefRemoved[miniIdx],
@@ -183,28 +173,58 @@ export default function RootLayout({
       ...rebuilt,
       ...timeline.slice(endIdx + 1),
     ];
-
+    
     setTimeline((prev) => newTimeline);
-    console.log("old timeline", timeline);
-    console.log("new timeline", newTimeline);
   };
+const removeTimeLineEntry = async (idx: number) => {
+  if (idx < 0 || idx > timeline.length - 1) return;
+
+  const tempTimeline = [...timeline];
+  const entryToRemove = tempTimeline[idx];
+
+  // Only allow removal of events
+  if (entryToRemove == null || entryToRemove.type !== "event") return;
+
+  // Define range to rebuild — adjust padding as needed
+  let startIdx = Math.max(0, idx - 4);
+  let endIdx = Math.min(tempTimeline.length - 1, idx + 4);
+
+  const toRebuild: TimelineEntry[] = [];
+
+  for (let i = startIdx; i <= endIdx; i++) {
+    const entry = tempTimeline[i];
+    if (entry == null || entry.type !== "event" || i === idx) continue;
+    toRebuild.push(entry);
+  }
+
+  const rebuilt = await buildTimelineWithTravel(toRebuild, mode);
+
+  const newTimeline = [
+    ...timeline.slice(0, startIdx),
+    ...rebuilt,
+    ...timeline.slice(endIdx + 1),
+  ];
+
+  setTimeline((prev) => newTimeline);
+};
+
 
   return (
     <TimelineContext.Provider
-      value={{ timeline, addEventToTimeline, moveTimelineEntry }}
+      value={{ timeline, addEventToTimeline, moveTimelineEntry, removeTimeLineEntry}}
     >
       <div
         className={clsx(
-          "min-h-screen text-foreground bg-background font-sans antialiased",
+          "text-foreground bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <NavigationBar shouldHideOnScroll={false} />
-          <div className="relative min-h-screen">
-            <div className="flex min-h-screen">
+          <NavigationBar shouldHideOnScroll={true} />
+          <div className="relative">
+            <div className="flex">
               <div
-                className="fixed left-0 top-[60px] min-h-screen border-r bg-white overflow-y-auto z-20"
+                className="fixed left-0 top-[60px] border-r bg-white overflow-y-auto z-20 h-screen pb-16"
                 style={{
                   width: sidebarExpanded ? 400 : 70,
                   transition: "width 0.1s",

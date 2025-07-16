@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <NavigationBar />
           <main className="flex justify-center px-6">
-            <div className="w-full md:max-w-6xl min-h-screen overflow-auto">
+            <div className="w-full md:max-w-6xl min-h-screen overflow-y-auto">
               {children}
             </div>
           </main>
