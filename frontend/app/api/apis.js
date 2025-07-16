@@ -81,6 +81,7 @@ export const fetchEventById = async (eventId) => {
 
 
 
+
 /*
 6) Gives the distance between two addresses
 */
