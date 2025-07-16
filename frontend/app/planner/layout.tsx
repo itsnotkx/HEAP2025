@@ -120,7 +120,7 @@ export default function PlannerLayout({ children }: { children: React.ReactNode 
             setExpanded={setSidebarExpanded}
           />
         </aside>
-        <main className="w-full pl-[70px] md:pl-[400px] px-6 pt-[60px]">
+        <main className="w-full pl-[70px] px-6 pt-[60px]">
           {children}
         </main>
       </div>
