@@ -3,6 +3,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from dateutil import parser as date_parser
 import re
+import json
 
 TIMEOUT_BASE_URL = "https://www.timeout.com"
 TIMEOUT_THINGS_TO_DO_URL = f"{TIMEOUT_BASE_URL}/singapore/things-to-do"
@@ -150,17 +151,33 @@ def scrape_timeout_events():
             print(f"Failed to parse {link}: {e}")
     return events
 
+MAX_STEPFUNCTION_PAYLOAD_SIZE = 256 * 1024  # 256KB
+
 def lambda_handler(event, context):
     try:
         events = scrape_timeout_events()
         print(f"Scraped {len(events)} events.")
-        return {
-            "statusCode":200,
-            "events":events
+        
+        # Trim events until under the payload limit
+        base_response = {
+            "statusCode": 200,
+            "events": []
         }
+
+        for event in events:
+            base_response["events"].append(event)
+            current_size = len(json.dumps(base_response).encode("utf-8"))
+            if current_size >= MAX_STEPFUNCTION_PAYLOAD_SIZE:
+                base_response["events"].pop()  # remove last to stay under limit
+                break
+        
+        print(f"Returning {len(base_response['events'])} events within size limit.")
+        return base_response
+
     except Exception as e:
         print(f"Error in Lambda: {e}")
         return {
             "statusCode": 500,
             "body": f"Error scraping events: {str(e)}"
         }
+

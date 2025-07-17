@@ -8,7 +8,7 @@ class Event(Base):
     event_id = Column(Integer, primary_key=True, index=True)
     title = Column(Text, nullable=False)
     start_date = Column(TIMESTAMP, nullable=False)
-    end_date = Column(TIMESTAMP, nullable=False)
+    end_date = Column(TIMESTAMP, nullable=True)
     address = Column(Text, nullable=True)
     price = Column(DECIMAL(10, 2), nullable=True)
     categories = Column(ARRAY(Float), nullable=True)
