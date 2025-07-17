@@ -139,7 +139,7 @@ export default function Planner() {
                     key={event.id}
                     event={event}
                     onAdd={handleAddEvent}
-                    className="max-w-xs w-full"
+                    className="max-w-xs"
                   />
                 ))}
               </div>

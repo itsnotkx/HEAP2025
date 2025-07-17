@@ -1,6 +1,8 @@
 "use client";
-import { Card, CardBody, CardFooter, Image } from "@heroui/react";
+import { Card, CardBody, CardFooter } from "@heroui/react";
 import Link from "next/link";
+import Image from 'next/image'
+
 
 export interface Event {
   id: string;
@@ -36,13 +38,17 @@ export default function EventCard({ event, className = "" }: EventCardProps) {
         className={`flex flex-col h-full w-full transition-transform hover:scale-105 shadow rounded-lg bg-white ${className}`}
       >
         {event["Image URL(s)"]?.[0] && (
-          <Image
-            src={event["Image URL(s)"][0]}
-            alt={displayTitle}
-            className="h-40 w-full object-cover"
-            height={160}
-            width="100%"
-          />
+        <div className="relative w-full aspect-[5/2] overflow-hidden">
+
+        <Image
+          src={event["Image URL(s)"][0]}
+          alt={displayTitle}
+          className="w-full h-40 object-cover"
+          width={400}          // fixed numeric width
+          height={160}         // fixed numeric height to match h-40 (40 x 4 = 160px)
+          unoptimized={true}   // optional: if images are from external source and not optimized
+        />
+        </div>
         )}
         <CardBody className="flex-1 flex flex-col p-4">
           <h3 className="font-bold text-lg mb-1">{displayTitle}</h3>

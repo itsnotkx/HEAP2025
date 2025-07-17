@@ -50,21 +50,23 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
     <Card
         onClick={() => {
     console.log("Card clicked");
-    handleCardClick();
+    handleCardClick(); 
   }}
-      className={`w-full max-w-sm h-full shadow-md hover:shadow-lg cursor-pointer ${className}`}
+  className={`w-full max-w-sm h-full flex flex-col shadow-md hover:shadow-lg cursor-pointer ${className}`}
       style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
     >
       <div onClick={handleCardClick}>
-      <CardHeader className="p-0">
+      <CardHeader className="p-0 justify-center">
         <Image
           src={imageUrl}
           alt={event.title}
-          className="w-full object-cover rounded-t-2xl bg-gray-100"
+          fallbackSrc="/logo.svg"
+          className="w-full min-h-[200px] max-h-[300px] object-contain bg-center object-center bg-no-repeat rounded-t-2xl bg-gray-100"
         />
       </CardHeader>
+          </div>
       <CardHeader className="text-lg font-semibold">{event.title}</CardHeader>
-      <CardBody className="text-sm text-gray-600" >
+<CardBody className="text-sm text-gray-600 flex-1 overflow-hidden">
         <strong>Date:</strong>{" "}
         {event.startDate
           ? new Date(event.startDate).toLocaleDateString()
@@ -90,7 +92,6 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
           ADD TO DAY
         </Button>
       </CardFooter>
-      </div>
     </Card>
   );
 }
