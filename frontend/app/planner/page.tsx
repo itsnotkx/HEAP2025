@@ -130,7 +130,6 @@ function PlannerContent() {
                     className="flex flex-col"
                     event={event}
                     onAdd={handleAddEvent}
-                    // className="max-w-xs"
                   />
                 ))}
               </div>
