@@ -64,50 +64,58 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
 
   return (
     <Card
-        onClick={() => {
+  onClick={() => {
     console.log("Card clicked");
-    handleCardClick(); 
+    handleCardClick();
   }}
   className={`w-full max-w-sm h-full flex flex-col shadow-md hover:shadow-lg cursor-pointer ${className}`}
-      style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
+  style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
+>
+  {/* Make this div flex-col and flex-grow to fill space */}
+  <div 
+    onClick={handleCardClick}
+    className="flex flex-col flex-grow min-h-0"
+  >
+    <CardHeader className="p-0">
+      <Image
+        src={imageUrl}
+        alt={event.title}
+        className="w-full object-cover rounded-t-2xl bg-gray-100"
+      />
+    </CardHeader>
+
+    <CardHeader className="text-lg font-semibold">
+      {event.title}
+    </CardHeader>
+
+    {/* Make CardBody grow to fill available space */}
+    <CardBody 
+      className="text-sm text-gray-600 flex-grow min-h-0"
     >
-      <div onClick={handleCardClick}>
-      <CardHeader className="p-0">
-        <Image
-          src={imageUrl}
-          alt={event.title}
-          className="w-full object-cover rounded-t-2xl bg-gray-100"
-        />
-      </CardHeader>
-      <CardHeader className="text-lg font-semibold">{event.title}</CardHeader>
-      <CardBody className="text-sm text-gray-600" >
-        <strong>Date:</strong>{" "}
-        {event.startDate
-          ? new Date(event.startDate).toLocaleDateString()
-          : "TBA"}
-        {" – "}
-        {event.endDate
-          ? new Date(event.endDate).toLocaleDateString()
-          : "TBA"}
-        <strong>Price:</strong> {event.price || "TBA"}
-        <strong>Address:</strong> {event.address || "TBA"}
-        {/*
-        <p className="text-sm text-gray-700 mt-1">
-          {event.description || "No description available."}
-        </p>
-        */}
-      </CardBody>
-      <CardFooter className="p-4 pt-0">
-        <Button
-          type="button"
-          onClick={handleAddClick}
-          className="w-full bg-primary text-white py-2 rounded-xl shadow"
-        >
-          ADD TO DAY
-        </Button>
-      </CardFooter>
-      </div>
-    </Card>
+      <strong>Date:</strong>{" "}
+      {event.startDate
+        ? new Date(event.startDate).toLocaleDateString()
+        : "TBA"}
+      {" – "}
+      {event.endDate
+        ? new Date(event.endDate).toLocaleDateString()
+        : "TBA"}
+      <strong>Price:</strong> {event.price || "TBA"}
+      <strong>Address:</strong> {event.address || "TBA"}
+    </CardBody>
+
+    {/* Footer stays at bottom since above grows */}
+    <CardFooter className="p-4 pt-0 mt-auto">
+      <Button
+        type="button"
+        onClick={handleAddClick}
+        className="w-full bg-primary text-white py-2 rounded-xl shadow"
+      >
+        ADD TO DAY
+      </Button>
+    </CardFooter>
+  </div>
+</Card>
   );
 };
 
