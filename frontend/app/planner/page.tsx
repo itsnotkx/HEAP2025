@@ -53,38 +53,54 @@ function PlannerContent() {
   //   }
   // }, [surprise, date, session]);
 
-  const handleSurpriseMe = async (formData: {
-    date: string;
-    startTime: string;
-    endTime: string;
-  }): Promise<void> => {
-    setLoading(true);
-    setError(null);
 
-    try {
-      if (!formData.date || !session?.user?.id) {
-        setError("Please log in and select a valid date.");
-        return;
-      }
+const handleSurpriseMe = async (formData: {
+  date: string;
+  startTime: string;
+  endTime: string;
+}): Promise<void> => {
+  setLoading(true);
+  setError(null);
 
-      if (!formData.startTime && !formData.endTime) {
-        setError("Please enter a valid start and end time");
-        return;
-      }
-
-      const surpriseEvents = await fetchSurpriseMe({
-        formData,
-        user_id: session.user.id,
-        user_preferences: session.user.preferences,
-      });
-      
-    } catch (err) {
-      console.error(err);
-      setError("An error occurred while fetching Surprise Me events.");
-    } finally {
+  try {
+    if (!formData.date || !session?.user?.id) {
+      setError("Please log in and select a valid date.");
       setLoading(false);
+      return;
     }
-  };
+
+    if (!formData.startTime || !formData.endTime) {
+      setError("Please enter a valid start and end time");
+      setLoading(false);
+      return;
+    }
+
+    // Fetch surprise events from backend
+    const surpriseEvents: EventType[] = await fetchSurpriseMe({
+      formData,
+      user_id: session.user.id,
+      user_preferences: session.user.preferences,
+    });
+
+    if (!Array.isArray(surpriseEvents) || surpriseEvents.length === 0) {
+      setError("No Surprise Me events returned.");
+      setLoading(false);
+      return;
+    }
+
+    // Add all surprise events one by one, awaiting each addition
+    for (const event of surpriseEvents) {
+      await addEventToTimeline(event, 60, "transit");
+    }
+
+    setSidebarExpanded(true);
+  } catch (err) {
+    console.error(err);
+    setError("An error occurred while fetching Surprise Me events.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSearchResults = (data: EventType[]) => {
     setEvents(data);

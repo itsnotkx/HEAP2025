@@ -88,10 +88,12 @@ export const fetchEventById = async (eventId) => {
 */
 export const getDistanceBetweenVenues = async (address1, address2, mode = "Transit") => {
   try {
-    // address1 = encodeURIComponent(address1);
-    // address2 = encodeURIComponent(address2);
+    if (!address1?.trim() || !address2?.trim()) {
+      return { distance: null, duration: null, error: "Invalid addresses" };
+    }
+    // Pass mode lowercase to match backend expectations
     const response = await axios.get(DIST_API, {
-      params: { address1, address2, mode },
+      params: { address1, address2, mode: mode.toLowerCase() },
     });
     return response.data;
   } catch (error) {
@@ -120,6 +122,7 @@ export const search = async (keyword, start_date, end_date, user_id) => {
   }
 };
 
+/*
 export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
   try {
     const { date, startTime, endTime } = formData;
@@ -147,6 +150,45 @@ export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
       return response.data;
     }
 
+  } catch (error) {
+    console.error('Error fetching surprise:', error);
+    throw error.response?.data || error;
+  }
+}
+*/
+
+export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
+  try {
+    const { date, startTime, endTime } = formData;
+
+    const starttime = new Date(`${date}T${startTime}`);
+    const endtime = new Date(`${date}T${endTime}`);
+
+    // Convert to ISO strings like "2025-07-15T08:00:00"
+    const startISO = starttime.toISOString();
+    const endISO = endtime.toISOString();
+
+    // Call your search API
+    const events = await search(null, startISO, endISO, user_id);
+
+    const response = await axios.post(`${EVENTS_API}/surpriseme`, {
+      event_results: events,
+      user_tags: user_preferences,
+    });
+
+    console.log('Surprise API response data:', response.data); // <-- debug log all response data
+
+    if (response.status === 200 && response.data.result) {
+      try {
+        return JSON.parse(response.data.result);
+      } catch (parseError) {
+        console.error('Failed parsing surprise result JSON:', parseError, response.data.result);
+        throw parseError;
+      }
+    }
+
+    console.error('Unexpected response:', response);
+    throw new Error('Failed to fetch surprise');
   } catch (error) {
     console.error('Error fetching surprise:', error);
     throw error.response?.data || error;
