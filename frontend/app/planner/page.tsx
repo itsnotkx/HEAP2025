@@ -122,10 +122,10 @@ function PlannerContent() {
                 {events.map((event: EventType) => (
                   <EventCard
                     key={event.id}
-                    className="max-w-xs w-full"
+                    className="flex flex-col"
                     event={event}
                     onAdd={handleAddEvent}
-                  />
+                   />
                 ))}
               </div>
             )}
