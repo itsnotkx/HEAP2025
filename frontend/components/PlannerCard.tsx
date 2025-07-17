@@ -31,14 +31,15 @@ function getEventImage(images: unknown): string {
   return PLACEHOLDER_IMAGE;
 }
 
-export default function PlannerCard({
+const PlannerCard: React.FC<PlannerCardProps> = ({
   event,
   onAdd,
   className,
-}: PlannerCardProps) {
+}) => {
   const router = useRouter();
   const imageUrl = getEventImage(event.images);
 
+  // Navigate to event details page
   const handleCardClick = () => {
     if (event.id !== undefined && event.id !== null) {
       router.push(`/events/${event.id}`);
@@ -47,6 +48,7 @@ export default function PlannerCard({
     }
   };
 
+  // Support keyboard accessibility (Enter, Space) for clickable div
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -54,20 +56,19 @@ export default function PlannerCard({
     }
   };
 
+  // Handle Add button click and prevent event bubbling to main clickable div
   const handleAddClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card's onClick
+    e.stopPropagation();
     onAdd(event);
   };
 
   return (
     <Card
-      className={`w-full max-w-sm h-full shadow-md hover:shadow-lg cursor-pointer ${className}`}
+      className={`w-full max-w-sm h-full shadow-md hover:shadow-lg cursor-pointer ${className || ""}`}
       style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
-      // Removing onClick from here to avoid duplicate event handling;
-      // making the focusable div handle interaction instead
     >
-      {/* Making this div the interactive element */}
       <div
+        aria-label={`View details for ${event.title}`}
         className="focus:outline-none"
         role="button"
         tabIndex={0}
@@ -81,21 +82,28 @@ export default function PlannerCard({
             src={imageUrl}
           />
         </CardHeader>
+
         <CardHeader className="text-lg font-semibold">{event.title}</CardHeader>
+
         <CardBody className="text-sm text-gray-600">
-          <strong>Date:</strong>{" "}
-          {event.startDate
-            ? new Date(event.startDate).toLocaleDateString()
-            : "TBA"}
-          {" – "}
-          {event.endDate
-            ? new Date(event.endDate).toLocaleDateString()
-            : "TBA"}{" "}
-          <br />
-          <strong>Price:</strong> {event.price || "TBA"}
-          <br />
-          <strong>Address:</strong> {event.address || "TBA"}
+          <p>
+            <strong>Date:</strong>{" "}
+            {event.startDate
+              ? new Date(event.startDate).toLocaleDateString()
+              : "TBA"}{" "}
+            –{" "}
+            {event.endDate
+              ? new Date(event.endDate).toLocaleDateString()
+              : "TBA"}
+          </p>
+          <p>
+            <strong>Price:</strong> {event.price || "TBA"}
+          </p>
+          <p>
+            <strong>Address:</strong> {event.address || "TBA"}
+          </p>
         </CardBody>
+
         <CardFooter className="p-4 pt-0">
           <Button
             className="w-full bg-primary text-white py-2 rounded-xl shadow"
@@ -108,4 +116,6 @@ export default function PlannerCard({
       </div>
     </Card>
   );
-}
+};
+
+export default PlannerCard;

@@ -53,6 +53,10 @@ export function mapRawEvent(raw: RawEvent): EventType {
 }
 
 // In types/event.ts or types/timeline.ts
+export type TravelMode = "transit" | "walking" | "bicycling" | "driving";
+
 export type TimelineEntry =
   | { type: "event"; event: EventType; duration: number | null }
-  | { type: "travel"; from: string; to: string; duration: number | null };
+  | { type: "travel"; from: string; to: string; duration: number | null; mode: TravelMode };
+
+  

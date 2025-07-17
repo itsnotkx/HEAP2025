@@ -1,97 +1,93 @@
 "use client";
 
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Calendar, MapPin } from "lucide-react";
 import { Button } from "@heroui/button";
 import { DatePicker } from "@heroui/date-picker";
-import React, { useState, useMemo } from "react";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { I18nProvider } from "@react-aria/i18n";
 
-// Demo function to produce "realistic" travel times between each event pair, given their names and mode
-const getDemoDuration = (from, to, mode) => {
-  // Just examples; replace with a Maps API call for real durations
+// ----- Types -----
+type TravelMode = "transit" | "walking" | "bicycling" | "driving";
+
+interface EventItem {
+  name: string;
+  address: string;
+}
+
+// ----- Demo function -----
+function getDemoDuration(from: string, to: string, mode: TravelMode): number {
   const base =
     from === "Singapore Zoo" && to === "Lunch"
       ? 14
       : from === "Lunch" && to === "River Safari"
-        ? 8
-        : 11;
+      ? 8
+      : 11;
   const multiplier =
     mode === "transit"
       ? 1
       : mode === "walking"
-        ? 3
-        : mode === "bicycling"
-          ? 1.5
-          : mode === "driving"
-            ? 0.9
-            : 1;
-
+      ? 3
+      : mode === "bicycling"
+      ? 1.5
+      : mode === "driving"
+      ? 0.9
+      : 1;
   return Math.round(base * multiplier);
-};
+}
 
-// All supported modes and their icons
-const modeOptions = [
+// ----- Modes and Colors -----
+const modeOptions: { value: TravelMode; label: string; icon: string }[] = [
   { value: "transit", label: "Transit", icon: "🚌" },
   { value: "walking", label: "Walking", icon: "🚶🏻" },
   { value: "bicycling", label: "Cycling", icon: "🚴🏻" },
   { value: "driving", label: "Driving", icon: "🚗" },
 ];
-const travelColors = {
+
+const travelColors: Record<TravelMode, string> = {
   transit: "bg-cyan-100 text-cyan-800 border-cyan-200",
   driving: "bg-orange-100 text-orange-800 border-orange-200",
   walking: "bg-green-100 text-green-800 border-green-200",
   bicycling: "bg-violet-100 text-violet-800 border-violet-200",
 };
 
+// ===== Main Component =====
+
 export default function App() {
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{ date: ReturnType<typeof today> }>({
     date: today(getLocalTimeZone()),
   });
 
-  // Core event array
-  const [events, setEvents] = useState([
-    {
-      name: "Singapore Zoo",
-      address: "80 Mandai Lake Rd, Singapore",
-    },
-    {
-      name: "Lunch",
-      address: "HaiDiLao Jurong East",
-    },
-    {
-      name: "River Safari",
-      address: "River Wonders, Mandai",
-    },
+  const [events, setEvents] = useState<EventItem[]>([
+    { name: "Singapore Zoo", address: "80 Mandai Lake Rd, Singapore" },
+    { name: "Lunch", address: "HaiDiLao Jurong East" },
+    { name: "River Safari", address: "River Wonders, Mandai" },
   ]);
-  // Per-segment (between events) modes; default to all "transit"
-  const [modes, setModes] = useState(["transit", "transit"]);
+  const [modes, setModes] = useState<TravelMode[]>(["transit", "transit"]);
 
-  // Calculate durations for every between-event segment
+  // ----- Calculate segment durations -----
   const travelDurations = useMemo(
     () =>
       events
         .slice(0, -1)
         .map((from, idx) =>
-          getDemoDuration(from.name, events[idx + 1].name, modes[idx]),
+          getDemoDuration(from.name, events[idx + 1]?.name, modes[idx]),
         ),
-    [events, modes],
+    [events, modes]
   );
 
-  // --- Move events (and update modes order accordingly) ---
-  const moveEvent = (index, direction) => {
+  // ----- Move event -----
+  function moveEvent(index: number, direction: "up" | "down") {
     if (
       (direction === "up" && index === 0) ||
       (direction === "down" && index === events.length - 1)
-    )
+    ) {
       return;
-
-    // Swap events
+    }
     const newEvents = [...events];
-
     if (direction === "up") {
       [newEvents[index - 1], newEvents[index]] = [
         newEvents[index],
@@ -103,14 +99,9 @@ export default function App() {
         newEvents[index],
       ];
     }
-
-    // Move modes so each segment stays between same event pairs
     let newModes = [...modes];
-
     if (direction === "up" && index > 0) {
-      // When moving event up, swap the mode below with the mode above
       if (index === events.length - 1) {
-        // Last event moved up — just reorder the previous mode
         newModes = [
           ...newModes.slice(0, index - 1),
           newModes[index],
@@ -128,35 +119,29 @@ export default function App() {
         newModes[index],
       ];
     }
-
     setEvents(newEvents);
     setModes(newModes.slice(0, newEvents.length - 1));
-  };
+  }
 
-  // --- Change mode for segment ---
-  const changeMode = (segmentIdx, newMode) => {
+  // ----- Change mode -----
+  function changeMode(segmentIdx: number, newMode: TravelMode) {
     const newModes = [...modes];
-
     newModes[segmentIdx] = newMode;
     setModes(newModes);
-  };
+  }
 
-  const handleChange = (field, value) => {
+  // ----- Form handlers -----
+  function handleChange(field: string, value: any) {
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  }
+  function handleSubmit() {
+    router.push(`/planner?date=${formData.date.toString()}`);
+  }
+  function handleSurpriseMe() {
+    router.push(`/planner?date=${formData.date.toString()}&surprise=true`);
+  }
 
-  const handleSubmit = () => {
-    const selectedDate = formData.date.toString();
-
-    router.push(`/planner?date=${selectedDate}`);
-  };
-
-  const handleSurpriseMe = () => {
-    const selectedDate = formData.date.toString();
-
-    router.push(`/planner?date=${selectedDate}&surprise=true`);
-  };
-
+  // ===== Render =====
   return (
     <main className="min-h-screen bg-white">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start px-12 py-16 mt-10">
@@ -196,7 +181,7 @@ export default function App() {
           </Button>
         </div>
 
-        {/* Right: Mandai Madness styled like sidebar/planner */}
+        {/* Right: Event Planner Demo */}
         <div className="w-full max-w-md">
           <h1 className="text-lg font-bold mb-1 text-teal-500">An Example!</h1>
           <h2 className="text-lg font-bold mb-1 text-red-500">
@@ -204,8 +189,7 @@ export default function App() {
           </h2>
           <p className="text-sm text-gray-500 mb-3">
             Add events to this planner and create your ideal schedule. <br />
-            Click{" "}
-            <span className="text-red-500 font-semibold">Get Started</span> to
+            Click <span className="text-red-500 font-semibold">Get Started</span> to
             build your own!
           </p>
 
@@ -222,11 +206,12 @@ export default function App() {
                           {event.name}
                         </span>
                         <button
-                          disabled // demo: not functional
+                          disabled
                           aria-label="Remove"
                           className="ml-2 p-1 rounded-full hover:bg-gray-200 text-gray-400 transition"
                           tabIndex={-1}
                         >
+                          {/* SVG (x) icon */}
                           <svg
                             className="h-4 w-4"
                             fill="currentColor"
@@ -251,6 +236,7 @@ export default function App() {
                         disabled={idx === 0}
                         onClick={() => moveEvent(idx, "up")}
                       >
+                        {/* Up arrow */}
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
@@ -269,6 +255,7 @@ export default function App() {
                         disabled={idx === events.length - 1}
                         onClick={() => moveEvent(idx, "down")}
                       >
+                        {/* Down arrow */}
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
@@ -284,14 +271,16 @@ export default function App() {
                     </div>
                   </div>
                 </div>
-                {/* --- Transition pill/dropdown --- */}
+                {/* Transition pill/dropdown */}
                 {idx < events.length - 1 && (
                   <div className="flex justify-center items-center mb-1">
                     <select
-                      className={`rounded-full font-semibold px-3 py-1 text-xs border ${travelColors[modes[idx] as keyof typeof travelColors] || travelColors.transit} focus:outline-none shadow`}
+                      className={`rounded-full font-semibold px-3 py-1 text-xs border ${travelColors[modes[idx]]} focus:outline-none shadow`}
                       style={{ minWidth: 95 }}
                       value={modes[idx]}
-                      onChange={(e) => changeMode(idx, e.target.value)}
+                      onChange={(e) =>
+                        changeMode(idx, e.target.value as TravelMode)
+                      }
                     >
                       {modeOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -299,7 +288,9 @@ export default function App() {
                         </option>
                       ))}
                     </select>
-                    <span className="ml-3 text-gray-500 text-xs">{`~${travelDurations[idx]} min`}</span>
+                    <span className="ml-3 text-gray-500 text-xs">
+                      ~{travelDurations[idx]} min
+                    </span>
                   </div>
                 )}
               </React.Fragment>
@@ -308,7 +299,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Bottom Features, unchanged */}
+      {/* Bottom Features */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center px-12 pb-16">
         <div className="flex flex-col items-center">
           <CheckCircle className="text-red-400 w-10 h-10 mb-2" />
