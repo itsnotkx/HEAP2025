@@ -4,10 +4,10 @@ export interface RawEvent {
   title: string;
   start_date: string;
   end_date: string;
-  address: string;
-  price: string;
-  categories: number[];
-  description: string;
+  address: string ;
+  price: string ;
+  categories: number[] ;
+  description: string ;
   organiser_id: number;
   images: string[];
 }
@@ -29,10 +29,10 @@ export interface EventType {
   title: string;
   startDate: string;
   endDate: string;
-  address: string;
-  price: string;
-  categories: number[];
-  description: string;
+  address: string ;
+  price: string ;
+  categories: number[] ;
+  description: string ;
   organiser_id: number;
   images: string[];
 }
