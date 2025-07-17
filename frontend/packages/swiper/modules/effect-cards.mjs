@@ -73,13 +73,13 @@ function EffectCards(_ref) {
       }
       const scaleString = progress < 0 ? `${1 + (1 - scale) * progress}` : `${1 - (1 - scale) * progress}`;
 
-      /* eslint-disable */
+       
       const transform = `
         translate3d(${tX}, ${tY}, ${tZ}px)
         rotateZ(${params.rotate ? rtl ? -rotate : rotate : 0}deg)
         scale(${scaleString})
       `;
-      /* eslint-enable */
+       
 
       if (params.slideShadows) {
         // Set shadows

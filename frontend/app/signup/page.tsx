@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { Input, Button, Card, CardBody } from "@heroui/react";
-import { signUp } from "../api/apis";
 import { useRouter } from "next/navigation";
-import {Image} from "@heroui/react";
+import { Image } from "@heroui/react";
+
+import { signUp } from "../api/apis";
 
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
@@ -20,6 +21,7 @@ export default function SignUpPage() {
 
     if (password !== confirmPassword) {
       setErrorMsg("Passwords do not match.");
+
       return;
     }
 
@@ -28,9 +30,9 @@ export default function SignUpPage() {
         username,
         email,
         password,
-        image_url: null,        // Optional — set to null or your logic
+        image_url: null, // Optional — set to null or your logic
         preferences: undefined, // Optional — let backend default
-        rating: undefined       // Optional — let backend default
+        rating: undefined, // Optional — let backend default
       });
 
       router.push("/auth/login"); // Redirect to login after successful signup
@@ -45,57 +47,59 @@ export default function SignUpPage() {
       <Card className="w-full max-w-md shadow-xl rounded-2xl p-6 bg-white">
         <CardBody>
           <Image
-            src="/logo.svg"
             alt="KiasuPlanner Logo"
             className="w-48 h-48 object-contain mx-auto mb-4"
             draggable={false}
+            src="/logo.svg"
           />
-          <h1 className="text-2xl font-bold mb-6 text-center">Create your account</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center">
+            Create your account
+          </h1>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <Input
               isRequired
-              label="Username"
-              type="text"
-              placeholder="username"
               className="w-full"
+              label="Username"
+              placeholder="username"
+              type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
             <Input
               isRequired
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
               className="w-full"
+              label="Email"
+              placeholder="you@example.com"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               isRequired
-              label="Password"
-              type="password"
-              placeholder="••••••••"
               className="w-full"
+              label="Password"
+              placeholder="••••••••"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <Input
               isRequired
-              label="Confirm Password"
-              type="password"
-              placeholder="••••••••"
               className="w-full"
+              label="Confirm Password"
+              placeholder="••••••••"
+              type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
-            <Button type="submit" color="primary" className="w-full mt-4">
+            <Button className="w-full mt-4" color="primary" type="submit">
               Sign Up
             </Button>
           </form>
           <p className="mt-6 text-sm text-center">
             Already have an account?{" "}
-            <a href="/auth/login" className="text-blue-600 hover:underline">
+            <a className="text-blue-600 hover:underline" href="/auth/login">
               Sign in
             </a>
           </p>

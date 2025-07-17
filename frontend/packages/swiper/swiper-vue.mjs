@@ -62,7 +62,7 @@ function renderVirtual(swiperRef, slides, virtualData) {
     if (index < 0) {
       slideIndex = slides.length + index;
     } else if (slideIndex >= slides.length) {
-      // eslint-disable-next-line
+       
       slideIndex = slideIndex - slides.length;
     }
     return slideIndex;

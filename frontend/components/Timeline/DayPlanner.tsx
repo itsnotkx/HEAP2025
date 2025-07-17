@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
-
+import React, { useEffect } from "react";
 import {
   Timeline,
   TimelineItem,
@@ -9,20 +8,17 @@ import {
   TimelineContent,
   TimelineDot,
 } from "@mui/lab";
-
 import { timelineItemClasses } from "@mui/lab/TimelineItem";
 import {
   ChevronUpIcon,
   ChevronDownIcon,
-  XCircleIcon
+  XCircleIcon,
 } from "@heroicons/react/24/solid";
-
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 
 import { EventType } from "../../types/event";
-import type { TimelineEntry } from "../../types/event";
 import { useTimeline } from "../../components/Timeline/TimelineContext";
 
 interface DayPlannerProps {
@@ -44,12 +40,17 @@ function GoogleMapsRouteButton({
 }) {
   const handleClick = () => {
     const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
-      from
+      from,
     )}&destination=${encodeURIComponent(to)}&travelmode=${mode}`;
+
     window.open(url, "_blank");
   };
 
-  return <Link showAnchorIcon onPress={handleClick}>View Route</Link>;
+  return (
+    <Link showAnchorIcon onPress={handleClick}>
+      View Route
+    </Link>
+  );
 }
 
 // 📍 Main Component
@@ -57,11 +58,7 @@ export default function DayPlanner({
   events,
   addEventToTimeline,
 }: DayPlannerProps) {
-  const {
-    timeline,
-    moveTimelineEntry,
-    removeTimeLineEntry
-  } = useTimeline();
+  const { timeline, moveTimelineEntry, removeTimeLineEntry } = useTimeline();
 
   const handleAddEvent = (event: EventType) => {
     addEventToTimeline(event, 60); // default 1 hr
@@ -100,9 +97,9 @@ export default function DayPlanner({
                           <span>{item.event.title}</span>
                           <Button
                             isIconOnly
-                            size="sm"
-                            radius="full"
                             className="ml-2 text-gray-500"
+                            radius="full"
+                            size="sm"
                             variant="light"
                             onPress={() => removeTimeLineEntry(idx)}
                           >
@@ -116,18 +113,18 @@ export default function DayPlanner({
 
                       <div className="flex flex-col gap-1 ml-2">
                         <Button
-                          onPress={() => moveTimelineEntry(idx, "up")}
                           isIconOnly
-                          color="primary"
                           className="h-7 w-7 text-white"
+                          color="primary"
+                          onPress={() => moveTimelineEntry(idx, "up")}
                         >
                           <ChevronUpIcon />
                         </Button>
                         <Button
-                          onPress={() => moveTimelineEntry(idx, "down")}
                           isIconOnly
-                          color="secondary"
                           className="h-7 w-7 text-white"
+                          color="secondary"
+                          onPress={() => moveTimelineEntry(idx, "down")}
                         >
                           <ChevronDownIcon />
                         </Button>
@@ -168,8 +165,8 @@ export default function DayPlanner({
                     <CardBody>
                       <GoogleMapsRouteButton
                         from={item.from}
-                        to={item.to}
                         mode={item.mode as TravelMode}
+                        to={item.to}
                       />
                     </CardBody>
                   </Card>

@@ -13,6 +13,7 @@ export default function useInfiniteScroll(callback: () => void) {
     });
 
     const current = bottomRef.current;
+
     if (current) observerRef.current.observe(current);
 
     return () => {

@@ -32,7 +32,7 @@ function calcDevice(_temp) {
   };
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
-  const android = ua.match(/(Android);?[\s\/]+([\d.]+)?/); // eslint-disable-line
+  const android = ua.match(/(Android);?[\s\/]+([\d.]+)?/);  
   let ipad = ua.match(/(iPad).*OS\s([\d_]+)/);
   const ipod = ua.match(/(iPod)(.*OS\s([\d_]+))?/);
   const iphone = !ipad && ua.match(/(iPhone\sOS|iOS)\s([\d_]+)/);
@@ -244,7 +244,7 @@ function Observer(_ref) {
   on('destroy', destroy);
 }
 
-/* eslint-disable no-underscore-dangle */
+ 
 
 var eventsEmitter = {
   on(events, handler, priority) {
@@ -459,7 +459,7 @@ function updateSlides() {
     if (gridEnabled) {
       swiper.grid.updateSlide(i, slide, slides);
     }
-    if (slides[i] && elementStyle(slide, 'display') === 'none') continue; // eslint-disable-line
+    if (slides[i] && elementStyle(slide, 'display') === 'none') continue;  
 
     if (params.slidesPerView === 'auto') {
       if (shouldResetSlideSize) {
@@ -477,7 +477,7 @@ function updateSlides() {
       if (params.roundLengths) {
         slideSize = swiper.isHorizontal() ? elementOuterSize(slide, 'width', true) : elementOuterSize(slide, 'height', true);
       } else {
-        // eslint-disable-next-line
+         
         const width = getDirectionPropertyValue(slideStyles, 'width');
         const paddingLeft = getDirectionPropertyValue(slideStyles, 'padding-left');
         const paddingRight = getDirectionPropertyValue(slideStyles, 'padding-right');
@@ -704,7 +704,7 @@ function updateAutoHeight(speed) {
 function updateSlidesOffset() {
   const swiper = this;
   const slides = swiper.slides;
-  // eslint-disable-next-line
+   
   const minusOffset = swiper.isElement ? swiper.isHorizontal() ? swiper.wrapperEl.offsetLeft : swiper.wrapperEl.offsetTop : 0;
   for (let i = 0; i < slides.length; i += 1) {
     slides[i].swiperSlideOffset = (swiper.isHorizontal() ? slides[i].offsetLeft : slides[i].offsetTop) - minusOffset - swiper.cssOverflowAdjustment();
@@ -768,7 +768,7 @@ function updateProgress(translate) {
   const swiper = this;
   if (typeof translate === 'undefined') {
     const multiplier = swiper.rtlTranslate ? -1 : 1;
-    // eslint-disable-next-line
+     
     translate = swiper && swiper.translate && swiper.translate * multiplier || 0;
   }
   const params = swiper.params;
@@ -1545,7 +1545,7 @@ function slideToLoop(index, speed, runCallbacks, internal) {
   let newIndex = index;
   if (swiper.params.loop) {
     if (swiper.virtual && swiper.params.virtual.enabled) {
-      // eslint-disable-next-line
+       
       newIndex = newIndex + swiper.virtual.slidesBefore;
     } else {
       let targetSlideIndex;
@@ -1624,7 +1624,7 @@ function slideNext(speed, runCallbacks, internal) {
     swiper.loopFix({
       direction: 'next'
     });
-    // eslint-disable-next-line
+     
     swiper._clientLeft = swiper.wrapperEl.clientLeft;
     if (swiper.activeIndex === swiper.slides.length - 1 && params.cssMode) {
       requestAnimationFrame(() => {
@@ -1663,7 +1663,7 @@ function slidePrev(speed, runCallbacks, internal) {
     swiper.loopFix({
       direction: 'prev'
     });
-    // eslint-disable-next-line
+     
     swiper._clientLeft = swiper.wrapperEl.clientLeft;
   }
   const translate = rtlTranslate ? swiper.translate : -swiper.translate;
@@ -2220,7 +2220,7 @@ function onTouchStart(event) {
 
   // change target el for shadow root component
   const swipingClassHasValue = !!params.noSwipingClass && params.noSwipingClass !== '';
-  // eslint-disable-next-line
+   
   const eventPath = e.composedPath ? e.composedPath() : e.path;
   if (swipingClassHasValue && e.target && e.target.shadowRoot && eventPath) {
     targetEl = eventPath[0];
@@ -2373,7 +2373,7 @@ function onTouchMove(event) {
     if (swiper.isHorizontal() && touches.currentY === touches.startY || swiper.isVertical() && touches.currentX === touches.startX) {
       data.isScrolling = false;
     } else {
-      // eslint-disable-next-line
+       
       if (diffX * diffX + diffY * diffY >= 25) {
         touchAngle = Math.atan2(Math.abs(diffY), Math.abs(diffX)) * 180 / Math.PI;
         data.isScrolling = swiper.isHorizontal() ? touchAngle > params.touchAngle : 90 - touchAngle > params.touchAngle;
@@ -2781,7 +2781,7 @@ function onScroll() {
   } else {
     swiper.translate = -wrapperEl.scrollTop;
   }
-  // eslint-disable-next-line
+   
   if (swiper.translate === 0) swiper.translate = 0;
   swiper.updateActiveIndex();
   swiper.updateSlidesClasses();
@@ -3348,7 +3348,7 @@ class Swiper {
         });
         swipers.push(new Swiper(newParams));
       });
-      // eslint-disable-next-line no-constructor-return
+       
       return swipers;
     }
 
@@ -3480,7 +3480,7 @@ class Swiper {
     }
 
     // Return app instance
-    // eslint-disable-next-line no-constructor-return
+     
     return swiper;
   }
   getDirectionLabel(property) {
@@ -3612,7 +3612,7 @@ class Swiper {
         }
       }
     } else {
-      // eslint-disable-next-line
+       
       if (view === 'current') {
         for (let i = activeIndex + 1; i < slides.length; i += 1) {
           const slideInView = exact ? slidesGrid[i] + slidesSizesGrid[i] - slidesGrid[activeIndex] < swiperSize : slidesGrid[i] - slidesGrid[activeIndex] < swiperSize;
@@ -3688,7 +3688,7 @@ class Swiper {
     const swiper = this;
     const currentDirection = swiper.params.direction;
     if (!newDirection) {
-      // eslint-disable-next-line
+       
       newDirection = currentDirection === 'horizontal' ? 'vertical' : 'horizontal';
     }
     if (newDirection === currentDirection || newDirection !== 'horizontal' && newDirection !== 'vertical') {

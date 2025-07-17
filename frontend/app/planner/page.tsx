@@ -1,19 +1,19 @@
-'use client';
+"use client";
+
+import type { EventType } from "../../types/event";
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import Navigationbar from "@/components/navbar";
-import EventCard from "@/components/PlannerCard";
-import SearchForm from "@/components/FormBox";
-import { useTimeline } from "@/components/Timeline/TimelineContext";
-
 import { fetchAllEvents } from "../api/events";
 import { fetchSurpriseMe } from "../api/apis";
 import { mapRawEvent } from "../../types/event";
 
-import type { EventType } from "../../types/event";
+import Navigationbar from "@/components/navbar";
+import EventCard from "@/components/PlannerCard";
+import SearchForm from "@/components/FormBox";
+import { useTimeline } from "@/components/Timeline/TimelineContext";
 
 export default function Planner() {
   const router = useRouter();
@@ -68,6 +68,7 @@ export default function Planner() {
     try {
       if (!formData.date || !session?.user?.id) {
         setError("Please log in and select a valid date.");
+
         return;
       }
 
@@ -115,20 +116,18 @@ export default function Planner() {
       <Navigationbar />
 
       <SearchForm
-        onSurprise={handleSurpriseMe}
-        onSearchResults={handleSearchResults}
         date={date}
+        onSearchResults={handleSearchResults}
+        onSurprise={handleSurpriseMe}
       />
 
       <main className="bg-gray-50 min-h-screen">
-        <section id="event-cards" className="py-12 pt-16 mt-16">
+        <section className="py-12 pt-16 mt-16" id="event-cards">
           <div className="max-w-6xl mx-auto px-4">
             {loading && (
               <p className="text-center text-gray-500">Loading events...</p>
             )}
-            {error && (
-              <p className="text-center text-red-500">{error}</p>
-            )}
+            {error && <p className="text-center text-red-500">{error}</p>}
             {!loading && !error && events.length === 0 && (
               <p className="text-center text-gray-400">No events found.</p>
             )}
@@ -137,9 +136,9 @@ export default function Planner() {
                 {events.map((event) => (
                   <EventCard
                     key={event.id}
+                    className="max-w-xs w-full"
                     event={event}
                     onAdd={handleAddEvent}
-                    className="max-w-xs w-full"
                   />
                 ))}
               </div>

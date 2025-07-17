@@ -81,7 +81,7 @@ function renderVirtual(swiper, slides, virtualData) {
     if (index < 0) {
       slideIndex = slides.length + index;
     } else if (slideIndex >= slides.length) {
-      // eslint-disable-next-line
+       
       slideIndex = slideIndex - slides.length;
     }
     return slideIndex;
@@ -113,7 +113,7 @@ function renderVirtual(swiper, slides, virtualData) {
 }
 
 function useIsomorphicLayoutEffect(callback, deps) {
-  // eslint-disable-next-line
+   
   if (typeof window === 'undefined') return useEffect(callback, deps);
   return useLayoutEffect(callback, deps);
 }
@@ -240,7 +240,7 @@ const Swiper = /*#__PURE__*/forwardRef(function (_temp, externalElRef) {
       swiper: swiperRef.current
     }, swiperParams);
     if (onSwiper && !swiperRef.current.destroyed) onSwiper(swiperRef.current);
-    // eslint-disable-next-line
+     
     return () => {
       if (swiperRef.current && !swiperRef.current.destroyed) {
         swiperRef.current.destroy(true, false);
@@ -348,7 +348,7 @@ const SwiperSlide = /*#__PURE__*/forwardRef(function (_temp, externalRef) {
       return;
     }
     swiper.on('_slideClass', updateClasses);
-    // eslint-disable-next-line
+     
     return () => {
       if (!swiper) return;
       swiper.off('_slideClass', updateClasses);

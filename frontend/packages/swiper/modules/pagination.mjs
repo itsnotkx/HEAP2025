@@ -374,7 +374,7 @@ function Pagination(_ref) {
   });
   on('init', () => {
     if (swiper.params.pagination.enabled === false) {
-      // eslint-disable-next-line
+       
       disable();
     } else {
       init();

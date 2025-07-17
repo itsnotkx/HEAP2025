@@ -36,7 +36,7 @@ function Virtual(_ref) {
     if (params.cache && swiper.virtual.cache[index]) {
       return swiper.virtual.cache[index];
     }
-    // eslint-disable-next-line
+     
     let slideEl;
     if (params.renderSlide) {
       slideEl = params.renderSlide.call(swiper, slide, index);
@@ -160,7 +160,7 @@ function Virtual(_ref) {
       if (index < 0) {
         slideIndex = slides.length + index;
       } else if (slideIndex >= slides.length) {
-        // eslint-disable-next-line
+         
         slideIndex = slideIndex - slides.length;
       }
       return slideIndex;

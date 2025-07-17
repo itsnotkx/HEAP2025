@@ -1,7 +1,7 @@
 import { g as getDocument, a as getWindow } from '../shared/ssr-window.esm.mjs';
 import { b as elementParents, d as elementOffset } from '../shared/utils.mjs';
 
-/* eslint-disable consistent-return */
+ 
 function Keyboard(_ref) {
   let {
     swiper,
@@ -66,7 +66,7 @@ function Keyboard(_ref) {
       for (let i = 0; i < swiperCoord.length; i += 1) {
         const point = swiperCoord[i];
         if (point[0] >= 0 && point[0] <= windowWidth && point[1] >= 0 && point[1] <= windowHeight) {
-          if (point[0] === 0 && point[1] === 0) continue; // eslint-disable-line
+          if (point[0] === 0 && point[1] === 0) continue;  
           inView = true;
         }
       }

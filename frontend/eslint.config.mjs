@@ -42,7 +42,14 @@ export default defineConfig([globalIgnores([
     "!**/plopfile.js",
     "!**/react-shim.js",
     "!**/tsup.config.ts",
-]), {
+]),  {
+    ignores: [
+      "packages/swiper/",
+    ]
+  },
+  
+  {
+
     extends: fixupConfigRules(compat.extends(
         "plugin:react/recommended",
         "plugin:prettier/recommended",

@@ -1,11 +1,10 @@
 "use client";
 import "@/styles/globals.css";
+import clsx from "clsx";
+
 import { Providers } from "@/app/providers";
 import NavigationBar from "@/components/navbar";
-import clsx from "clsx";
 import { fontSans } from "@/config/fonts";
-import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
 
 // export const metadata: Metadata = {
 //   title: {
@@ -16,20 +15,20 @@ import { siteConfig } from "@/config/site";
 //   icons: { icon: "/favicon.ico" },
 // };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-
-  
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     // <html lang="en">
-        <html
-      lang="en"
-      className={"light"}
-      style={{ colorScheme: "light" }}
-    >
-      <body className={clsx(
-        "min-h-screen text-foreground bg-background font-sans antialiased",
-        fontSans.variable
-      )}>
+    <html className={"light"} lang="en" style={{ colorScheme: "light" }}>
+      <body
+        className={clsx(
+          "min-h-screen text-foreground bg-background font-sans antialiased",
+          fontSans.variable,
+        )}
+      >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <NavigationBar />
           <main className="flex justify-center px-6">

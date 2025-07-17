@@ -88,7 +88,7 @@ function isObject(o) {
   return typeof o === 'object' && o !== null && o.constructor && Object.prototype.toString.call(o).slice(8, -1) === 'Object';
 }
 function isNode(node) {
-  // eslint-disable-next-line
+   
   if (typeof window !== 'undefined' && typeof window.HTMLElement !== 'undefined') {
     return node instanceof HTMLElement;
   }
@@ -250,7 +250,7 @@ function elementOffset(el) {
 function elementPrevAll(el, selector) {
   const prevEls = [];
   while (el.previousElementSibling) {
-    const prev = el.previousElementSibling; // eslint-disable-line
+    const prev = el.previousElementSibling;  
     if (selector) {
       if (prev.matches(selector)) prevEls.push(prev);
     } else prevEls.push(prev);
@@ -261,7 +261,7 @@ function elementPrevAll(el, selector) {
 function elementNextAll(el, selector) {
   const nextEls = [];
   while (el.nextElementSibling) {
-    const next = el.nextElementSibling; // eslint-disable-line
+    const next = el.nextElementSibling;  
     if (selector) {
       if (next.matches(selector)) nextEls.push(next);
     } else nextEls.push(next);
@@ -278,7 +278,7 @@ function elementIndex(el) {
   let i;
   if (child) {
     i = 0;
-    // eslint-disable-next-line
+     
     while ((child = child.previousSibling) !== null) {
       if (child.nodeType === 1) i += 1;
     }
@@ -287,8 +287,8 @@ function elementIndex(el) {
   return undefined;
 }
 function elementParents(el, selector) {
-  const parents = []; // eslint-disable-line
-  let parent = el.parentElement; // eslint-disable-line
+  const parents = [];  
+  let parent = el.parentElement;  
   while (parent) {
     if (selector) {
       if (parent.matches(selector)) parents.push(parent);

@@ -309,7 +309,7 @@ function Scrollbar(_ref) {
   });
   on('init', () => {
     if (swiper.params.scrollbar.enabled === false) {
-      // eslint-disable-next-line
+       
       disable();
     } else {
       init();

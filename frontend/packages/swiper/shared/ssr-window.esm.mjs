@@ -9,7 +9,7 @@
  *
  * Released on: February 12, 2025
  */
-/* eslint-disable no-param-reassign */
+ 
 function isObject(obj) {
   return obj !== null && typeof obj === 'object' && 'constructor' in obj && obj.constructor === Object;
 }

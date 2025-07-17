@@ -144,7 +144,7 @@ function Controller(_ref) {
   }
   on('beforeInit', () => {
     if (typeof window !== 'undefined' && (
-    // eslint-disable-line
+     
     typeof swiper.params.controller.control === 'string' || swiper.params.controller.control instanceof HTMLElement)) {
       const controlElements = typeof swiper.params.controller.control === 'string' ? [...document.querySelectorAll(swiper.params.controller.control)] : [swiper.params.controller.control];
       controlElements.forEach(controlElement => {

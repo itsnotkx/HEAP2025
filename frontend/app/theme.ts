@@ -1,19 +1,18 @@
-
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
-    palette: {
+  palette: {
     primary: {
-      main: '#2EC4B6',
+      main: "#2EC4B6",
     },
     secondary: {
-      main: '#B8A2C8'
-    }
+      main: "#B8A2C8",
+    },
   },
   typography: {
     fontFamily: '"Schibsted Grotesk", Arial, sans-serif',
   },
-    components: {
+  components: {
     MuiTypography: {
       styleOverrides: {
         root: {
