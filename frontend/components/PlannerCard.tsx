@@ -19,7 +19,7 @@ const PLACEHOLDER_IMAGE = "/KiasuPlanner.png";
 function getEventImage(images: unknown): string {
   if (Array.isArray(images)) {
     const validImage = images.find(
-      (img) => typeof img === "string" && img.trim().length > 0,
+      (img) => typeof img === "string" && img.trim().length > 0
     );
 
     return validImage || PLACEHOLDER_IMAGE;
@@ -64,40 +64,41 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
 
   return (
     <Card
-        onClick={() => {
-    console.log("Card clicked");
-    handleCardClick(); 
-  }}
-  className={`w-full max-w-sm h-full flex flex-col shadow-md hover:shadow-lg cursor-pointer ${className}`}
+      onClick={() => {
+        console.log("Card clicked");
+        handleCardClick();
+      }}
+      className={`w-full max-w-sm  shadow-md hover:shadow-lg cursor-pointer flex flex-col ${className}`}
       style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
     >
-      <div onClick={handleCardClick}>
       <CardHeader className="p-0">
         <Image
           src={imageUrl}
+          fallbackSrc={PLACEHOLDER_IMAGE}
           alt={event.title}
-          className="w-full object-cover rounded-t-2xl bg-gray-100"
+          className="w-full min-h-[200px] max-h-[200px] object-cover bg-gray-100 rounded-t-2xl"
         />
       </CardHeader>
-      <CardHeader className="text-lg font-semibold">{event.title}</CardHeader>
-      <CardBody className="text-sm text-gray-600" >
-        <strong>Date:</strong>{" "}
-        {event.startDate
-          ? new Date(event.startDate).toLocaleDateString()
-          : "TBA"}
-        {" – "}
-        {event.endDate
-          ? new Date(event.endDate).toLocaleDateString()
-          : "TBA"}
-        <strong>Price:</strong> {event.price || "TBA"}
-        <strong>Address:</strong> {event.address || "TBA"}
-        {/*
-        <p className="text-sm text-gray-700 mt-1">
-          {event.description || "No description available."}
+
+      <CardBody className="text-sm text-gray-600 flex-1 flex flex-col px-4 py-2">
+        <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
+        <p>
+          <strong>Date:</strong>{" "}
+          {event.startDate
+            ? new Date(event.startDate).toLocaleDateString()
+            : "TBA"}
+          {" – "}
+          {event.endDate ? new Date(event.endDate).toLocaleDateString() : "TBA"}
         </p>
-        */}
+        <p>
+          <strong>Price:</strong> {event.price || "TBA"}
+        </p>
+        <p>
+          <strong>Address:</strong> {event.address || "TBA"}
+        </p>
       </CardBody>
-      <CardFooter className="p-4 pt-0">
+
+      <CardFooter className="mt-auto p-4 pt-0">
         <Button
           type="button"
           onClick={handleAddClick}
@@ -106,7 +107,6 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
           ADD TO DAY
         </Button>
       </CardFooter>
-      </div>
     </Card>
   );
 };

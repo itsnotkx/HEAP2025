@@ -39,7 +39,6 @@ export default function EventCard({ event, className = "" }: EventCardProps) {
       >
         {event["Image URL(s)"]?.[0] && (
         <div className="relative w-full aspect-[5/2] overflow-hidden">
-
         <Image
           src={event["Image URL(s)"][0]}
           alt={displayTitle}
