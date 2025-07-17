@@ -25,6 +25,7 @@ export default function PlannerLayout({
     timeline.filter((entry) => entry.type === "event") as TimelineEntry[];
 
   // Add an event to the timeline
+  // @ts-ignore
   const addEventToTimeline = async (
     event: EventType,
     duration = 60,
