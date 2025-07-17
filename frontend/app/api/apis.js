@@ -16,6 +16,10 @@ export const signIn = async (email, password) => {
   }
 };
 
+export const saveDay = async(eventsArray) => {
+
+}
+
 export const ssoSignIn = async (email, username) => {
   try {
     const response = await axios.post(`${USERS_API}/signin/sso`, { email, username });
@@ -126,28 +130,26 @@ export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
     const starttime = new Date(`${date}T${startTime}`);
     const endtime = new Date(`${date}T${endTime}`);
 
-    // Convert to ISO strings like "2025-07-15T08:00:00"
     const startISO = starttime.toISOString();
     const endISO = endtime.toISOString();
 
     // Call your search API
     const events = await search(null, startISO, endISO, user_id);
 
-    // const startDate = `${startISO.toString()}T${startTime.toString()}:00`;
-    // const endDate = `${endISO.toString()}T${endTime.toString()}:00`;
-
-    // const events = await search(null, startDate, endDate, user_id);
-    
     const response = await axios.post(`${EVENTS_API}/surpriseme`, {
       event_results: events,
       user_tags: user_preferences
     });
 
-    if (response.status === 200 && response.data.result) {
-      return JSON.parse(response.data.result); // assuming it's a JSON string
+    if (response.status === 200) {
+      console.log("response data---------");
+      console.log(response.data);
+      return response.data;
+    } else {
+      console.log("skill issue!");
+      return response.data;
     }
 
-    throw new Error('Failed to fetch surprise');
   } catch (error) {
     console.error('Error fetching surprise:', error);
     throw error.response?.data || error;

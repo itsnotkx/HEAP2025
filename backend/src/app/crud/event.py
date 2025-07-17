@@ -61,9 +61,6 @@ def search_event_keyword(
    
     preferences_array = user[0] if user and user[0] else []
     
-    print(f"Search params - keyword: {keyword}, start_date: {start_date}, end_date: {end_date}, user_id: {user_id}")
-    print(f"User preferences: {preferences_array}")
-    
     # Build WHERE clause dynamically
     filters = []
     params: dict[str, Any] = {"user_id": user_id}

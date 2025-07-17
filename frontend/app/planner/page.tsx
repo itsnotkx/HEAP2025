@@ -20,7 +20,7 @@ function PlannerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const date = searchParams?.get("date") ?? "";
-  const surprise = searchParams?.get("surprise") === "true";
+  const surprise = searchParams?.get("surprise") === "false";
 
   const { data: session } = useSession();
   const { addEventToTimeline, setSidebarExpanded } =
@@ -43,15 +43,15 @@ function PlannerContent() {
     }
   }, [surprise]);
 
-  useEffect(() => {
-    if (surprise && date && session?.user?.id) {
-      handleSurpriseMe({
-        date,
-        startTime: "09:00",
-        endTime: "18:00",
-      });
-    }
-  }, [surprise, date, session]);
+  // useEffect(() => {
+  //   if (surprise && date && session?.user?.id) {
+  //     handleSurpriseMe({
+  //       date,
+  //       startTime: "09:00",
+  //       endTime: "18:00",
+  //     });
+  //   }
+  // }, [surprise, date, session]);
 
   const handleSurpriseMe = async (formData: {
     date: string;
@@ -67,14 +67,20 @@ function PlannerContent() {
         return;
       }
 
-      const result = await fetchSurpriseMe({
+      if (!formData.startTime && !formData.endTime) {
+        setError("Please enter a valid start and end time");
+        return;
+      }
+
+      const surpriseEvents = await fetchSurpriseMe({
         formData,
         user_id: session.user.id,
         user_preferences: session.user.preferences,
       });
 
-      const surpriseEvents: EventType[] = result.selected_events || [];
-
+      console.log("-------------------------");
+      console.log(surpriseEvents);
+      
       setEvents(surpriseEvents);
 
       // Add all surprise events to timeline using strict TravelMode type (default here)
@@ -130,7 +136,6 @@ function PlannerContent() {
                     className="max-w-xs w-full"
                     event={event}
                     onAdd={handleAddEvent}
-                    className="max-w-xs"
                   />
                 ))}
               </div>

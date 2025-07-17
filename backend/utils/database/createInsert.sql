@@ -21,8 +21,9 @@ CREATE TABLE Event (
     price DECIMAL(10, 2),
     categories FLOAT[],   -- Array of floats
     description TEXT,
-    organiser_id INTEGER REFERENCES "users"(user_id) ON DELETE CASCADE,
     images TEXT[]
+    lat FLOAT,
+    long FLOAT
 );
 
 -- Participation History Table
