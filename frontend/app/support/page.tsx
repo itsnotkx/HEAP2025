@@ -97,7 +97,7 @@ export default function SupportPage() {
             Still need help?
           </h2>
           <p className="text-gray-700 mb-2">
-            Contact our team and we’ll get back to you as soon as possible.
+            Contact our team and we&#39ll get back to you as soon as possible.
           </p>
           <a
             className="text-accent underline hover:text-primary"

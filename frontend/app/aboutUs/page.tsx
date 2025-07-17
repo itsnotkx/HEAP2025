@@ -79,7 +79,7 @@ export default function AboutPage() {
                 Honest Reviews
               </h3>
               <p className="text-gray-700 text-sm">
-                Real reviews from our community so you know what’s worth your
+                Real reviews from our community so you know what&#39s worth your
                 time.
               </p>
             </li>
