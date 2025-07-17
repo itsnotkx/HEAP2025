@@ -17,18 +17,18 @@ const team = [
     avatar: "https://randomuser.me/api/portraits/women/12.jpg",
   },
   {
-    name: "Ethan",
-    role: "Backend Developer, Frontend Developer, Team Morale Captain, Professional Diddler, Rizzlord",
+    name: "Ethan Lim",
+    role: "Team Morale Captain, Full Stack Developer",
     avatar: "/jin.png",
   },
   {
     name: "Kar Xing",
-    role: "Professional Regard",
-    avatar: "/kx.jpg",
+    role: "Carrying the group, Full Stack Developer",
+    avatar: "/kxaura.png",
   },
   {
     name: "Wai Zin Lin",
-    role: "Team Leader",
+    role: "Team Leader, Full Stack Developer",
     avatar: "https://upload.wikimedia.org/wiktionary/en/thumb/6/6c/Ernest_Khalimov.png/250px-Ernest_Khalimov.png",
     leader: true,
   },
