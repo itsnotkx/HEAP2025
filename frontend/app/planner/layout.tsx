@@ -30,9 +30,23 @@ export default function PlannerLayout({
     duration = 60,
     mode: TravelMode = "transit",
   ): Promise<void> => {
-    const eventEntries = getEventEntries();
-    eventEntries.push({ type: "event", event, duration });
-    const rebuiltTimeline = await buildTimelineWithTravel(eventEntries, modeOverrides);
+    setTimeline((prev) => {
+      // Extract current events from prev timeline
+      const eventsOnly = prev.filter((entry) => entry.type === "event") as TimelineEntry[];
+
+      // Add the new event
+      const updatedEvents = [...eventsOnly, { type: "event", event, duration }];
+
+      // Return placeholder timeline while we rebuild
+      return updatedEvents;
+    });
+
+    // Now rebuild timeline with travel entries
+    const rebuiltTimeline = await buildTimelineWithTravel(
+      [...getEventEntries(), { type: "event", event, duration }],
+      modeOverrides,
+    );
+
     setTimeline(rebuiltTimeline);
   };
 

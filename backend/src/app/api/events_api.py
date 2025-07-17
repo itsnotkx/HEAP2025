@@ -55,15 +55,6 @@ def delete_event(event_id: int, db: Session = Depends(get_db)):
     if not success:
         raise HTTPException(status_code=404, detail="Event not found")
     
-    
-from pulp import LpProblem, LpMaximize, LpVariable, lpSum, LpBinary, LpStatus, LpStatusOptimal
-from datetime import datetime, timedelta
-from math import radians, cos, sin, asin, sqrt, inf
-import json
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-import random
-
 class SurpriseRequest(BaseModel):
     event_results: list
     user_tags: list
@@ -72,11 +63,19 @@ class SurpriseRequest(BaseModel):
     meal_three: Optional[str] = None
 
 @router.post("/surpriseme")
-def handler(req: SurpriseRequest):
-    event_results = req.event_results
-    user_tags = req.user_tags
+def surpriseme(
+    start_date: Optional[datetime] = Query(None, description="Start date in ISO format"),
+    end_date: Optional[datetime] = Query(None, description="End date in ISO format"),
+    user_id: int = Query(None, description="User ID to filter events by user preferences"),
+    db: Session = Depends(get_db)
+):
+    events = event_crud.search_event_keyword(db, user_id, None, start_date, end_date)
+    print(events[:3])
+    return events[:3] #return top 3 only
 
-    
+    #return the top 3 events that match the user's preferences
+
+
 
 
 #     meal_one = req.meal_one

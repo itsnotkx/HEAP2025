@@ -77,18 +77,7 @@ function PlannerContent() {
         user_id: session.user.id,
         user_preferences: session.user.preferences,
       });
-
-      console.log("-------------------------");
-      console.log(surpriseEvents);
       
-      setEvents(surpriseEvents);
-
-      // Add all surprise events to timeline using strict TravelMode type (default here)
-      surpriseEvents.forEach((event: EventType) => {
-        addEventToTimeline(event, 60, "transit");
-      });
-
-      setSidebarExpanded(true);
     } catch (err) {
       console.error(err);
       setError("An error occurred while fetching Surprise Me events.");
