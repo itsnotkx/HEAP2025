@@ -19,12 +19,12 @@ const team = [
   {
     name: "Ethan",
     role: "Backend Developer, Frontend Developer, Team Morale Captain, Professional Diddler, Rizzlord",
-    avatar: "https://hips.hearstapps.com/hmg-prod/images/snoop_dogg_photo_by_estevan_oriol_archive_photos_getty_455616412.jpg",
+    avatar: "/jin.png",
   },
   {
     name: "Kar Xing",
     role: "Professional Regard",
-    avatar: "https://m.media-amazon.com/images/M/MV5BNTE1ODU3NTM1N15BMl5BanBnXkFtZTcwNTk0NDM4Nw@@._V1_.jpg",
+    avatar: "/kx.jpg",
   },
   {
     name: "Wai Zin Lin",
