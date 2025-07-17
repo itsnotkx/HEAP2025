@@ -130,6 +130,7 @@ function PlannerContent() {
                     className="max-w-xs w-full"
                     event={event}
                     onAdd={handleAddEvent}
+                    className="max-w-xs"
                   />
                 ))}
               </div>

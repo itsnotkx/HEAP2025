@@ -64,55 +64,48 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
 
   return (
     <Card
-      className={`w-full max-w-sm h-full shadow-md hover:shadow-lg cursor-pointer ${className || ""}`}
+        onClick={() => {
+    console.log("Card clicked");
+    handleCardClick(); 
+  }}
+  className={`w-full max-w-sm h-full flex flex-col shadow-md hover:shadow-lg cursor-pointer ${className}`}
       style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
     >
-      <div
-        aria-label={`View details for ${event.title}`}
-        className="focus:outline-none"
-        role="button"
-        tabIndex={0}
-        onClick={handleCardClick}
-        onKeyDown={handleKeyDown}
-      >
-        <CardHeader className="p-0">
-          <Image
-            alt={event.title}
-            className="w-full object-cover rounded-t-2xl bg-gray-100"
-            src={imageUrl}
-          />
-        </CardHeader>
-
-        <CardHeader className="text-lg font-semibold">{event.title}</CardHeader>
-
-        <CardBody className="text-sm text-gray-600">
-          <p>
-            <strong>Date:</strong>{" "}
-            {event.startDate
-              ? new Date(event.startDate).toLocaleDateString()
-              : "TBA"}{" "}
-            –{" "}
-            {event.endDate
-              ? new Date(event.endDate).toLocaleDateString()
-              : "TBA"}
-          </p>
-          <p>
-            <strong>Price:</strong> {event.price || "TBA"}
-          </p>
-          <p>
-            <strong>Address:</strong> {event.address || "TBA"}
-          </p>
-        </CardBody>
-
-        <CardFooter className="p-4 pt-0">
-          <Button
-            className="w-full bg-primary text-white py-2 rounded-xl shadow"
-            type="button"
-            onClick={handleAddClick}
-          >
-            ADD TO DAY
-          </Button>
-        </CardFooter>
+      <div onClick={handleCardClick}>
+      <CardHeader className="p-0">
+        <Image
+          src={imageUrl}
+          alt={event.title}
+          className="w-full object-cover rounded-t-2xl bg-gray-100"
+        />
+      </CardHeader>
+      <CardHeader className="text-lg font-semibold">{event.title}</CardHeader>
+      <CardBody className="text-sm text-gray-600" >
+        <strong>Date:</strong>{" "}
+        {event.startDate
+          ? new Date(event.startDate).toLocaleDateString()
+          : "TBA"}
+        {" – "}
+        {event.endDate
+          ? new Date(event.endDate).toLocaleDateString()
+          : "TBA"}
+        <strong>Price:</strong> {event.price || "TBA"}
+        <strong>Address:</strong> {event.address || "TBA"}
+        {/*
+        <p className="text-sm text-gray-700 mt-1">
+          {event.description || "No description available."}
+        </p>
+        */}
+      </CardBody>
+      <CardFooter className="p-4 pt-0">
+        <Button
+          type="button"
+          onClick={handleAddClick}
+          className="w-full bg-primary text-white py-2 rounded-xl shadow"
+        >
+          ADD TO DAY
+        </Button>
+      </CardFooter>
       </div>
     </Card>
   );
