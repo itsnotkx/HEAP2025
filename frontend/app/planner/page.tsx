@@ -130,7 +130,7 @@ function PlannerContent() {
                     className="flex flex-col"
                     event={event}
                     onAdd={handleAddEvent}
-                  />
+                   />
                 ))}
               </div>
             )}

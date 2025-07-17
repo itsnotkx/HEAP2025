@@ -7,6 +7,7 @@ import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Image } from "@heroui/react";
 
 import { EventType } from "../types/event";
+import { get } from "http";
 
 interface PlannerCardProps {
   event: EventType;
@@ -71,14 +72,14 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
   className={`w-full max-w-sm h-full flex flex-col shadow-md hover:shadow-lg cursor-pointer ${className}`}
   style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
 >
-  {/* Make this div flex-col and flex-grow to fill space */}
-  <div 
+   <div 
     onClick={handleCardClick}
-    className="flex flex-col flex-grow min-h-0"
+    className="flex flex-col flex-grow min-h-0 "
   >
-    <CardHeader className="p-0">
+    <CardHeader className="p-0 justify-center">
       <Image
         src={imageUrl}
+        fallbackSrc="/KiasuPlanner.png"
         alt={event.title}
         className="w-full object-cover rounded-t-2xl bg-gray-100"
       />
@@ -88,10 +89,7 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
       {event.title}
     </CardHeader>
 
-    {/* Make CardBody grow to fill available space */}
-    <CardBody 
-      className="text-sm text-gray-600 flex-grow min-h-0"
-    >
+    <CardBody className="text-sm text-gray-600 flex-grow min-h-0">
       <strong>Date:</strong>{" "}
       {event.startDate
         ? new Date(event.startDate).toLocaleDateString()
