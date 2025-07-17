@@ -126,7 +126,7 @@ function Autoplay(_ref) {
       });
     }
 
-    // eslint-disable-next-line
+     
     return delay;
   };
   const start = () => {

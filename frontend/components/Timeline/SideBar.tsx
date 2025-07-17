@@ -2,7 +2,6 @@
 
 import React from "react";
 import clsx from "clsx";
-import { useTimeline } from "@/components/Timeline/TimelineContext";
 import {
   ChevronRightIcon,
   ChevronLeftIcon,
@@ -10,6 +9,8 @@ import {
   ChevronDownIcon,
   XCircleIcon,
 } from "@heroicons/react/24/solid";
+
+import { useTimeline } from "@/components/Timeline/TimelineContext";
 
 const travelColors = {
   transit: "bg-cyan-100 text-cyan-800 border-cyan-200",
@@ -25,8 +26,12 @@ export default function SideBar({
   expanded: boolean;
   setExpanded: (val: boolean) => void;
 }) {
-  const { timeline, moveTimelineEntry, removeTimeLineEntry, updateSegmentMode } =
-    useTimeline();
+  const {
+    timeline,
+    moveTimelineEntry,
+    removeTimeLineEntry,
+    updateSegmentMode,
+  } = useTimeline();
 
   // Extract only event entries with their timeline index
   const eventItems = timeline
@@ -37,16 +42,16 @@ export default function SideBar({
     <div
       className={clsx(
         "transition-all bg-white min-h-screen border-r shadow-md flex flex-col items-center overflow-y-auto",
-        expanded ? "w-[400px]" : "w-[70px]"
+        expanded ? "w-[400px]" : "w-[70px]",
       )}
     >
       {/* Collapsed sidebar: right-arrow button */}
       {!expanded && (
         <div className="w-full flex justify-center mt-6 mb-6">
           <button
-            onClick={() => setExpanded(true)}
-            className="p-2 bg-accent hover:bg-accent rounded text-white"
             aria-label="Expand sidebar"
+            className="p-2 bg-accent hover:bg-accent rounded text-white"
+            onClick={() => setExpanded(true)}
           >
             <ChevronRightIcon className="w-8 h-8" />
           </button>
@@ -66,9 +71,9 @@ export default function SideBar({
               </p>
             </div>
             <button
-              onClick={() => setExpanded(false)}
-              className="p-2 bg-accent hover:bg-accent rounded text-white"
               aria-label="Collapse sidebar"
+              className="p-2 bg-accent hover:bg-accent rounded text-white"
+              onClick={() => setExpanded(false)}
             >
               <ChevronLeftIcon className="w-8 h-8" />
             </button>
@@ -79,7 +84,7 @@ export default function SideBar({
               <React.Fragment key={eventItem.timelineIdx}>
                 {/* --- Event Card --- */}
                 <div className="flex items-start">
-                  <span className="w-2 h-2 rounded-full bg-teal-400 mr-3 mt-3"></span>
+                  <span className="w-2 h-2 rounded-full bg-teal-400 mr-3 mt-3" />
                   <div className="bg-white rounded-xl shadow px-4 py-3 flex-1 flex items-center min-h-[64px]">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center mb-1">
@@ -87,9 +92,9 @@ export default function SideBar({
                           {eventItem.event.title}
                         </span>
                         <button
+                          aria-label="Remove"
                           className="ml-2 p-1 rounded-full hover:bg-gray-200 text-gray-400 transition"
                           onClick={() => removeTimeLineEntry(i)}
-                          aria-label="Remove"
                         >
                           <XCircleIcon className="h-4 w-4" />
                         </button>
@@ -100,18 +105,18 @@ export default function SideBar({
                     </div>
                     <div className="flex flex-col justify-center ml-2 gap-1">
                       <button
-                        className="bg-teal-400 hover:bg-teal-500 text-white rounded-full w-8 h-8 flex items-center justify-center mb-1 shadow transition"
-                        onClick={() => moveTimelineEntry(i, "up")}
                         aria-label="Move Up"
+                        className="bg-teal-400 hover:bg-teal-500 text-white rounded-full w-8 h-8 flex items-center justify-center mb-1 shadow transition"
                         disabled={i === 0}
+                        onClick={() => moveTimelineEntry(i, "up")}
                       >
                         <ChevronUpIcon className="w-4 h-4" />
                       </button>
                       <button
-                        className="bg-rose-400 hover:bg-rose-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow transition"
-                        onClick={() => moveTimelineEntry(i, "down")}
                         aria-label="Move Down"
+                        className="bg-rose-400 hover:bg-rose-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow transition"
                         disabled={i === eventItems.length - 1}
+                        onClick={() => moveTimelineEntry(i, "down")}
                       >
                         <ChevronDownIcon className="w-4 h-4" />
                       </button>
@@ -123,16 +128,20 @@ export default function SideBar({
                 {timeline[eventItem.timelineIdx + 1]?.type === "travel" && (
                   <div className="flex justify-center items-center">
                     <select
-                      value={timeline[eventItem.timelineIdx + 1].mode}
-                      onChange={(e) =>
-                        updateSegmentMode(eventItem.timelineIdx + 1, e.target.value)
-                      }
                       className={`rounded-full font-semibold px-3 py-1 text-xs border ${
                         travelColors[
-                          timeline[eventItem.timelineIdx + 1].mode as keyof typeof travelColors
+                          timeline[eventItem.timelineIdx + 1]
+                            .mode as keyof typeof travelColors
                         ] || travelColors.transit
                       } focus:outline-none shadow`}
                       style={{ minWidth: 95 }}
+                      value={timeline[eventItem.timelineIdx + 1].mode}
+                      onChange={(e) =>
+                        updateSegmentMode(
+                          eventItem.timelineIdx + 1,
+                          e.target.value,
+                        )
+                      }
                     >
                       <option value="transit">&#128652; Transit</option>
                       <option value="driving">&#128663; Driving</option>

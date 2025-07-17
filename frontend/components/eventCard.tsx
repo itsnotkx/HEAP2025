@@ -31,10 +31,10 @@ export default function EventCard({ event, className = "" }: EventCardProps) {
   const displayTitle = event.title.replace(/^\d+\.\s*/, "");
 
   return (
-    <Link href={`/events/${event.id}`} passHref>
+    <Link passHref href={`/events/${event.id}`}>
       <Card
-        isPressable
         isHoverable
+        isPressable
         className={`flex flex-col h-full w-full transition-transform hover:scale-105 shadow rounded-lg bg-white ${className}`}
       >
         {event["Image URL(s)"]?.[0] && (

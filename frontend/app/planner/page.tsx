@@ -1,19 +1,19 @@
-'use client';
+"use client";
+
+import type { EventType, RawEvent, TravelMode } from "../../types/event";
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import Navigationbar from "@/components/navbar";
-import EventCard from "@/components/PlannerCard";
-import SearchForm from "@/components/FormBox";
-import { useTimeline } from "@/components/Timeline/TimelineContext";
-
 import { fetchAllEvents } from "../api/events";
 import { fetchSurpriseMe } from "../api/apis";
 import { mapRawEvent } from "../../types/event";
 
-import type { EventType } from "../../types/event";
+import Navigationbar from "@/components/navbar";
+import EventCard from "@/components/PlannerCard";
+import SearchForm from "@/components/FormBox";
+import { useTimeline } from "@/components/Timeline/TimelineContext";
 
 export default function Planner() {
   const router = useRouter();
@@ -22,28 +22,26 @@ export default function Planner() {
   const surprise = searchParams?.get("surprise") === "true";
 
   const { data: session } = useSession();
-  const { addEventToTimeline, setSidebarExpanded } = useTimeline(); // ✅ includes sidebar trigger
+  const { addEventToTimeline, setSidebarExpanded } =
+    useTimeline(); // expects strict typing
 
+  // State typed correctly for EventType[]
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Fetch all available events unless surprise flag is set
-   */
   useEffect(() => {
     if (!surprise) {
       setLoading(true);
       fetchAllEvents()
-        .then((data) => setEvents(data.map(mapRawEvent)))
+        .then((data: RawEvent[]) => {
+          setEvents(data.map(mapRawEvent));
+        })
         .catch(() => setError("Unable to load events."))
         .finally(() => setLoading(false));
     }
   }, [surprise]);
 
-  /**
-   * Automatically trigger Surprise Me if flag is set in URL
-   */
   useEffect(() => {
     if (surprise && date && session?.user?.id) {
       handleSurpriseMe({
@@ -54,14 +52,11 @@ export default function Planner() {
     }
   }, [surprise, date, session]);
 
-  /**
-   * User-triggered or auto-triggered surprise
-   */
   const handleSurpriseMe = async (formData: {
     date: string;
     startTime: string;
     endTime: string;
-  }) => {
+  }): Promise<void> => {
     setLoading(true);
     setError(null);
 
@@ -77,16 +72,15 @@ export default function Planner() {
         user_preferences: session.user.preferences,
       });
 
-      const surpriseEvents = result.selected_events || [];
+      const surpriseEvents: EventType[] = result.selected_events || [];
 
       setEvents(surpriseEvents);
 
-      // Automatically add all events to timeline
-      surpriseEvents.forEach((event) => {
-        addEventToTimeline(event, 60); // default 60 minutes
+      // Add all surprise events to timeline using strict TravelMode type (default here)
+      surpriseEvents.forEach((event: EventType) => {
+        addEventToTimeline(event, 60, "transit");
       });
 
-      // Automatically expand sidebar
       setSidebarExpanded(true);
     } catch (err) {
       console.error(err);
@@ -96,18 +90,13 @@ export default function Planner() {
     }
   };
 
-  /**
-   * SearchForm filters
-   */
   const handleSearchResults = (data: EventType[]) => {
-    setEvents(data.map(mapRawEvent));
+    setEvents(data);
   };
 
-  /**
-   * Manual event add
-   */
+  // Respect TimelineContext typing: duration?: number, mode?: TravelMode
   const handleAddEvent = (event: EventType) => {
-    addEventToTimeline(event, 60);
+    addEventToTimeline(event, 60, "transit"); // explicitly pass mode
   };
 
   return (
@@ -115,13 +104,13 @@ export default function Planner() {
       <Navigationbar />
 
       <SearchForm
-        onSurprise={handleSurpriseMe}
-        onSearchResults={handleSearchResults}
         date={date}
+        onSearchResults={handleSearchResults}
+        onSurprise={handleSurpriseMe}
       />
 
       <main className="bg-gray-50 min-h-screen">
-        <section id="event-cards" className="py-12 pt-16 mt-16">
+        <section className="py-12 pt-16 mt-16" id="event-cards">
           <div className="max-w-6xl mx-auto px-4">
             {loading && (
               <p className="text-center text-gray-500">Loading events...</p>
@@ -134,9 +123,10 @@ export default function Planner() {
             )}
             {!loading && !error && events.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
-                {events.map((event) => (
+                {events.map((event: EventType) => (
                   <EventCard
                     key={event.id}
+                    className="max-w-xs w-full"
                     event={event}
                     onAdd={handleAddEvent}
                     className="max-w-xs"

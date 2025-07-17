@@ -11,23 +11,23 @@ export default function Slider() {
   return (
     <div className="w-full flex justify-center">
       <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={0}
-        centeredSlides={true}
-        slidesPerView={1}
-        speed={2000}
+        navigation
         autoplay={{
           delay: 4000,
           disableOnInteraction: false,
         }}
-        navigation
+        centeredSlides={true}
+        modules={[Navigation, Pagination, Autoplay]}
         pagination={{ clickable: true }}
+        slidesPerView={1}
+        spaceBetween={0}
+        speed={2000}
+        style={{
+          width: "800px", // fixed container width
+          height: "600px", // fixed container height
+        }}
         onSlideChange={() => console.log("slide change")}
         onSwiper={(swiper) => console.log(swiper)}
-        style={{
-          width: "800px",   // fixed container width
-          height: "600px",  // fixed container height
-        }}
       >
         {/** Wrap each image in a div to make layout easier */}
         {[
@@ -46,17 +46,15 @@ export default function Slider() {
               backgroundColor: "#000", // Optional: dark background
             }}
           >
-     
             <Image
-              src={img}
               alt={`slide ${index + 1}`}
-              width={800}
               height={600}
+              src={img}
               style={{
                 objectFit: "fill",
               }}
+              width={800}
             />
-
           </SwiperSlide>
         ))}
       </Swiper>

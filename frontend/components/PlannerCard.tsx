@@ -1,12 +1,12 @@
-
-
 "use client";
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/button";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { EventType } from "../types/event";
 import { Image } from "@heroui/react";
+
+import { EventType } from "../types/event";
 
 interface PlannerCardProps {
   event: EventType;
@@ -19,20 +19,27 @@ const PLACEHOLDER_IMAGE = "/KiasuPlanner.png";
 function getEventImage(images: unknown): string {
   if (Array.isArray(images)) {
     const validImage = images.find(
-      (img) => typeof img === "string" && img.trim().length > 0
+      (img) => typeof img === "string" && img.trim().length > 0,
     );
+
     return validImage || PLACEHOLDER_IMAGE;
   }
   if (typeof images === "string" && images.trim().length > 0) {
     return images;
   }
+
   return PLACEHOLDER_IMAGE;
 }
 
-export default function PlannerCard({ event, onAdd, className }: PlannerCardProps) {
+const PlannerCard: React.FC<PlannerCardProps> = ({
+  event,
+  onAdd,
+  className,
+}) => {
   const router = useRouter();
   const imageUrl = getEventImage(event.images);
 
+  // Navigate to event details page
   const handleCardClick = () => {
     if (event.id !== undefined && event.id !== null) {
       router.push(`/events/${event.id}`);
@@ -41,6 +48,15 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
     }
   };
 
+  // Support keyboard accessibility (Enter, Space) for clickable div
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
+  // Handle Add button click and prevent event bubbling to main clickable div
   const handleAddClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onAdd(event);
@@ -56,17 +72,15 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
       style={{ fontFamily: '"Schibsted Grotesk", sans-serif' }}
     >
       <div onClick={handleCardClick}>
-      <CardHeader className="p-0 justify-center">
+      <CardHeader className="p-0">
         <Image
           src={imageUrl}
           alt={event.title}
-          fallbackSrc="/logo.svg"
-          className="w-full min-h-[200px] max-h-[300px] object-contain bg-center object-center bg-no-repeat rounded-t-2xl bg-gray-100"
+          className="w-full object-cover rounded-t-2xl bg-gray-100"
         />
       </CardHeader>
-          </div>
       <CardHeader className="text-lg font-semibold">{event.title}</CardHeader>
-<CardBody className="text-sm text-gray-600 flex-1 overflow-hidden">
+      <CardBody className="text-sm text-gray-600" >
         <strong>Date:</strong>{" "}
         {event.startDate
           ? new Date(event.startDate).toLocaleDateString()
@@ -92,6 +106,9 @@ export default function PlannerCard({ event, onAdd, className }: PlannerCardProp
           ADD TO DAY
         </Button>
       </CardFooter>
+      </div>
     </Card>
   );
-}
+};
+
+export default PlannerCard;

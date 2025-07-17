@@ -122,7 +122,7 @@ function Navigation(_ref) {
   }
   on('init', () => {
     if (swiper.params.navigation.enabled === false) {
-      // eslint-disable-next-line
+       
       disable();
     } else {
       init();

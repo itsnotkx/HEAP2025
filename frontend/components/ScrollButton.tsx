@@ -5,16 +5,20 @@ type ScrollButtonProps = {
   targetId: string;
 };
 
-export default function ScrollButton({ className, targetId}: ScrollButtonProps) {
+export default function ScrollButton({
+  className,
+  targetId,
+}: ScrollButtonProps) {
   const scrollToEvents = () => {
     const section = document.getElementById(targetId);
+
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
-    <Button onPress={scrollToEvents} className={className}>
+    <Button className={className} onPress={scrollToEvents}>
       Get Started
     </Button>
   );

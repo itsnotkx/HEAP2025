@@ -10,7 +10,6 @@ export interface RawEvent {
   description: string;
   organiser_id: number;
   images: string[];
-
 }
 /*
     db_event = Event(
@@ -36,12 +35,7 @@ export interface EventType {
   description: string;
   organiser_id: number;
   images: string[];
-
 }
-
-
-
-
 
 export function mapRawEvent(raw: RawEvent): EventType {
   return {
@@ -59,6 +53,10 @@ export function mapRawEvent(raw: RawEvent): EventType {
 }
 
 // In types/event.ts or types/timeline.ts
+export type TravelMode = "transit" | "walking" | "bicycling" | "driving";
+
 export type TimelineEntry =
-  | { type: 'event'; event: EventType; duration: number | null }
-  | { type: 'travel';from: string; to: string; duration: number | null };
+  | { type: "event"; event: EventType; duration: number | null }
+  | { type: "travel"; from: string; to: string; duration: number | null; mode: TravelMode };
+
+  

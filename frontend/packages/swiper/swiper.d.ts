@@ -1,5 +1,5 @@
 // @ts-ignore
-import Swiper from './types/swiper-class.js';
+import Swiper from "./types/swiper-class.js";
 
 export default Swiper;
 export { Swiper };

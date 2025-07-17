@@ -1,4 +1,4 @@
-import type Swiper from '../swiper-class.js';
+import type Swiper from "../swiper-class.js";
 
 export interface AutoplayMethods {
   /**
@@ -57,7 +57,11 @@ export interface AutoplayEvents {
   /**
    * Event triggers continuously while autoplay is enabled. It contains time left (in ms) before transition to next slide and percentage of that time related to autoplay delay
    */
-  autoplayTimeLeft: (swiper: Swiper, timeLeft: number, percentage: number) => void;
+  autoplayTimeLeft: (
+    swiper: Swiper,
+    timeLeft: number,
+    percentage: number,
+  ) => void;
   /**
    * Event will be fired when slide changed with autoplay
    */

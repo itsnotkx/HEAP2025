@@ -2,6 +2,14 @@
 import Image from "next/image";
 import logo from "@/public/KiasuPlanner.png";
 
-export default function KiasuPlannerLogo() {
-  return <Image src={logo} alt="Kiasu Planner Logo" width={125} height={11} />;
+interface KiasuPlannerLogoProps {
+  className?: string;
+}
+
+export default function KiasuPlannerLogo({ className = "" }: KiasuPlannerLogoProps) {
+  return (
+    <div className={className}>
+      <Image alt="Kiasu Planner Logo" height={11} src={logo} width={125} />
+    </div>
+  );
 }

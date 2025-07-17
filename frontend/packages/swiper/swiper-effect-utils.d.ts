@@ -1,6 +1,10 @@
-import type { Swiper, SwiperOptions } from './types/index.js';
+import type { Swiper, SwiperOptions } from "./types/index.js";
 
-declare const createShadow: (suffix: string, slideEl: HTMLElement, side?: string) => HTMLElement;
+declare const createShadow: (
+  suffix: string,
+  slideEl: HTMLElement,
+  side?: string,
+) => HTMLElement;
 
 declare const effectInit: (params: {
   effect: string;
@@ -25,4 +29,10 @@ declare const effectVirtualTransitionEnd: (params: {
 
 declare const getSlideTransformEl: (slideEl: HTMLElement) => void;
 
-export { createShadow, effectInit, effectTarget, effectVirtualTransitionEnd, getSlideTransformEl };
+export {
+  createShadow,
+  effectInit,
+  effectTarget,
+  effectVirtualTransitionEnd,
+  getSlideTransformEl,
+};

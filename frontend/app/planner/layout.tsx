@@ -1,81 +1,95 @@
 "use client";
 
+import type { EventType, TimelineEntry, TravelMode } from "@/types/event";
+
 import React, { useState } from "react";
-import clsx from "clsx";
+
 import SideBar from "@/components/Timeline/SideBar";
 import { TimelineContext } from "@/components/Timeline/TimelineContext";
-import type { EventType, TimelineEntry } from "@/types/event";
 import { getDistanceBetweenVenues } from "@/app/api/apis";
 
-export default function PlannerLayout({ children }: { children: React.ReactNode }) {
+// ModeOverrides associates timeline indices with their travel mode
+type ModeOverrides = Record<number, TravelMode>;
+
+export default function PlannerLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
-  const [modeOverrides, setModeOverrides] = useState<Record<number, string>>({});
+  const [modeOverrides, setModeOverrides] = useState<ModeOverrides>({});
 
-  // Helper: get just event entries
-  const getEventEntries = () =>
-    timeline.filter(e => e.type === "event") as TimelineEntry[];
+  // Extract only event entries from the timeline
+  const getEventEntries = (): TimelineEntry[] =>
+    timeline.filter((entry) => entry.type === "event") as TimelineEntry[];
 
-  // Add event
+  // Add an event to the timeline
   const addEventToTimeline = async (
     event: EventType,
     duration = 60,
-    defaultMode = "transit"
-  ) => {
+    mode: TravelMode = "transit",
+  ): Promise<void> => {
     const eventEntries = getEventEntries();
-    eventEntries.push({ type: "event", event, duration } as TimelineEntry);
-    const rebuilt = await buildTimelineWithTravel(eventEntries, modeOverrides);
-    setTimeline(rebuilt);
+    eventEntries.push({ type: "event", event, duration });
+    const rebuiltTimeline = await buildTimelineWithTravel(eventEntries, modeOverrides);
+    setTimeline(rebuiltTimeline);
   };
 
-  // Move event
+  // Move an event up or down within the timeline
   const moveTimelineEntry = async (index: number, direction: "up" | "down") => {
     const eventEntries = getEventEntries();
-    const target = direction === "up" ? index - 1 : index + 1;
-    if (target < 0 || target >= eventEntries.length) return;
-    [eventEntries[index], eventEntries[target]] = [eventEntries[target], eventEntries[index]];
-    const rebuilt = await buildTimelineWithTravel(eventEntries, modeOverrides);
-    setTimeline(rebuilt);
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+    if (targetIndex < 0 || targetIndex >= eventEntries.length) return;
+
+    [eventEntries[index], eventEntries[targetIndex]] = [
+      eventEntries[targetIndex],
+      eventEntries[index],
+    ];
+
+    const rebuiltTimeline = await buildTimelineWithTravel(eventEntries, modeOverrides);
+    setTimeline(rebuiltTimeline);
   };
 
-  // Remove event
-  const removeTimeLineEntry = async (index: number) => {
+  // Remove an event from the timeline
+  const removeTimelineEntry = async (index: number): Promise<void> => {
     const eventEntries = getEventEntries();
-    if (index < 0 || index > eventEntries.length - 1) return;
+    if (index < 0 || index >= eventEntries.length) return;
+
     eventEntries.splice(index, 1);
-    const rebuilt = await buildTimelineWithTravel(eventEntries, modeOverrides);
-    setTimeline(rebuilt);
+
+    const rebuiltTimeline = await buildTimelineWithTravel(eventEntries, modeOverrides);
+    setTimeline(rebuiltTimeline);
   };
 
-  // 🔑 Update mode for **this travel segment (timeline index, not event index!)**
-  const updateSegmentMode = async (timelineIndex: number, mode: string) => {
-    const updated = { ...modeOverrides, [timelineIndex]: mode };
-    setModeOverrides(updated);
+  // Update mode (transit, walking, etc) for a travel segment
+  const updateSegmentMode = async (timelineIndex: number, mode: TravelMode) => {
+    const updatedModeOverrides: ModeOverrides = { ...modeOverrides, [timelineIndex]: mode };
+    setModeOverrides(updatedModeOverrides);
 
-    // 🎯 Always build from events only, not the timeline-with-travels
     const eventEntries = getEventEntries();
-    const rebuilt = await buildTimelineWithTravel(eventEntries, updated);
-    setTimeline(rebuilt);
+    const rebuiltTimeline = await buildTimelineWithTravel(eventEntries, updatedModeOverrides);
+    setTimeline(rebuiltTimeline);
   };
 
-  // This is the magic: build a [event, travel, event, ...] timeline, so each travel segment
-  // can be identified by its own index, matching the rendered dropdown!
+  // Constructs a timeline of alternating event and travel entries
   const buildTimelineWithTravel = async (
-    eventsOnly: TimelineEntry[], // Only events!
-    overrides: Record<number, string>
+    eventsOnly: TimelineEntry[],
+    overrides: ModeOverrides,
   ): Promise<TimelineEntry[]> => {
     const result: TimelineEntry[] = [];
-    let travelTimelineIdx = 0;
+
     for (let i = 0; i < eventsOnly.length; i++) {
-      const current = eventsOnly[i];
-      result.push(current);
+      const currentEvent = eventsOnly[i];
+      result.push(currentEvent);
+
       if (i < eventsOnly.length - 1) {
-        const from = (current as any).event.address;
-        const to = (eventsOnly[i + 1] as any).event.address;
-        // The trick: use the precise index the segment will have in result
-        // It's always the current result.length (i.e. the next element)
-        const actualTravelIdx = result.length;
-        const mode = overrides[actualTravelIdx] || "transit";
+        const from = (currentEvent as any).event.address ?? "";
+        const to = (eventsOnly[i + 1] as any).event.address ?? "";
+        const travelIndex = result.length;
+        const mode = overrides[travelIndex] ?? "transit";
+
         try {
           const { duration } = await getDistanceBetweenVenues(from, to, mode);
           result.push({
@@ -85,7 +99,7 @@ export default function PlannerLayout({ children }: { children: React.ReactNode 
             duration,
             mode,
           });
-        } catch (err) {
+        } catch {
           result.push({
             type: "travel",
             from,
@@ -96,6 +110,7 @@ export default function PlannerLayout({ children }: { children: React.ReactNode 
         }
       }
     }
+
     return result;
   };
 
@@ -105,7 +120,7 @@ export default function PlannerLayout({ children }: { children: React.ReactNode 
         timeline,
         addEventToTimeline,
         moveTimelineEntry,
-        removeTimeLineEntry,
+        removeTimelineEntry,
         setSidebarExpanded,
         updateSegmentMode,
       }}
@@ -115,14 +130,9 @@ export default function PlannerLayout({ children }: { children: React.ReactNode 
           className="fixed left-0 top-[60px] h-screen z-20 bg-white border-r transition-all overflow-y-auto"
           style={{ width: sidebarExpanded ? 400 : 70 }}
         >
-          <SideBar
-            expanded={sidebarExpanded}
-            setExpanded={setSidebarExpanded}
-          />
+          <SideBar expanded={sidebarExpanded} setExpanded={setSidebarExpanded} />
         </aside>
-        <main className="w-full pl-[70px] px-6 pt-[60px]">
-          {children}
-        </main>
+        <main className="w-full pl-[70px] px-6 pt-[60px]">{children}</main>
       </div>
     </TimelineContext.Provider>
   );

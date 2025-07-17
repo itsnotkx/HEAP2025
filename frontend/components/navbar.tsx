@@ -14,13 +14,15 @@ import {
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut, signIn } from "next-auth/react";
-import {Image} from "@heroui/react";
+import { Image } from "@heroui/react";
 
 interface NavigationbarProps {
   shouldHideOnScroll?: boolean;
 }
 
-export default function Navigationbar({ shouldHideOnScroll = false }: NavigationbarProps) {
+export default function Navigationbar({
+  shouldHideOnScroll = false,
+}: NavigationbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [hydrated, setHydrated] = useState(false); // wait for client-side hydration
@@ -46,6 +48,7 @@ export default function Navigationbar({ shouldHideOnScroll = false }: Navigation
         ? "text-teal-500 font-bold hover:text-primary"
         : "text-black font-bold hover:text-primary";
     }
+
     return normalizedPath === href.toLowerCase()
       ? "text-teal-500 font-bold hover:text-primary"
       : "text-black font-bold hover:text-primary";
@@ -57,21 +60,26 @@ export default function Navigationbar({ shouldHideOnScroll = false }: Navigation
       className="py-1 min-h-0 h-100 fixed top-0 left-0 w-full z-50 bg-white"
       {...(shouldHideOnScroll ? { shouldHideOnScroll: true } : {})}
     >
-      <NavbarContent justify="between" className="items-center px-6 w-full">
+      <NavbarContent className="items-center px-6 w-full" justify="between">
         {/* Logo */}
         <NavbarBrand>
-          <Link href="/" className="flex items-center">
+          <Link className="flex items-center" href="/">
             <Button
-              as="div"
               aria-label="logo"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+              as="div"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
             >
               <Image
-                src="/logo.svg"
                 alt="Favicon"
-                width={100}
                 height={100}
+                src="/logo.svg"
                 style={{ marginLeft: 0, paddingLeft: 0 }}
+                width={100}
               />
             </Button>
           </Link>
@@ -79,13 +87,13 @@ export default function Navigationbar({ shouldHideOnScroll = false }: Navigation
 
         {/* Navigation links */}
         <nav className="flex flex-grow justify-center space-x-16 text-lg font-bold">
-          <Link href="/" className={linkClass("/")}>
+          <Link className={linkClass("/")} href="/">
             Features
           </Link>
-          <Link href="/aboutUs" className={linkClass("/aboutus")}>
+          <Link className={linkClass("/aboutus")} href="/aboutUs">
             About Us
           </Link>
-          <Link href="/support" className={linkClass("/support")}>
+          <Link className={linkClass("/support")} href="/support">
             Support
           </Link>
         </nav>
@@ -93,17 +101,17 @@ export default function Navigationbar({ shouldHideOnScroll = false }: Navigation
         {/* Login/Avatar */}
         <div className="flex-shrink-0 w-[160px] flex justify-end">
           {status === "loading" ? (
-            <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+            <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
           ) : session?.user ? (
             <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
               <PopoverTrigger>
                 <Avatar
                   isBordered
                   as="button"
-                  src={session.user.image || "/default-avatar.png"}
+                  className="cursor-pointer"
                   name={session.user.name || "User"}
                   size="lg"
-                  className="cursor-pointer"
+                  src={session.user.image || "/default-avatar.png"}
                 />
               </PopoverTrigger>
               <PopoverContent>
@@ -119,8 +127,8 @@ export default function Navigationbar({ shouldHideOnScroll = false }: Navigation
             </Popover>
           ) : (
             <Button
-              color="primary"
               className="text-white px-10 py-2 rounded-full"
+              color="primary"
               size="lg"
               onPress={handleLoginClick}
             >

@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Swiper, SwiperOptions } from './types/index.js';
+import { Swiper, SwiperOptions } from "./types/index.js";
 
 declare const register: () => void;
 
@@ -436,8 +436,8 @@ interface SwiperSlide extends HTMLElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'swiper-container': SwiperContainer;
-    'swiper-slide': SwiperSlide;
+    "swiper-container": SwiperContainer;
+    "swiper-slide": SwiperSlide;
   }
 }
 

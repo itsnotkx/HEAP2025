@@ -2,18 +2,17 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, DatePicker, Form, Input, TimeInput } from "@heroui/react";
+import { Button, DatePicker, Input, TimeInput } from "@heroui/react";
 import { I18nProvider } from "@react-aria/i18n";
-
 import {
   getLocalTimeZone,
   parseDate,
   today,
-  Time,
   DateValue,
 } from "@internationalized/date";
-import { search } from "@/app/api/apis";
 import { useSession } from "next-auth/react";
+
+import { search } from "@/app/api/apis";
 
 export default function FormBox({
   onSurprise,
@@ -27,13 +26,15 @@ export default function FormBox({
   const { data: session } = useSession();
   const router = useRouter();
 
-  const parsedDate: DateValue = date ? parseDate(date) : today(getLocalTimeZone());
+  const parsedDate: DateValue = date
+    ? parseDate(date)
+    : today(getLocalTimeZone());
 
   const [formData, setFormData] = useState({
     date: parsedDate,
     startTime: null,
     endTime: null,
-    keyword: ""
+    keyword: "",
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -52,17 +53,22 @@ export default function FormBox({
     const hasDateTime = date && startTime && endTime;
 
     if (!hasKeyword && !hasDateTime) {
-      setErrorMessage("Please enter a keyword or select a date and time range.");
+      setErrorMessage(
+        "Please enter a keyword or select a date and time range.",
+      );
+
       return;
     }
 
     if (hasDateTime && startTime > endTime) {
       setErrorMessage("End time must be after start time.");
+
       return;
     }
 
     if (!session?.user?.id) {
       setErrorMessage("Please log in to search for events.");
+
       return;
     }
 
@@ -78,17 +84,26 @@ export default function FormBox({
     if (hasDateTime) {
       const start = `${date.toString()}T${startTime}`;
       const end = `${date.toString()}T${endTime}`;
+
       searchParams.set("start_date", start);
       searchParams.set("end_date", end);
-      searchParams.set("user_id", session.user.id)
+      searchParams.set("user_id", session.user.id);
     }
 
     // Update the browser URL and trigger navigation (optional: can use shallow routing)
-    const start_date = hasDateTime ? `${date.toString()}T${startTime}` : undefined;
+    const start_date = hasDateTime
+      ? `${date.toString()}T${startTime}`
+      : undefined;
     const end_date = hasDateTime ? `${date.toString()}T${endTime}` : undefined;
 
     try {
-      const data = await search(keyword.trim(), start_date, end_date, session.user.id);
+      const data = await search(
+        keyword.trim(),
+        start_date,
+        end_date,
+        session.user.id,
+      );
+
       setResults(data); // show results
       if (onSearchResults) {
         onSearchResults(data); // pass to parent
@@ -111,12 +126,12 @@ export default function FormBox({
         console.error("Error response:", {
           status,
           data,
-          headers: err.response.headers
+          headers: err.response.headers,
         });
 
         switch (status) {
           case 422:
-            errorMsg = `Validation error: ${data.detail || 'Invalid parameters'}`;
+            errorMsg = `Validation error: ${data.detail || "Invalid parameters"}`;
             break;
           case 404:
             errorMsg = data.detail || "No events found.";
@@ -131,7 +146,7 @@ export default function FormBox({
             errorMsg = "Server error.";
             break;
           default:
-            errorMsg = `Error ${status}: ${data.detail || 'Unknown error'}`;
+            errorMsg = `Error ${status}: ${data.detail || "Unknown error"}`;
         }
       } else if (err.request) {
         // Request was made but no response received
@@ -172,9 +187,9 @@ export default function FormBox({
           <I18nProvider locale="en-SG">
             <DatePicker
               label="Date"
+              minValue={today(getLocalTimeZone())}
               value={formData.date}
               onChange={(val) => handleChange("date", val)}
-              minValue={today(getLocalTimeZone())}
             />
           </I18nProvider>
 
@@ -199,19 +214,19 @@ export default function FormBox({
         )}
 
         <Button
-          type="submit"
           className="w-full bg-primary text-white py-3 rounded-xl shadow"
           disabled={isLoading}
+          type="submit"
         >
           {isLoading ? "Searching..." : "Search"}
         </Button>
 
         {onSurprise && (
           <Button
-            type="button"
             className="w-full bg-indigo-500 text-white py-3 rounded-xl shadow mt-2"
-            onClick={handleSurpriseClick}
             disabled={isLoading}
+            type="button"
+            onClick={handleSurpriseClick}
           >
             Surprise Me!
           </Button>

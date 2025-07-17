@@ -1,7 +1,6 @@
-import { cn } from "@/lib/utils2"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function Login() {
   return (
@@ -16,24 +15,21 @@ export function Login() {
         <div className="grid gap-2">
           <Label htmlFor="username">Username</Label>
           <Input
+            required
             id="username"
             name="username"
-            type="text"
             placeholder="johndoe"
-            required
+            type="text"
           />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            required
-          />
+          <Input required id="password" name="password" type="password" />
         </div>
-        <Button type="submit" className="w-full">Login</Button>
+        <Button className="w-full" type="submit">
+          Login
+        </Button>
       </div>
     </form>
-  )
+  );
 }

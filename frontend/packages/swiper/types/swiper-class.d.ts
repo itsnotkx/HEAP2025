@@ -1,29 +1,28 @@
-import type { SwiperOptions } from './swiper-options.js';
-import type { CSSSelector, SwiperModule } from './shared.js';
-import type { SwiperEvents } from './swiper-events.js';
-
-import type { A11yMethods } from './modules/a11y.js';
-import type { AutoplayMethods } from './modules/autoplay.js';
-import type { ControllerMethods } from './modules/controller.js';
-import type { CoverflowEffectMethods } from './modules/effect-coverflow.js';
-import type { CubeEffectMethods } from './modules/effect-cube.js';
-import type { FadeEffectMethods } from './modules/effect-fade.js';
-import type { FlipEffectMethods } from './modules/effect-flip.js';
-import type { CreativeEffectMethods } from './modules/effect-creative.js';
-import type { CardsEffectMethods } from './modules/effect-cards.js';
-import type { HashNavigationMethods } from './modules/hash-navigation.js';
-import type { HistoryMethods } from './modules/history.js';
-import type { KeyboardMethods } from './modules/keyboard.js';
-import type { MousewheelMethods } from './modules/mousewheel.js';
-import type { NavigationMethods } from './modules/navigation.js';
-import type { PaginationMethods } from './modules/pagination.js';
-import type { ParallaxMethods } from './modules/parallax.js';
-import type { ScrollbarMethods } from './modules/scrollbar.js';
-import type { ThumbsMethods } from './modules/thumbs.js';
-import type { VirtualMethods } from './modules/virtual.js';
-import type { ZoomMethods } from './modules/zoom.js';
-import type { FreeModeMethods } from './modules/free-mode.js';
-import type { ManipulationMethods } from './modules/manipulation.js';
+import type { SwiperOptions } from "./swiper-options.js";
+import type { CSSSelector, SwiperModule } from "./shared.js";
+import type { SwiperEvents } from "./swiper-events.js";
+import type { A11yMethods } from "./modules/a11y.js";
+import type { AutoplayMethods } from "./modules/autoplay.js";
+import type { ControllerMethods } from "./modules/controller.js";
+import type { CoverflowEffectMethods } from "./modules/effect-coverflow.js";
+import type { CubeEffectMethods } from "./modules/effect-cube.js";
+import type { FadeEffectMethods } from "./modules/effect-fade.js";
+import type { FlipEffectMethods } from "./modules/effect-flip.js";
+import type { CreativeEffectMethods } from "./modules/effect-creative.js";
+import type { CardsEffectMethods } from "./modules/effect-cards.js";
+import type { HashNavigationMethods } from "./modules/hash-navigation.js";
+import type { HistoryMethods } from "./modules/history.js";
+import type { KeyboardMethods } from "./modules/keyboard.js";
+import type { MousewheelMethods } from "./modules/mousewheel.js";
+import type { NavigationMethods } from "./modules/navigation.js";
+import type { PaginationMethods } from "./modules/pagination.js";
+import type { ParallaxMethods } from "./modules/parallax.js";
+import type { ScrollbarMethods } from "./modules/scrollbar.js";
+import type { ThumbsMethods } from "./modules/thumbs.js";
+import type { VirtualMethods } from "./modules/virtual.js";
+import type { ZoomMethods } from "./modules/zoom.js";
+import type { FreeModeMethods } from "./modules/free-mode.js";
+import type { ManipulationMethods } from "./modules/manipulation.js";
 
 interface SwiperClass<Events> {
   /** Add event handler */
@@ -196,7 +195,7 @@ interface Swiper extends SwiperClass<SwiperEvents> {
   /**
    * Direction of sliding
    */
-  swipeDirection: 'prev' | 'next';
+  swipeDirection: "prev" | "next";
 
   /**
    * !INTERNAL
@@ -336,14 +335,17 @@ interface Swiper extends SwiperClass<SwiperEvents> {
    * @param direction New direction. If not specified, then will automatically changed to opposite direction
    * @param needUpdate Will call swiper.update(). Default true
    */
-  changeDirection(direction?: 'horizontal' | 'vertical', needUpdate?: boolean): void;
+  changeDirection(
+    direction?: "horizontal" | "vertical",
+    needUpdate?: boolean,
+  ): void;
 
   /**
    * Changes slider language
    *
    * @param direction New direction. Should be `rtl` or `ltr`
    */
-  changeLanguageDirection(direction: 'rtl' | 'ltr'): void;
+  changeLanguageDirection(direction: "rtl" | "ltr"): void;
 
   /**
    * Detach all events listeners
@@ -443,7 +445,7 @@ interface Swiper extends SwiperClass<SwiperEvents> {
   /**
    * !INTERNAL
    */
-  getBreakpoint(breakpoints: SwiperOptions['breakpoints']): string;
+  getBreakpoint(breakpoints: SwiperOptions["breakpoints"]): string;
 
   /**
    * !INTERNAL

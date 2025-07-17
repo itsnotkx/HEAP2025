@@ -1,4 +1,4 @@
-import type Swiper from '../swiper-class.js';
+import type Swiper from "../swiper-class.js";
 
 export interface ZoomMethods {
   /**
@@ -41,7 +41,12 @@ export interface ZoomEvents {
   /**
    * Event will be fired on zoom change
    */
-  zoomChange: (swiper: Swiper, scale: number, imageEl: HTMLElement, slideEl: HTMLElement) => void;
+  zoomChange: (
+    swiper: Swiper,
+    scale: number,
+    imageEl: HTMLElement,
+    slideEl: HTMLElement,
+  ) => void;
 }
 
 export interface ZoomOptions {

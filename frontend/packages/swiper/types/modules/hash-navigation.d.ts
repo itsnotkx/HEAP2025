@@ -1,4 +1,4 @@
-import type Swiper from '../swiper-class.js';
+import type Swiper from "../swiper-class.js";
 
 export interface HashNavigationMethods {}
 
