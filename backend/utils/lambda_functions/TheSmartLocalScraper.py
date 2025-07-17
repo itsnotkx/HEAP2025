@@ -283,6 +283,7 @@ def lambda_handler(event, context):
     try:
         events = scrape_tsl_events()
         print(f"Scraped {len(events)} events.")
+        
         return {
             "statusCode":200,
             "events":events
@@ -293,4 +294,3 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": f"Error scraping events: {str(e)}"
         }
-    
