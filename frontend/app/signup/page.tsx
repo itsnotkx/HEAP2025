@@ -15,7 +15,7 @@ export default function SignUpPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMsg("");
 
@@ -38,7 +38,7 @@ export default function SignUpPage() {
       router.push("/auth/login"); // Redirect to login after successful signup
     } catch (error) {
       console.error("Signup failed", error);
-      setErrorMsg(error?.detail || "Signup failed. Please try again.");
+      setErrorMsg((error as any).detail || "Signup failed. Please try again.");
     }
   };
 

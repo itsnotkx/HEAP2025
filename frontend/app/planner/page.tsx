@@ -2,7 +2,7 @@
 
 import type { EventType, RawEvent, TravelMode } from "../../types/event";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -15,7 +15,8 @@ import EventCard from "@/components/PlannerCard";
 import SearchForm from "@/components/FormBox";
 import { useTimeline } from "@/components/Timeline/TimelineContext";
 
-export default function Planner() {
+// Separate component that uses useSearchParams
+function PlannerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const date = searchParams?.get("date") ?? "";
@@ -100,7 +101,7 @@ export default function Planner() {
   };
 
   return (
-    <>
+    <div>
       <Navigationbar />
 
       <SearchForm
@@ -140,6 +141,29 @@ export default function Planner() {
       <footer className="text-left text-gray-400 py-4">
         © 2025 KiasuPlanner. All rights reserved.
       </footer>
-    </>
+    </div>
+  );
+}
+
+// Loading fallback component
+function PlannerLoading() {
+  return (
+    <div>
+      <Navigationbar />
+      <div className="bg-gray-50 min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 py-12 pt-16 mt-16">
+          <p className="text-center text-gray-500">Loading planner...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function Planner() {
+  return (
+    <Suspense fallback={<PlannerLoading />}>
+      <PlannerContent />
+    </Suspense>
   );
 }

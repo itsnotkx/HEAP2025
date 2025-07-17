@@ -56,41 +56,22 @@ export default function FormBox({
       setErrorMessage(
         "Please enter a keyword or select a date and time range.",
       );
-
       return;
     }
 
     if (hasDateTime && startTime > endTime) {
       setErrorMessage("End time must be after start time.");
-
       return;
     }
 
     if (!session?.user?.id) {
       setErrorMessage("Please log in to search for events.");
-
       return;
     }
 
     setErrorMessage("");
     setIsLoading(true);
 
-    const searchParams = new URLSearchParams();
-
-    if (hasKeyword) {
-      searchParams.set("keyword", keyword.trim());
-    }
-
-    if (hasDateTime) {
-      const start = `${date.toString()}T${startTime}`;
-      const end = `${date.toString()}T${endTime}`;
-
-      searchParams.set("start_date", start);
-      searchParams.set("end_date", end);
-      searchParams.set("user_id", session.user.id);
-    }
-
-    // Update the browser URL and trigger navigation (optional: can use shallow routing)
     const start_date = hasDateTime
       ? `${date.toString()}T${startTime}`
       : undefined;
@@ -104,75 +85,31 @@ export default function FormBox({
         session.user.id,
       );
 
-      setResults(data); // show results
+      setResults(data);
       if (onSearchResults) {
-        onSearchResults(data); // pass to parent
+        onSearchResults(data);
       }
 
-      // If no results found, show a message
       if (data.length === 0) {
         setErrorMessage("No events found for your search criteria.");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Search error:", err);
-
-      // Enhanced error handling with detailed messages
-      let errorMsg = "Something went wrong while searching.";
-
-      if (err.response) {
-        const status = err.response.status;
-        const data = err.response.data;
-
-        console.error("Error response:", {
-          status,
-          data,
-          headers: err.response.headers,
-        });
-
-        switch (status) {
-          case 422:
-            errorMsg = `Validation error: ${data.detail || "Invalid parameters"}`;
-            break;
-          case 404:
-            errorMsg = data.detail || "No events found.";
-            break;
-          case 401:
-            errorMsg = "Authentication required.";
-            break;
-          case 403:
-            errorMsg = "Access denied.";
-            break;
-          case 500:
-            errorMsg = "Server error.";
-            break;
-          default:
-            errorMsg = `Error ${status}: ${data.detail || "Unknown error"}`;
-        }
-      } else if (err.request) {
-        // Request was made but no response received
-        console.error("No response received:", err.request);
-        errorMsg = "Network error. Please check your connection and try again.";
-      } else {
-        // Something else happened
-        console.error("Request setup error:", err.message);
-        errorMsg = `Request error: ${err.message}`;
-      }
-
-      setErrorMessage(errorMsg);
+      setErrorMessage("Something went wrong while searching.");
       setResults([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // handleSurpriseClick - only calls onSurprise if provided
-  const handleSurpriseClick = (e) => {
+  const handleSurpriseClick = (e: any) => {
     e.preventDefault();
     if (onSurprise) {
       onSurprise(formData);
     }
   };
 
+  // ✅ JSX is returned from the top-level of the component
   return (
     <div className="mx-auto p-6 rounded-2xl shadow-lg bg-white mt-10">
       <form className="space-y-6" onSubmit={handleSubmit}>
@@ -232,24 +169,6 @@ export default function FormBox({
           </Button>
         )}
       </form>
-
-      {/* {results.length > 0 && (
-        <div className="mt-8 space-y-4">
-          <h2 className="text-lg font-semibold">Results ({results.length})</h2>
-          {results.map((event) => (
-            <div
-              key={event.id}
-              className="p-4 bg-gray-50 border rounded-lg shadow-sm"
-            >
-              <h3 className="text-base font-bold">{event.title}</h3>
-              <p className="text-sm text-gray-600">{event.description}</p>
-              <p className="text-sm text-gray-500">
-                {event.start_time} → {event.end_time}
-              </p>
-            </div>
-          ))}
-        </div>
-      )} */}
     </div>
   );
 }

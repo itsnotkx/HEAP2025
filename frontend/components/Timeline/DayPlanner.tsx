@@ -58,7 +58,7 @@ export default function DayPlanner({
   events,
   addEventToTimeline,
 }: DayPlannerProps) {
-  const { timeline, moveTimelineEntry, removeTimeLineEntry } = useTimeline();
+  const { timeline, moveTimelineEntry, removeTimelineEntry } = useTimeline();
 
   const handleAddEvent = (event: EventType) => {
     addEventToTimeline(event, 60); // default 1 hr
@@ -101,7 +101,7 @@ export default function DayPlanner({
                             radius="full"
                             size="sm"
                             variant="light"
-                            onPress={() => removeTimeLineEntry(idx)}
+                            onPress={() => removeTimelineEntry(idx)}
                           >
                             <XCircleIcon className="h-5 w-5" />
                           </Button>

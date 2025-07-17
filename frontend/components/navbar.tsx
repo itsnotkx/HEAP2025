@@ -60,7 +60,7 @@ export default function Navigationbar({
       className="py-1 min-h-0 h-100 fixed top-0 left-0 w-full z-50 bg-white"
       {...(shouldHideOnScroll ? { shouldHideOnScroll: true } : {})}
     >
-      <NavbarContent className="items-center px-6 w-full" justify="between">
+      <NavbarContent className="items-center px-6 w-full" justify="center">
         {/* Logo */}
         <NavbarBrand>
           <Link className="flex items-center" href="/">

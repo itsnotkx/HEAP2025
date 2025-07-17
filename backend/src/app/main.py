@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models import *
-
 from api import events_api, user_api, distance_api # import your router modules here
 from dotenv import load_dotenv
 load_dotenv()  # This will read .env and set environment variables

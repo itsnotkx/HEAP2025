@@ -21,7 +21,7 @@ export default function UserButton({ user, onClick }: UserButtonProps) {
     >
       {isSignedIn ? (
         <Image
-          alt={`${user?.name} profile`}
+          //alt={`${user?.name} profile`}
           className="w-8 h-8 rounded-full object-cover"
           src={user?.profilePictureUrl}
         />
