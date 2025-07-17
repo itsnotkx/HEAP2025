@@ -6,7 +6,7 @@ from typing import Optional, List, Tuple
 class EventBase(BaseModel):
     title: str
     start_date: datetime
-    end_date: datetime
+    end_date: Optional[datetime]
     address: Optional[str]
     price: Optional[float]
     categories: Optional[List[float]]
