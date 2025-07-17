@@ -41,9 +41,9 @@
 
 ## Tech Stack
 
-- **Frontend:** Next.js (React, TypeScript, TailwindCSS, HeroUI), NextAuth, Google Maps API, MUI, Vercel (deployed frontend)
+- **Frontend:** Next.js (React, TypeScript, TailwindCSS, HeroUI), NextAuth, Google Maps API, MUI, Vercel
 - **Backend:** FastAPI (Python), Docker, AWS EC2
-- **Database:** (as defined in backend Docker image)
+- **Database:** PostgreSql
 - **Cloud/Infra:** AWS EC2, Docker, Vercel
 
 ---
