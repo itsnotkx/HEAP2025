@@ -67,7 +67,7 @@ HEAP2025/
 |------------------------|---------------------------------------------------------------------|
 | <span style="color: #2EC4B6;">Timeline Sidebar</span>       | Add, reorder, and remove events; select transit per segment         |
 | <span style="color: #FFD166;">Event Search</span>           | Find events by keyword, date, or filters                            |
-| <span style="color: #FF6B6B;">AI "Surprise Me"</span>       | Smart suggestions for your day; tailored to your profile/session    |
+| <span style="color: #FF6B6B;">AI "Surprise Me"</span>       | Smart suggestions for your day; tailored to your profile            |
 | <span style="color: #232946;">Integrated Routing</span>     | Google Maps-powered travel time, real addresses, per-segment modes  |
 | Dockerized Backend     | FastAPI server for scheduling, event, and suggestion APIs           |
 | One-Click Deployment   | Rapid setup on AWS or any Docker host                               |
