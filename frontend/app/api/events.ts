@@ -1,8 +1,12 @@
-// _apis/apis.ts
+
 import { RawEvent } from "../../types/event";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT ||
+  "http://localhost:8000/api/events";
+
 export async function fetchAllEvents(): Promise<RawEvent[]> {
-  const res = await fetch("http://localhost:8000/api/events");
+  const res = await fetch(`${BASE_URL}`);
 
   if (!res.ok) throw new Error("Failed to fetch events");
 
@@ -18,14 +22,14 @@ export async function fetchFilteredEvents({
   startTime: string; // 'HH:MM'
   endTime: string; // 'HH:MM'
 }) {
-  // Format date and times as needed by your backend
-  const startDate = `${date.toString()}T${startTime.toString()}:00`;
-  const endDate = `${date.toString()}T${endTime.toString()}:00`;
+  const startDate = `${date}T${startTime}:00`;
+  const endDate = `${date}T${endTime}:00`;
 
-  // This assumes you have a GET /events/search endpoint
-  const res = await fetch(
-    `http://localhost:8000/api/events/search?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}&user_id=1`,
-  );
+  const url = `${BASE_URL}/search?start_date=${encodeURIComponent(
+    startDate,
+  )}&end_date=${encodeURIComponent(endDate)}&user_id=1`;
+
+  const res = await fetch(url);
 
   if (!res.ok) throw new Error("Failed to fetch events");
 
