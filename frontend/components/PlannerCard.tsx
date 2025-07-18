@@ -42,8 +42,8 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
 
   // Navigate to event details page
   const handleCardClick = () => {
-    if (event.id !== undefined && event.id !== null) {
-      router.push(`/events/${event.id}`);
+    if ((event as any).event_id !== undefined && (event as any).event_id !== null) {
+      router.push(`/events/${(event as any).event_id}`);
     } else {
       console.warn("Invalid event ID, cannot route:", event);
     }
