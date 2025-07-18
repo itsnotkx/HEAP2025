@@ -42,12 +42,18 @@ export const createEvent = async (eventData) => {
  */
 export const fetchEventById = async (eventId) => {
   try {
-    const response = await axios.get(`/api/events/${eventId}`);
-    return response.data;
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/events/${eventId}`, {
+      cache: 'no-store', // or 'force-cache' depending on your use case
+    });
+    if (!res.ok) throw new Error(`Failed to fetch event ${eventId}`);
+    return res.json();
   } catch (error) {
-    throw error.response?.data || error;
+    console.error('fetchEventById error:', error);
+    throw error;
   }
 };
+
 
 /*
 6) Gives the distance between two addresses

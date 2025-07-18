@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { EventType } from "../types/event";
 
-const PLACEHOLDER_IMAGE = "/placeholder.jpg";
+const PLACEHOLDER_IMAGE = "../KiasuPlanner.png";
 
 // Color palette
 const COLORS = {
