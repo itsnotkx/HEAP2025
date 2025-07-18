@@ -5,7 +5,7 @@ const BASE_URL =
   process.env.EVENTS_API_BASE_ENDPOINT;
 
 export async function fetchAllEvents(): Promise<RawEvent[]> {
-  const res = await fetch(`${BASE_URL}`);
+  const res = await fetch(`${BASE_URL}/`);
 
   if (!res.ok) throw new Error("Failed to fetch events");
 

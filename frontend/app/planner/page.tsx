@@ -6,7 +6,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { fetchAllEvents } from "../api/events";
+import { fetchAllEvents } from "../api/apis";
 import { fetchSurpriseMe } from "../api/apis";
 import { mapRawEvent } from "../../types/event";
 
