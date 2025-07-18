@@ -88,7 +88,7 @@ export default function SideBar({
             </button>
           </div>
 
-          <div className="flex flex-col gap-4 py-4 px-2 w-full">
+          <div className="flex flex-col gap-4 pt-4 px-2 w-full pb-[100px]">
             {eventItems.map((eventItem, i) => {
               // Get next timeline entry (potential travel segment)
               const nextEntry = timeline[eventItem.timelineIdx + 1];
