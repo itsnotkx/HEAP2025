@@ -1,8 +1,13 @@
 import axios from 'axios';
 
-const USERS_API = process.env.NEXT_PUBLIC_USERS_API_BASE_ENDPOINT;
-const EVENTS_API = process.env.NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT;
-const DIST_API = process.env.NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT;
+const USERS_API = process.env.USERS_API_BASE_ENDPOINT;
+const EVENTS_API = process.env.EVENTS_API_BASE_ENDPOINT;
+const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT;
+
+console.log(USERS_API);
+console.log(EVENTS_API);
+console.log(DIST_API);
+
 /**
  * 1) Sign in - POST /signin/traditional
  */

@@ -2,7 +2,7 @@
 import { RawEvent } from "../../types/event";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT;
+  process.env.EVENTS_API_BASE_ENDPOINT;
 
 export async function fetchAllEvents(): Promise<RawEvent[]> {
   const res = await fetch(`${BASE_URL}`);
