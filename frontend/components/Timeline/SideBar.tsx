@@ -107,7 +107,7 @@ export default function SideBar({
                   {/* --- Event Card --- */}
                   <div className="flex items-start ">
                     <span className="w-2 h-2 rounded-full bg-teal-400 mr-3 mt-3" />
-                    <div className="bg-white rounded-xl shadow px-4 py-3 flex-1 flex items-center min-h-[64px]  w-[200px]">
+                    <div className="bg-white rounded-xl shadow px-4 py-3 flex-1 flex items-center min-h-[64px] w-[200px]">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center mb-1">
                           <span className="font-semibold text-base">

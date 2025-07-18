@@ -85,8 +85,8 @@ const PlannerCard: React.FC<PlannerCardProps> = ({
             src={imageUrl}
             fallbackSrc="/KiasuPlanner.png"
             alt={event.title}
-            className="w-full object-cover rounded-t-2xl bg-gray-100"
-          />
+            className="w-full rounded-t-2xl bg-gray-100 cover h-[200px]"
+          /> 
         </CardHeader>
 
         <CardHeader className="text-lg font-semibold">
