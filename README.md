@@ -17,7 +17,8 @@
 - [About](#about)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
+- [Project Structu
+- re](#project-structure)
 - [Core Functionalities](#core-functionalities)
 - [License](#license)
 
@@ -59,13 +60,10 @@
 ## Project Structure
 ```
 HEAP2025/
-├── app/ # Next.js frontend source
-├── components/ # Shared React components
-├── styles/ # CSS/global styles – see variables for colour palette
-├── backend/ # FastAPI backend (Dockerized)
-├── types/ # Shared TypeScript types
-├── .env.example # Environment variable template
-└── README.md # Project docs (this file)
+├── frontend/ # Next.js frontend server
+├── backend/ # Shared React components
+   ├── src/ # backend web server for serving the frontende
+   ├── utils/ # Scripts for scrapers, classifier and database
 ```
 ---
 
