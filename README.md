@@ -82,17 +82,77 @@ HEAP2025/
 
 ---
 
-## Deployment instructions
+## Deployment instructions 
+For the Backend Scrapers, as they are built to be serverless functions they should be deployed on the cloud using lambda.
+
+## Enviroment Variables
+### Webapp Backend: 
+DB_HOST
+DB_PORT=5432
+DB_NAME
+DB_USER
+DB_PASSWORD
+GOOGLE_MAPS_API_KEY
+
+### Scraper Backend: 
+GOOGLE_MAPS_API_KEY
+
+### Webapp Frontend:
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+NEXTAUTH_URL
+AUTH_SECRET
+GOOGLE_MAPS_API_KEY
+NEXT_PUBLIC_USERS_API_BASE_ENDPOINT={insert backend public hostname}/api/distance
+NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT={insert backend public hostname}/api/events   
+NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT={insert backend public hostname}/api/users
+
+
+## Local
+### Database
+1) Create a PostgreSQL database in your local PostGreSQL database server.
+2) Run the create statment backend/utils/database/crate.sql
+3) Allow connections for database requests from both the scraper backend and the webapp backend.
+   
+### Webapp Backend: 
+1) Set up a virtual environment and
+  pip install -r requirements.txt
+2) Run the following command:
+  ```fastapi run```
+
+### Webapp Frontend:
+1) In frontend/, run
+   ```npm install```
+   ```npm run build```
+   ```npm start```
+
+
+
+## Deployment on Cloud
+### Database
+1) Create a PostgreSQL database in AWS RDS.
+2) Run the create statment backend/utils/database/crate.sql
+3) Allow connections for database requests from both the scraper backend and the webapp backend.
 
 ### Scraper Backend: 
 1) Create a lambda function for STBScraper.py, TimeOutScraper.py, TheSmartLocalScraper.py, deduplication.py under backend/utils/lambda_functions. Fill up the environment variables as needed. include models.py in each of these lambda functions as well.
 2) Create an AWS RDS instance. Run the create-insert script under backend/utils/database/createInsert.sql
 3) Create a lambda function classifier-forwarder, under backend/utils/lambda_functions.
-4) Create an EC2 instance. In this, place classifier.py. do remember to pip install -r requirements.txt. Within the ec2 instance, run the code using python3 classifier.py
-5) For each scraper, ceate AWS Stepfunctions following this flow: Scraper -> deduplicator -> classifier-forwarder
-6) For each Stepfunction, create an eventbridge event scheduling the database update.
+4) Create layers for the functions, as shown in backend/requirements.txt
+5) Take psycopg2 from https://github.com/jkehler/awslambda-psycopg2 as pip install psycopg2 does not work with the Lambda image.
+6) Create an EC2 instance. In this, place classifier.py. do remember to pip install -r requirements.txt. Within the ec2 instance, run the code using python3 classifier.py
+7) For each scraper, ceate AWS Stepfunctions following this flow: Scraper -> deduplicator -> classifier-forwarder
+8) For each Stepfunction, create an eventbridge event scheduling the database update.
 
 ### Webapp backend:
+1) Go to AWS ec2, create an ec2 insrance. Configure it to be t2.micro with Amazon Linux as the image. Configure security group to allow port 80 and 22 inbound.
+2) SSH into the isntance an run the following commands:
+    ```sudo yum update -y```
+    ```sudo yum install -y docker```
+    ```sudo service docker start```
+    ```sudo usermod -aG docker ec2-user```
+    ```docker pull wzinl/kiasuplannerbackend```
+    ```docker run -d -p 80:8000 wzinl/kiasuplannerbackend```
 
 ### Webapp Frontend:
 1) Go to Vercel, create a new project, and set root directory to be /frontend.
