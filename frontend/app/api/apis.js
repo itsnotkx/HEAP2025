@@ -1,32 +1,8 @@
 import axios from 'axios';
 
-const USERS_API = process.env.USERS_API_BASE_ENDPOINT;
-const EVENTS_API = process.env.EVENTS_API_BASE_ENDPOINT;
-const DIST_API = process.env.DISTANCE_API_BASE_ENDPOINT;
-
-console.log(USERS_API);
-console.log(EVENTS_API);
-console.log(DIST_API);
-
-/**
- * 1) Sign in - POST /signin/traditional
- */
-export const signIn = async (email, password) => { 
-  try {
-    const response = await axios.post(`${USERS_API}/signin/traditional`, { email, password });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error;
-  }
-};
-
-export const saveDay = async(eventsArray) => {
-
-}
-
 export const ssoSignIn = async (email, username) => {
   try {
-    const response = await axios.post(`${USERS_API}/signin/sso`, { email, username });
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_USERS_API_BASE_ENDPOINT}/signin/sso`, { email, username });
     console.log("response.data:", response.data);
     return response.data;
   } catch (error) {
@@ -36,24 +12,11 @@ export const ssoSignIn = async (email, username) => {
 };
 
 /**
- * 2) Create account - POST /signup/traditional
- * @param {object} userData - 
- */
-export const signUp = async (userData) => {
-  try {
-    const response = await axios.post(`${USERS_API}/signup/traditional`, userData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error;
-  }
-};
-
-/**
  * 3) Fetch all events - GET /
  */
 export const fetchAllEvents = async () => {
   try {
-    const response = await axios.get(`${EVENTS_API}/`);
+    const response = await axios.get('/api/events');
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -66,7 +29,7 @@ export const fetchAllEvents = async () => {
  */
 export const createEvent = async (eventData) => {
   try {
-    const response = await axios.post(`${EVENTS_API}/`, eventData);
+    const response = await axios.post('/api/events', eventData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -77,10 +40,9 @@ export const createEvent = async (eventData) => {
  * 5) Fetch event by id - GET /{event_id}
  * @param {string|number} eventId
  */
-
 export const fetchEventById = async (eventId) => {
   try {
-    const response = await axios.get(`${EVENTS_API}/${eventId}`);
+    const response = await axios.get(`/api/events/${eventId}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -95,8 +57,8 @@ export const getDistanceBetweenVenues = async (address1, address2, mode = "Trans
     if (!address1?.trim() || !address2?.trim()) {
       return { distance: null, duration: null, error: "Invalid addresses" };
     }
-    // Pass mode lowercase to match backend expectations
-    const response = await axios.get(DIST_API, {
+    
+    const response = await axios.get('/api/distance', {
       params: { address1, address2, mode: mode.toLowerCase() },
     });
     return response.data;
@@ -115,7 +77,7 @@ export const search = async (keyword, start_date, end_date, user_id) => {
     if (end_date) params.end_date = end_date.toString();
     if (user_id) params.user_id = user_id;
 
-    const response = await axios.get(`${EVENTS_API}/search`, {
+    const response = await axios.get('/api/events/search', {
       params,
     });
 
@@ -125,41 +87,6 @@ export const search = async (keyword, start_date, end_date, user_id) => {
     return [];
   }
 };
-
-/*
-export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
-  try {
-    const { date, startTime, endTime } = formData;
-
-    const starttime = new Date(`${date}T${startTime}`);
-    const endtime = new Date(`${date}T${endTime}`);
-
-    const startISO = starttime.toISOString();
-    const endISO = endtime.toISOString();
-
-    // Call your search API
-    const events = await search(null, startISO, endISO, user_id);
-
-    const response = await axios.post(`${EVENTS_API}/surpriseme`, {
-      event_results: events,
-      user_tags: user_preferences
-    });
-
-    if (response.status === 200) {
-      console.log("response data---------");
-      console.log(response.data);
-      return response.data;
-    } else {
-      console.log("skill issue!");
-      return response.data;
-    }
-
-  } catch (error) {
-    console.error('Error fetching surprise:', error);
-    throw error.response?.data || error;
-  }
-}
-*/
 
 export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
   try {
@@ -175,12 +102,12 @@ export async function fetchSurpriseMe({ formData, user_id, user_preferences }) {
     // Call your search API
     const events = await search(null, startISO, endISO, user_id);
 
-    const response = await axios.post(`${EVENTS_API}/surpriseme`, {
+    const response = await axios.post('/api/events/surpriseme', {
       event_results: events,
       user_tags: user_preferences,
     });
 
-    console.log('Surprise API response data:', response.data); // <-- debug log all response data
+    console.log('Surprise API response data:', response.data);
 
     if (response.status === 200 && response.data.result) {
       try {

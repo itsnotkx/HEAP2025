@@ -6,7 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { signIn as nextSignIn } from "next-auth/react";
 
-import { signIn } from "@/app/api/apis"; // Keep your existing path
+// import { signIn } from "@/app/api/apis"; // Keep your existing path
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
@@ -14,19 +14,19 @@ export default function LoginPage() {
   const router = useRouter();
 
   // Handle form submission with proper typing
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    try {
-      const user = await signIn(email); // Removed password since it's unused
+  //   try {
+  //     const user = await signIn(email); // Removed password since it's unused
 
-      console.log("Login successful", user);
-      router.push("/planner");
-    } catch (error: any) {
-      console.error("Login failed", error);
-      setErrorMsg(error?.detail || "Invalid email or password");
-    }
-  };
+  //     console.log("Login successful", user);
+  //     router.push("/planner");
+  //   } catch (error: any) {
+  //     console.error("Login failed", error);
+  //     setErrorMsg(error?.detail || "Invalid email or password");
+  //   }
+  // };
 
   // Google SSO handler
   const handleGoogleSignIn = async () => {
