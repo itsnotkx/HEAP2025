@@ -38,7 +38,7 @@ export default function Navigationbar({
   const isRootPath = (path: string) => path === "" || path === "/";
 
   const handleLoginClick = () => {
-    signIn(); // Uses NextAuth's signIn method
+    router.push("/auth/login")
   };
 
   const linkClass = (href: string) => {
