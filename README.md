@@ -1,6 +1,13 @@
-# KiasuPlanner – HEAP2025
+![App Screenshot](frontend/public/KiasuPlanner.png)<hr>
 
 *KiasuPlanner* is an intelligent, all-in-one event and itinerary planning platform designed to help users effortlessly build, optimize, and personalize their schedules. Whether planning a day out, managing multiple venues, or seeking "Surprise Me" event suggestions, KiasuPlanner leverages AI to reduce planning friction and maximize your enjoyment.
+
+## Group Members:
+KHOO KAR XING
+ETHAN LIM JIN
+WAI ZIN LIN
+MATTHEW KHOO LAY ROY
+EI CHAW ZIN
 
 ---
 
@@ -17,12 +24,12 @@
 
 ## About
 
-*KiasuPlanner* is built for the "kiasu" ones — those who stress and go through the hassle for the best experience. Let us help you out! With seamless frontend interactions, AI-driven event suggestions, real-time routing, and integrated mapping/ticketing, KiasuPlanner transforms both solo and group itinerary planning.
+*KiasuPlanner* is built for the "kiasu" ones - those who stress and go through the hassle for the best experience. Let us help you out! With seamless frontend interactions, User-tailored event suggestions, real-time routing, and integrated mapping, KiasuPlanner transforms both solo and group itinerary planning.
 
 **Platform Highlights:**
 - Interactive day planner (easily rearrangeable, timeline, per-segment transit choice)
-- AI "Surprise Me" for smart event stacks
-- Real-time travel time computations (Google Maps API)
+- "Surprise Me" for the adventurous
+- Real-time travel time computations
 - Secure user session and personalized suggestions
 
 ---
