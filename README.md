@@ -1,6 +1,6 @@
 ![App Screenshot](frontend/public/KiasuPlanner.png)<hr>
 
-*KiasuPlanner* is an intelligent, all-in-one event and itinerary planning platform designed to help users effortlessly build, optimize, and personalize their schedules. Whether planning a day out, managing multiple venues, or seeking "Surprise Me" event suggestions, KiasuPlanner leverages AI to reduce planning friction and maximize your enjoyment.
+[KiasuPlanner](https://heap-2025-kiasuplanner.vercel.app) is an intelligent, all-in-one event and itinerary planning platform designed to help users effortlessly build, optimize, and personalize their schedules. Whether planning a day out, managing multiple venues, or seeking "Surprise Me" event suggestions, KiasuPlanner leverages AI to reduce planning friction and maximize your enjoyment.
 
 ## Group Members
 
@@ -81,6 +81,24 @@ HEAP2025/
 | One-Click Deployment   | Rapid setup on AWS or any Docker host                               |
 
 ---
+
+## Deployment instructions
+
+### Scraper Backend: 
+1) Create a lambda function for STBScraper.py, TimeOutScraper.py, TheSmartLocalScraper.py, deduplication.py under backend/utils/lambda_functions. Fill up the environment variables as needed. include models.py in each of these lambda functions as well.
+2) Create an AWS RDS instance. Run the create-insert script under backend/utils/database/createInsert.sql
+3) Create a lambda function classifier-forwarder, under backend/utils/lambda_functions.
+4) Create an EC2 instance. In this, place classifier.py. do remember to pip install -r requirements.txt. Within the ec2 instance, run the code using python3 classifier.py
+5) For each scraper, ceate AWS Stepfunctions following this flow: Scraper -> deduplicator -> classifier-forwarder
+6) For each Stepfunction, create an eventbridge event scheduling the database update.
+
+### Webapp backend:
+
+### Webapp Frontend:
+1) Go to Vercel, create a new project, and set root directory to be /frontend.
+2) Set the build command to be ```npm run build```, and the install command to be ```npm install```
+3) Set the environment variables: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, NEXTAUTH_URL, NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT, NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT, NEXT_PUBLIC_USERS_API_BASE_ENDPOINT
+4) Deploy the webapp.
 
 ## License
 
