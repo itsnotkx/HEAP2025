@@ -41,42 +41,22 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Card className="w-full max-w-md shadow-xl rounded-2xl p-6 bg-white">
-        <CardBody>
-          <Image
-            alt="KiasuPlanner Logo"
-            className="w-48 h-48 object-contain mx-auto mb-4"
-            draggable={false}
-            src="/logo.svg"
-          />
+      <Card className="w-full max-w-md shadow-xl rounded-2xl p-6 bg-white justify-center">
+        <CardBody className="w-full max-w-md shadow-xl rounded-2xl p-6 bg-white justify-center">
+<div className="flex justify-center">
+  <Image
+    alt="KiasuPlanner Logo"
+    className="w-48 h-48 object-contain mb-4"
+    draggable={false}
+    src="/logo.svg"
+  />
+</div>
+
           <h1 className="text-2xl font-bold mb-6 text-center">
             Sign in to your account
           </h1>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="px-4 py-2 border rounded"
-              aria-label="Email address"
-            />
-            {/* You can add a password input here if needed */}
-
-            {errorMsg && (
-              <p role="alert" className="text-red-600 text-sm mb-2">
-                {errorMsg}
-              </p>
-            )}
-
-            <Button type="submit" className="w-full" variant="solid">
-              Sign In
-            </Button>
-          </form>
-
-          <hr className="my-6 border-gray-300" />
+          {/* <hr className="my-6 border-gray-300" /> */}
 
           <Button
             className="w-full flex items-center justify-center gap-2"
