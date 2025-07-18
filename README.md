@@ -2,12 +2,13 @@
 
 *KiasuPlanner* is an intelligent, all-in-one event and itinerary planning platform designed to help users effortlessly build, optimize, and personalize their schedules. Whether planning a day out, managing multiple venues, or seeking "Surprise Me" event suggestions, KiasuPlanner leverages AI to reduce planning friction and maximize your enjoyment.
 
-## Group Members:
--KHOO KAR XING
--ETHAN LIM JIN
--WAI ZIN LIN
--MATTHEW KHOO LAY ROY
--EI CHAW ZIN
+## Group Members
+
+- KHOO KAR XING
+- ETHAN LIM JIN
+- WAI ZIN LIN
+- MATTHEW KHOO LAY ROY
+- EI CHAW ZIN
 
 ---
 
