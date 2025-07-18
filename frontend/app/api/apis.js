@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const USERS_API = process.env.NEXT_PUBLIC_USERS_API_BASE_ENDPOINT || 'http://localhost:8000/api/users';
-const EVENTS_API = process.env.NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT || 'http://localhost:8000/api/events';
-const DIST_API = process.env.NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT || 'http://localhost:8000/api/distance';
+const USERS_API = process.env.NEXT_PUBLIC_USERS_API_BASE_ENDPOINT;
+const EVENTS_API = process.env.NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT;
+const DIST_API = process.env.NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT;
 /**
  * 1) Sign in - POST /signin/traditional
  */
-export const signIn = async (email, password) => {
+export const signIn = async (email, password) => { 
   try {
     const response = await axios.post(`${USERS_API}/signin/traditional`, { email, password });
     return response.data;
