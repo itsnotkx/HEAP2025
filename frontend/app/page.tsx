@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Calendar, MapPin } from "lucide-react";
 import { Button } from "@heroui/button";
@@ -15,26 +15,46 @@ interface EventItem {
   name: string;
   address: string;
 }
+type TravelStatus = "idle" | "loading" | "error" | "done";
 
-// ----- Demo function -----
-function getDemoDuration(from: string, to: string, mode: TravelMode): number {
-  const base =
-    from === "Singapore Zoo" && to === "Lunch"
-      ? 14
-      : from === "Lunch" && to === "River Safari"
-      ? 8
-      : 11;
-  const multiplier =
-    mode === "transit"
-      ? 1
-      : mode === "walking"
-      ? 3
-      : mode === "bicycling"
-      ? 1.5
-      : mode === "driving"
-      ? 0.9
-      : 1;
-  return Math.round(base * multiplier);
+// Utility: Detect if an address is not usable
+function isAddressUnknown(address?: string | null): boolean {
+  return (
+    !address ||
+    address.trim() === "" ||
+    address.trim().toUpperCase() === "TBA"
+  );
+}
+
+// API fetch for travel duration
+async function fetchTravelDuration(
+  from: string,
+  to: string,
+  mode: TravelMode
+): Promise<number | null> {
+  try {
+    const res = await fetch(
+      `/api/distance?from=${encodeURIComponent(from)}&to=${encodeURIComponent(
+        to
+      )}&mode=${mode}`
+    );
+    if (!res.ok) {
+      console.error(
+        `API error (status ${res.status}):`,
+        await res.text()
+      );
+      return null;
+    }
+    const data = await res.json();
+    if (typeof data.duration !== "number") {
+      console.error("API error: duration not returned or not a number", data);
+      return null;
+    }
+    return data.duration;
+  } catch (e) {
+    console.error("API network/error", e);
+    return null;
+  }
 }
 
 // ----- Modes and Colors -----
@@ -63,21 +83,55 @@ export default function App() {
 
   const [events, setEvents] = useState<EventItem[]>([
     { name: "Singapore Zoo", address: "80 Mandai Lake Rd, Singapore" },
-    { name: "Lunch", address: "HaiDiLao Jurong East" },
+    { name: "Lunch", address: "2 Jurong East Street 21, #03-01 IMM Building, Singapore 609601" },
     { name: "River Safari", address: "River Wonders, Mandai" },
   ]);
   const [modes, setModes] = useState<TravelMode[]>(["transit", "transit"]);
 
-  // ----- Calculate segment durations -----
-  const travelDurations = useMemo(
-    () =>
-      events
-        .slice(0, -1)
-        .map((from, idx) =>
-          getDemoDuration(from.name, events[idx + 1]?.name, modes[idx]),
-        ),
-    [events, modes]
-  );
+  // state for travel durations and status for each segment
+  const [travelDurations, setTravelDurations] = useState<(number | null)[]>([]);
+  const [travelStatus, setTravelStatus] = useState<TravelStatus[]>([]);
+
+  // ----- Calculate segment durations via API -----
+  useEffect(() => {
+    let isMounted = true;
+
+    async function calcDurations() {
+      const statuses: TravelStatus[] = [];
+      const durations = await Promise.all(
+        events.slice(0, -1).map(async (fromEvent, idx) => {
+          const toEvent = events[idx + 1];
+          if (
+            isAddressUnknown(fromEvent.address) ||
+            isAddressUnknown(toEvent.address)
+          ) {
+            statuses[idx] = "done";
+            return null;
+          }
+          statuses[idx] = "loading";
+          const duration = await fetchTravelDuration(
+            fromEvent.address,
+            toEvent.address,
+            modes[idx]
+          );
+          statuses[idx] = duration !== null ? "done" : "error";
+          return duration;
+        })
+      );
+      if (isMounted) {
+        setTravelDurations(durations);
+        setTravelStatus(statuses);
+      }
+    }
+
+    setTravelStatus(events.slice(0, -1).map(() => "idle"));
+    setTravelDurations(events.slice(0, -1).map(() => null));
+    calcDurations();
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, modes]);
 
   // ----- Move event -----
   function moveEvent(index: number, direction: "up" | "down") {
@@ -236,7 +290,6 @@ export default function App() {
                         disabled={idx === 0}
                         onClick={() => moveEvent(idx, "up")}
                       >
-                        {/* Up arrow */}
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
@@ -255,7 +308,6 @@ export default function App() {
                         disabled={idx === events.length - 1}
                         onClick={() => moveEvent(idx, "down")}
                       >
-                        {/* Down arrow */}
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
@@ -273,13 +325,17 @@ export default function App() {
                 </div>
                 {/* Transition pill/dropdown */}
                 {idx < events.length - 1 && (
-                  <div className="flex justify-center items-center mb-1">
+                  <div className="flex justify-center items-center mb-1 w-full">
                     <select
                       className={`rounded-full font-semibold px-3 py-1 text-xs border ${travelColors[modes[idx]]} focus:outline-none shadow`}
                       style={{ minWidth: 95 }}
                       value={modes[idx]}
                       onChange={(e) =>
                         changeMode(idx, e.target.value as TravelMode)
+                      }
+                      disabled={
+                        isAddressUnknown(event.address) ||
+                        isAddressUnknown(events[idx + 1]?.address)
                       }
                     >
                       {modeOptions.map((opt) => (
@@ -288,9 +344,24 @@ export default function App() {
                         </option>
                       ))}
                     </select>
-                    <span className="ml-3 text-gray-500 text-xs">
-                      ~{travelDurations[idx]} min
-                    </span>
+                    {isAddressUnknown(event.address) ||
+                    isAddressUnknown(events[idx + 1]?.address) ? (
+                      <span className="w-full text-center text-[10px] text-gray-500 leading-none py-0.5 ml-2">
+                        Unable to show time due to unknown location, please buffer accordingly.
+                      </span>
+                    ) : travelStatus[idx] === "loading" ? (
+                      <span className="ml-3 text-gray-400 text-xs italic">Loading...</span>
+                    ) : travelStatus[idx] === "error" ? (
+                      <span className="ml-3 text-red-400 text-xs font-medium">
+                        Route unavailable
+                      </span>
+                    ) : (
+                      <span className="ml-3 text-gray-500 text-xs">
+                        {travelDurations[idx] !== null
+                          ? `~${travelDurations[idx]} min`
+                          : ""}
+                      </span>
+                    )}
                   </div>
                 )}
               </React.Fragment>

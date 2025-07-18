@@ -20,6 +20,15 @@ const travelColors = {
   bicycling: "bg-violet-100 text-violet-800 border-violet-200",
 };
 
+// Utility to check for missing or "TBA" addresses
+function isAddressUnknown(address?: string | null): boolean {
+  return (
+    !address ||
+    address.trim() === "" ||
+    address.trim().toUpperCase() === "TBA"
+  );
+}
+
 export default function SideBar({
   expanded,
   setExpanded,
@@ -34,7 +43,6 @@ export default function SideBar({
     updateSegmentMode,
   } = useTimeline();
 
-  // Extract only event entries with their timeline index
   const eventItems = timeline
     .map((item, idx) => ({ ...item, timelineIdx: idx }))
     .filter((item) => item.type === "event");
@@ -46,7 +54,7 @@ export default function SideBar({
         expanded ? "w-[400px]" : "w-[70px]",
       )}
     >
-      {/* Collapsed sidebar: right-arrow button */}
+      {/* Collapsed sidebar */}
       {!expanded && (
         <div className="w-full flex justify-center mt-6 mb-6">
           <button
@@ -82,10 +90,18 @@ export default function SideBar({
 
           <div className="flex flex-col gap-4 py-4 px-2 w-full">
             {eventItems.map((eventItem, i) => {
-              // Get the next timeline entry (potential travel segment)
+              // Get next timeline entry (potential travel segment)
               const nextEntry = timeline[eventItem.timelineIdx + 1];
               const isTravelEntry = nextEntry?.type === "travel";
-              
+
+              // Check if either end of the trip is unknown
+              let showNoTransportMsg = false;
+              if (isTravelEntry) {
+                const fromUnknown = isAddressUnknown(nextEntry.from);
+                const toUnknown = isAddressUnknown(nextEntry.to);
+                showNoTransportMsg = fromUnknown || toUnknown;
+              }
+
               return (
                 <React.Fragment key={eventItem.timelineIdx}>
                   {/* --- Event Card --- */}
@@ -132,31 +148,39 @@ export default function SideBar({
                   {/* --- Transit Dropdown Between Events (show only if corresponding travel exists) --- */}
                   {isTravelEntry && (
                     <div className="flex justify-center items-center">
-                      <select
-                        className={`rounded-full font-semibold px-3 py-1 text-xs border ${
-                          travelColors[
-                            nextEntry.mode as keyof typeof travelColors
-                          ] || travelColors.transit
-                        } focus:outline-none shadow`}
-                        style={{ minWidth: 95 }}
-                        value={nextEntry.mode}
-                        onChange={(e) =>
-                          updateSegmentMode(
-                            eventItem.timelineIdx + 1,
-                            e.target.value as TravelMode,
-                          )
-                        }
-                      >
-                        <option value="transit">&#128652; Transit</option>
-                        <option value="driving">&#128663; Driving</option>
-                        <option value="walking">&#128694; Walking</option>
-                        <option value="bicycling">&#128692; Cycling</option>
-                      </select>
-                      <span className="ml-3 text-gray-500 text-xs">
-                        {nextEntry.duration
-                          ? `~${nextEntry.duration} min`
-                          : ""}
-                      </span>
+                      {showNoTransportMsg ? (
+                        <span className="text-center text-[10px] text-gray-500 px-2 py-1">
+                          Unable to show time due to unknown location, please buffer accordingly.
+                        </span>
+                      ) : (
+                        <>
+                          <select
+                            className={`rounded-full font-semibold px-3 py-1 text-xs border ${
+                              travelColors[
+                                nextEntry.mode as keyof typeof travelColors
+                              ] || travelColors.transit
+                            } focus:outline-none shadow`}
+                            style={{ minWidth: 95 }}
+                            value={nextEntry.mode}
+                            onChange={(e) =>
+                              updateSegmentMode(
+                                eventItem.timelineIdx + 1,
+                                e.target.value as TravelMode,
+                              )
+                            }
+                          >
+                            <option value="transit">&#128652; Transit</option>
+                            <option value="driving">&#128663; Driving</option>
+                            <option value="walking">&#128694; Walking</option>
+                            <option value="bicycling">&#128692; Cycling</option>
+                          </select>
+                          <span className="ml-3 text-gray-500 text-xs">
+                            {nextEntry.duration
+                              ? `~${nextEntry.duration} min`
+                              : ""}
+                          </span>
+                        </>
+                      )}
                     </div>
                   )}
                 </React.Fragment>
