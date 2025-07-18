@@ -84,26 +84,26 @@ HEAP2025/
 For the Backend Scrapers, as they are built to be serverless functions they should be deployed on the cloud using lambda.
 
 ## Enviroment Variables
-### Webapp Backend: 
-DB_HOST
-DB_PORT=5432
-DB_NAME
-DB_USER
-DB_PASSWORD
-GOOGLE_MAPS_API_KEY
+### Webapp Backend:  
+   ```DB_HOST```  
+   ```DB_PORT=5432```  
+   ```DB_NAME```  
+   ```DB_USER```  
+   ```DB_PASSWORD```  
+   ```GOOGLE_MAPS_API_KEY```  
 
-### Scraper Backend: 
-GOOGLE_MAPS_API_KEY
+### Scraper Backend:  
+   ```GOOGLE_MAPS_API_KEY```  
 
-### Webapp Frontend:
-GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
-NEXTAUTH_URL
-AUTH_SECRET
-GOOGLE_MAPS_API_KEY
-NEXT_PUBLIC_USERS_API_BASE_ENDPOINT={insert backend public hostname}/api/distance
-NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT={insert backend public hostname}/api/events   
-NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT={insert backend public hostname}/api/users
+### Webapp Frontend:  
+   ```GOOGLE_CLIENT_ID```  
+   ```GOOGLE_CLIENT_SECRET```  
+   ```NEXTAUTH_URL```  
+   ```AUTH_SECRET```  
+   ```GOOGLE_MAPS_API_KEY```  
+   ```NEXT_PUBLIC_USERS_API_BASE_ENDPOINT={insert backend public hostname}/api/distance```  
+   ```NEXT_PUBLIC_EVENTS_API_BASE_ENDPOINT={insert backend public hostname}/api/events```  
+   ```NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT={insert backend public hostname}/api/users```  
 
 
 ## Local
@@ -116,13 +116,13 @@ NEXT_PUBLIC_DISTANCE_API_BASE_ENDPOINT={insert backend public hostname}/api/user
 1) Set up a virtual environment and
   pip install -r requirements.txt
 2) Run the following command:
-  ```fastapi run```
+  ```fastapi run```  
 
 ### Webapp Frontend:
 1) In frontend/, run
-   ```npm install```
-   ```npm run build```
-   ```npm start```
+   ```npm install```  
+   ```npm run build```  
+   ```npm start```  
 
 
 
